@@ -1,0 +1,39 @@
+Dependencies:
+
+	Software:
+		make (for installation only)
+		perl
+
+	Perl Modules:
+
+		Getopt::Long
+		IO::Handle
+		Nmap::Parser
+		Pod::Usage
+
+To install this software into the default location (/usr/local) do the
+following:
+
+	gzip -dc xndiff-0.1.tgz | tar -xof -
+	cd xndiff-0.1
+	perl Makefile.PL
+	make
+	make install
+
+To install in an alternative location specify a prefix for where the software
+is to be installed.  For example, this set of commands will install the
+software in a directory called $HOME/xndiff:
+
+	gzip -dc xndiff-0.1.tgz | tar -xof -
+	cd xndiff-0.1
+	perl Makefile.PL PREFIX=$HOME/xndiff
+	make
+	make install
+
+If you had specified the alternative prefix (as above) then the following
+files would be installed:
+
+	$HOME/xndiff/lib/perl/5.8/perllocal.pod
+	$HOME/xndiff/lib/perl/5.8.8/auto/xndiff/.packlist
+	$HOME/xndiff/man/man1/xndiff.1p
+	$HOME/xndiff/bin/xndiff
