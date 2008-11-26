@@ -1,3 +1,5 @@
+#summary Installation Instructions
+
 Dependencies:
  Software:
   make (for installation only)<br/>
