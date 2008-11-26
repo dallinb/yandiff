@@ -1,3 +1,5 @@
+#summary Manual for xndiff
+
 ==NAME==
 xndiff - find differences between two nmap network scans
 
