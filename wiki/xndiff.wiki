@@ -12,10 +12,3 @@ switch for XML output.
 
 xndiff is a complete rewrite of ndiff written by James Levine, except
 where ndiff used nmap’s "grepable" output, xndiff reads XML output.
-
-
-= Contents =
-
-  * COPYING
-  * INSTALL
-  * Manual
