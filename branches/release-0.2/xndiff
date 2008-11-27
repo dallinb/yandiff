@@ -1044,14 +1044,21 @@ xndiff --baseline baseline.xml --observed observed.xml \
 
 =back
 
-
 =head1 HISTORY
 
 B<xndiff> is a complete rewrite of ndiff written by James Levine, except
 where ndiff used nmap's "grepable" output, xndiff reads XML output.
 
-=head1 AUTHOR
+=head1 AUTHORS
 
-Ben Dalling <b.dalling@locp.co.uk>
+The Xndiff project at http://code.google.com/p/xndiff
+
+=head1 BUGS
+
+The project members graciously accept that there may be bugs.  If there are
+any found, please report them at the link below or browse the issues reported
+to see if a fix is either available or in progress.
+
+http://code.google.com/p/xndiff/issues
 
 =cut
