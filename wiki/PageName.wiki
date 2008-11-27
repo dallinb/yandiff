@@ -49,10 +49,10 @@ OPTIONS
            to generate an html page, while "htmle" causes ndiff to generate an
            embeddable html fragment (See ndiff2html).
 
-       -op [ocufx]
-       -output-ports [ocufk]
+       -op [ ocufx ]
+       -output-ports [ ocufk ]
            Specifies which ports to display when outputting changed hosts.
-           Any combination of the characters [ocufx] may be specified to
+           Any combination of the characters [ ocufx ] may be specified to
            enable printing of ports that changed to states (in the "observed"
            scan) as follows:
 
@@ -62,9 +62,9 @@ OPTIONS
             x = unfiltered
             k = unknown (wasn't scanned or host wasn't up)
 
-       -oh [nmc]
-       -output-hosts [nmc]
-           Specifies which types hosts to display.  Any combination of [nmc]
+       -oh [ nmc ]
+       -output-hosts [ nmc ]
+           Specifies which types hosts to display.  Any combination of [ nmc ]
            may be specified, as follows:
 
             n = new hosts (in the "observed" scan)
