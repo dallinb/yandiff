@@ -987,8 +987,8 @@ Send the output to the specified file.
 
 =item B<--output-hosts> <nmc>
 
-Specifies which types of hosts to display.  Any combination of [nmc] may be
-specified, as follows:
+Specifies which types of hosts to display.  Any combination of n, m, or c may
+be specified, as follows:
 
 n = new hosts in the "observed" scan.
 
@@ -1030,7 +1030,7 @@ xndiff --baseline baseline.xml --observed observed.xml
 
 =back
 
-To generate a stylesheet to file.
+To generate a stylesheet to file:
 
 =over 8
 
@@ -1039,7 +1039,7 @@ xndiff --gen-stylesheet xndiff.xsl
 =back
 
 To generate a report to an XML file and using the stylesheet generated in the
-previous example.
+previous example:
 
 =over 8
 
@@ -1050,8 +1050,9 @@ xndiff --baseline baseline.xml --observed observed.xml \
 
 =head1 HISTORY
 
-B<xndiff> is a complete rewrite of ndiff written by James Levine, except
-where ndiff used nmap's "grepable" output, xndiff reads XML output.
+Xndiff is loosely based on ndiff written by James Levine, except
+where ndiff used "grepable" output from nmap, xndiff reads XML output using
+Nmap::Parser.
 
 =head1 AUTHORS
 
