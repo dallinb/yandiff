@@ -1,10 +1,14 @@
 #summary Manual for xndiff
+#labels Phase-Deploy,Featured
 
-==NAME==
-xndiff - find differences between two nmap network scans
+= NAME =
 
-==SYNOPSIS==
- xndiff [--format <text | xml>] [--output-file file] [--output-hosts < nmc >] [--stylesheet <file | URL>] --baseline file --observed file
+ xndiff - find differences between two nmap network scans
+
+
+= SYNOPSIS =
+
+ xndiff [--format `<`text | xml`>`] [--output-file file] [--output-hosts `<`nmc`>`] [--stylesheet `<`file | URL`>`] --baseline file --observed file
 
  xndiff --gen-stylesheet file
 
@@ -14,64 +18,71 @@ xndiff - find differences between two nmap network scans
 
  xndiff --version
 
-==OPTIONS==
+
+= OPTIONS =
+
+<b>--baseline file</b> Specifies the nmap results to use as the baseline for the comparison.
+
+<b>--format `<`text | xml`>`</b> Specifies the output format (text is the default).
+
+<b>--gen-stylesheet file</b> Generate an XML stylesheet (XSLT) suitable for use with the --stylesheet option.
+
+<b>--help</b> Print a brief help message and exit.
+
+<b>--man</b> Print the manual page and exit.
+
+<b>--observed file</b> Specifies the nmap results to use as the "observed results" for the comparison.
+
+<b>--output-file file</b>Send the output to the specified file.
+
+<b>--output-hosts`<`nmc`>`</b> Specifies which types of hosts to display. Any combination of [nmc] may be specified, as follows:
+
+   *n = new hosts in the "observed" scan.
+   *m = missing hosts in the "observed" scan.
+   *c = changed hosts in the "observed" scan.
+
+The default is to show new, missing and changed hosts.
+
+<b>--stylesheet `<`file | URL`>`</b> Specifies the location of an XML stylesheet to be referred to in any XML output. A suitable stylesheet can be generated using the --gen-stylesheet option.
+
+<b>--version</b> Print the version and exit.
 
 
- --baseline file
-   Specifies the nmap results to use as the baseline for the comparison.
+= DESCRIPTION =
 
-
-  --format <text | xml>
-    Specifies the output format (text is the default).
-
-  --gen-stylesheet file
-    Generate an XML stylesheet (XSLT) suitable for use with the --stylesheet option.
-
-  --help
-    Print a brief help message and exit.
-
-  --man
-    Print the manual page and exit.
-
-  --observed
-    Specifies the nmap results to use as the "observed results" for the comparison.
-
-  --output-file
-    Send the output to the specified file.
-
-  --output-hosts < nmc  >
-    Specifies which types of hosts to display. Any combination of n, m or c may be specified, as follows:
-      * n = new hosts in the "observed" scan.
-      * m = missing hosts in the "observed" scan.
-      * c = changed hosts in the "observed" scan.
-    The default is to show new, missing and changed hosts.
-
-  --stylesheet <file | URL>
-    Specifies the location of an XML stylesheet to be referred to in any XML output. A suitable stylesheet can be generated using the --gen-stylesheet option.
-
-  --version
-    Print the version and exit.
-
-==DESCRIPTION==
- xndiff allows a network administrator or other interested party to easily monitor one or more networks for changes in port states and running services. It achieves this by comparing the results of two nmap scans, one designated the "baseline", the other "observation".
+ <b>xndiff</b> allows a network administrator or other interested party to easily monitor one or more networks for changes in port states and running services. It achieves this by comparing the results of two nmap scans, one designated the "baseline", the other "observation".
 
  Both baseline and observation are stored in files generated via nmap's -oX switch for XML output.
 
-==EXAMPLES==
-To generate a report to screen:
 
- xndiff --baseline baseline.xml --observed observed.xml
+= EXAMPLES =
 
-To generate a stylesheet to file.
+ To generate a report to screen:
 
- xndiff --gen-stylesheet xndiff.xsl
+  `xndiff --baseline baseline.xml --observed observed.xml`
 
-To generate a report to an XML file and using the stylesheet generated in the previous example.
+ To generate a stylesheet to file.
 
- xndiff --baseline baseline.xml --observed observed.xml --format xml --output-file report.xml
+  `xndiff --gen-stylesheet xndiff.xsl`
 
-==HISTORY==
-'''xndiff''' is a complete rewrite of ndiff written by James Levine, except where ndiff used nmap's "grepable" output, xndiff reads XML output.
+ To generate a report to an XML file and using the stylesheet generated in the previous example.
 
-==AUTHOR==
-Ben Dalling <b.dall...@locp.co.uk>
+  'xndiff --baseline baseline.xml --observed observed.xml \
+      --format xml --output-file report.xml'
+
+
+= HISTORY =
+
+ Xndiff is loosely based on ndiff written by James Levine, except where ndiff used "grepable" output from nmap, xndiff reads XML output using Nmap::Parser.
+
+
+= AUTHORS =
+
+ The Xndiff project at http://code.google.com/p/xndiff
+
+
+= BUGS =
+
+ The project members graciously accept that there may be bugs. If there are any found, please report them at the link below or browse the issues reported to see if a fix is either available or in progress.
+
+ http://code.google.com/p/xndiff/issues
