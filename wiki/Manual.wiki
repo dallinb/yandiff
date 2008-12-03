@@ -35,7 +35,7 @@
 
 <b>--output-file file</b>Send the output to the specified file.
 
-<b>--output-hosts`<`nmc`>`</b> Specifies which types of hosts to display. Any combination of [nmc] may be specified, as follows:
+<b>--output-hosts`<`nmc`>`</b> Specifies which types of hosts to display. Any combination of n, m or c may be specified, as follows:
 
    *n = new hosts in the "observed" scan.
    *m = missing hosts in the "observed" scan.
@@ -61,14 +61,13 @@ The default is to show new, missing and changed hosts.
 
   `xndiff --baseline baseline.xml --observed observed.xml`
 
- To generate a stylesheet to file.
+ To generate a stylesheet to file:
 
   `xndiff --gen-stylesheet xndiff.xsl`
 
  To generate a report to an XML file and using the stylesheet generated in the previous example.
 
-  'xndiff --baseline baseline.xml --observed observed.xml \
-      --format xml --output-file report.xml'
+  `xndiff --baseline baseline.xml --observed observed.xml --format xml --output-file report.xml`
 
 
 = HISTORY =
