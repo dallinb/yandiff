@@ -372,6 +372,7 @@ my $man = 0;
 my $observed_file = '';
 my $output_file = '';
 my $output_hosts = '';
+my $output_ports = '';
 my $release = 2;
 my $run_date = `date`;
 my $show_version = 0;
@@ -403,6 +404,7 @@ GetOptions(
     'observed=s' => \$observed_file,
     'output-file=s' => \$output_file,
     'output-hosts=s' => \$output_hosts,
+    'output-ports' => \$output_ports,
     'stylesheet=s' => \$stylesheet,
     'version' => \$show_version
     ) or pod2usage(1);
@@ -940,6 +942,7 @@ xndiff
 [--format <text | xml>]
 [--output-file file]
 [--output-hosts <nmc>]
+[--output-ports <ofc>]
 [--stylesheet <file | URL>]
 --baseline file
 --observed file
@@ -997,6 +1000,19 @@ m = missing hosts in the "observed" scan.
 c = changed hosts in the "observed" scan.
 
 The default is to show new, missing and changed hosts.
+
+= item B<--output-ports> <ofc>
+
+Specifies which ports to check. Open, filtered or closed ports.
+Any combination of [ofc] may be specified, as follows:
+
+o = Open ports in the "observed" scan.
+
+f = Filtered ports in the "observed" scan.
+
+c = closed ports in the "observed" scan.
+
+The default is to show open, filtered and closed ports.
 
 =item B<--stylesheet> <file | URL>
 
