@@ -821,6 +821,8 @@ sub generate {
  h2.green { color: #000000; background-color:#CCFFCC; border-color:#006400; }
 
  h2.red { color: #000000; background-color:#FFCCCC; border-color:#8B0000; }
+
+ h2.orange { color: #000000; background-color:#FFDDBB; border-color:#8B0000; }
    
  h3 { font-family: Verdana, Helvetica, sans-serif; font-weight:bold;
   font-size: 10pt; color:#000000; background-color: #FFFFFF; width: 75%;
@@ -846,6 +848,8 @@ sub generate {
  a:hover { text-decoration: underline; }
 
  a.red { color:#8B0000; }
+
+ a.orange { color: orange; }
 
  a.green { color:#006400; }
 
@@ -873,6 +877,32 @@ sub generate {
 </head>
 <body>
  <h1>Xndiff</h1>
+
+ <h2>Host Summary</h2>
+
+ <xsl:if test="new">
+  <p><b>New</b>:
+  <xsl:for-each select="new">
+   <xsl:apply-templates select="host"/>
+  </xsl:for-each>
+  </p>
+ </xsl:if>
+
+ <xsl:if test="missing">
+  <p><b>Missing</b>:
+  <xsl:for-each select="missing">
+   <xsl:apply-templates select="host"/>
+  </xsl:for-each>
+  </p>
+ </xsl:if>
+
+ <xsl:if test="changed">
+  <p><b>Changed</b>:
+  <xsl:for-each select="changed">
+   <xsl:apply-templates select="host"/>
+  </xsl:for-each>
+  </p>
+ </xsl:if>
 
  <h2>Run Parameters</h2>
 
@@ -924,12 +954,16 @@ sub generate {
   </tr>
  </table>
 
- <hr/>
-
  <xsl:if test="new">
   <h2>New</h2>
 
   <xsl:for-each select="new/host">
+   <xsl:element name="a">
+    <xsl:attribute name="name">
+     <xsl:value-of select="translate(\@ip_addr, '.', '_') " />
+    </xsl:attribute>
+   </xsl:element>
+
    <xsl:choose>
     <xsl:when test="\@status = 'up'">
      <h2 class="green">
@@ -958,7 +992,6 @@ sub generate {
    </table>
   </xsl:for-each>
 
-  <hr/>
  </xsl:if>
 
  <xsl:if test="missing">
@@ -966,17 +999,27 @@ sub generate {
   <ul>
 
   <xsl:for-each select="missing/host">
+   <xsl:element name="a">
+    <xsl:attribute name="name">
+     <xsl:value-of select="translate(\@ip_addr, '.', '_') " />
+    </xsl:attribute>
+   </xsl:element>
    <li><b><xsl:value-of select="\@ip_addr"/>/<xsl:value-of
     select="\@hostname"/>
    </b></li>
   </xsl:for-each>
-  </ul><hr/>
+  </ul>
  </xsl:if>
 
  <xsl:if test="changed">
   <h2>Changed</h2>
 
   <xsl:for-each select="changed/host">
+   <xsl:element name="a">
+    <xsl:attribute name="name">
+     <xsl:value-of select="translate(\@ip_addr, '.', '_') " />
+    </xsl:attribute>
+   </xsl:element>
    <xsl:choose>
     <xsl:when test="\@status = 'up'">
      <h2 class="green">
@@ -1014,7 +1057,6 @@ sub generate {
     </xsl:for-each>
    </table>
   </xsl:for-each>
-  <hr/>
  </xsl:if>
 
  <sub>
@@ -1024,6 +1066,25 @@ sub generate {
  </sub>
 </body>
 </html>
+</xsl:template>
+
+<xsl:template match="host">
+   &lt;<xsl:element name="a">
+   <xsl:if test="name(parent::node()) = 'new'">
+    <xsl:attribute name="class">green</xsl:attribute>
+   </xsl:if>
+   <xsl:if test="name(parent::node()) = 'missing'">
+    <xsl:attribute name="class">red</xsl:attribute>
+   </xsl:if>
+   <xsl:if test="name(parent::node()) = 'changed'">
+    <xsl:attribute name="class">orange</xsl:attribute>
+   </xsl:if>
+   <xsl:attribute name="href">
+    #<xsl:value-of select="translate(\@ip_addr, '.', '_') "/>
+   </xsl:attribute>
+    <xsl:value-of select="\@ip_addr"/><xsl:text> / </xsl:text><xsl:value-of
+    select="\@hostname"/>
+   </xsl:element>&gt;
 </xsl:template>
 
 <xsl:template match="service">
