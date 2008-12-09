@@ -6,5 +6,5 @@ one designated the "baseline", the other "observation".
 Both baseline and observation are stored in files generated via nmap’s -oX
 switch for XML output.
 
-xndiff is a complete rewrite of ndiff written by James Levine, except
-where ndiff used nmap’s "grepable" output, xndiff reads XML output.
+Xndiff is loosely based on ndiff written by James Levine, except where ndiff
+used nmap’s "grepable" output, xndiff reads XML output using Nmap::Parser.

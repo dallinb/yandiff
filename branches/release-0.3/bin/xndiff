@@ -379,7 +379,11 @@ my $show_changed_hosts = 1;
 my $show_missing_hosts = 1;
 my $show_new_hosts = 1;
 my $stylesheet = '';
-my $version = 0;
+
+# OK so all the other variables are in lowercase and local.  The reason why
+# version is specified differently is that that it is compatible with
+# Module::Build therefore making distribution and installing easier.
+$VERSION = '0.3';
 
 ##############################################################################
 # Command line parsing.
@@ -407,7 +411,7 @@ pod2usage(1) if $help;
 pod2usage(-verbose => 2) if $man;
 
 if ($show_version) {
-	print "Version: $version.$release\n";
+	print "Version: $VERSION\n";
 	exit(0);
 }
 
@@ -473,7 +477,7 @@ if ($format eq 'text') {
 	    "\n" if ($stylesheet);
 	chomp $run_date;
 	print "<xndiff rundate=\"$run_date\"",
-	    ' version="', $version, '.', $release, '"',
+	    ' version="', $VERSION, '"',
 	    ' command_line="', $command_line, '">', "\n";
 	print " <parameters>\n";
         my $session = $baseline->get_session();
