@@ -1,39 +1,36 @@
 #summary Installation Instructions
+#labels Phase-Deploy
 
 Dependencies:
+
  Software:
-  make (for installation only)<br/>
   perl
 
  Perl Modules:
   Getopt::Long<br/>
   IO::Handle<br/>
+  Module::Build	(for installation only)<br/>
   Nmap::Parser<br/>
-  Pod::Usage<br/>
+  Pod::Usage
 
-To install this software into the default location (/usr/local) do the
-following:
+To install this software into the default location (/usr/local in Linux) do
+the following after decompressing the archive and going to the directory
+where it was extracted to:
 
- gzip -dc xndiff-0.1.tgz | tar -xof -<br/>
- cd xndiff-0.1<br/>
- perl Makefile.PL<br/>
- make'<br/>
- make install
+ perl Build.PL<br/>
+ perl Build build<br/>
+ perl Build install
 
 To install in an alternative location specify a prefix for where the software
 is to be installed.  For example, this set of commands will install the
 software in a directory called $HOME/xndiff:
 
- gzip -dc xndiff-0.1.tgz | tar -xof -<br/>
- cd xndiff-0.1<br/>
- perl Makefile.PL PREFIX=$HOME/xndiff<br/>
- make<br/>
- make install
+ perl Build.PL --install_base $HOME/xndiff<br/>
+ perl Build build<br/>
+ perl Build install
 
 If you had specified the alternative prefix (as above) then the following
 files would be installed:
 
- $HOME/xndiff/lib/perl/5.8/perllocal.pod<br/>
- $HOME/xndiff/lib/perl/5.8.8/auto/xndiff/.packlist<br/>
  $HOME/xndiff/man/man1/xndiff.1p<br/>
  $HOME/xndiff/bin/xndiff
