@@ -1,0 +1,55 @@
+Dependencies
+============
+
+Before you can start, Xndiff requires Perl [1], the Nmap::Parser module and
+the nmake utility [2]. Xndiff is written in Perl and the Nmap::Parser module
+requires nmake during installation. The directories where Perl and nmake are
+installed should be in the execution path [3]. When this has been configured
+correctly, the Nmap::Parser module needs to be installed by typing the
+following command:
+
+	cpan Nmap::Parser
+
+You will be prompted for some yes/no answers and for most users the defaults
+are sufficient. This should be the final dependency require to be installed
+and you should be able to proceed to install the xndiff utility.
+
+Installation
+============
+
+In the example below, the archive has been extracted to C:\xndiff and that is
+also the current working directory:
+
+
+ 
+	C:\xndiff>perl Build.PL
+	Checking whether your kit is complete...
+	Looks good
+ 
+	Checking prerequisites...
+	Looks good
+ 
+	Creating new 'Build' script for 'xndiff' version '0.3'
+	C:\xndiff>perl Build build
+	Copying bin\xndiff -> blib\script\xndiff
+	Deleting blib\script\xndiff.bak
+	Manifying blib\script/xndiff -> blib\bindoc\xndiff.1
+	HTMLifying blib\script\xndiff -> blib\binhtml\bin\xndiff.html
+	C:\xndiff>perl Build install
+	Installing C:\Perl\man\man1\xndiff.1
+	Installing C:\Perl\html\bin\xndiff.html
+	Installing C:\Perl\site\bin\xndiff
+	Installing C:\Perl\site\bin\xndiff.bat
+
+References
+==========
+
+[1] - Perl Downloads, available from <http://www.activestate.com/downloads>
+viewed on 14 December 2008.
+
+[2] - Nmake from Microsoft, available from
+<http://download.microsoft.com/download/vc15/patch/1.52/w95/en-us/nmake15.exe>
+viewed on 14 December 2008.
+
+[3] - How to set the path in Windows 2000 / Windows XP, available from
+<http://www.computerhope.com/issues/ch000549.htm> viewed on 14 December 2008.

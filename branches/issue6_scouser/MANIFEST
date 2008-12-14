@@ -3,5 +3,7 @@ Build.PL
 COPYING.txt
 INSTALL.txt
 MANIFEST			This list of files
-README.txt
 META.yml
+README.txt
+t/t01.pl
+WIN-INSTALL.txt
