@@ -5,5 +5,5 @@ INSTALL.txt
 MANIFEST			This list of files
 META.yml
 README.txt
-t/t01.pl
+test.pl
 WIN-INSTALL.txt
