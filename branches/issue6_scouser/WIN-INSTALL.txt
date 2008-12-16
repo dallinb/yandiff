@@ -19,27 +19,29 @@ Installation
 
 In the example below, the archive has been extracted to C:\xndiff and that is
 also the current working directory:
-
-
  
 	C:\xndiff>perl Build.PL
-	Checking whether your kit is complete...
-	Looks good
- 
-	Checking prerequisites...
-	Looks good
- 
-	Creating new 'Build' script for 'xndiff' version '0.3'
 	C:\xndiff>perl Build build
-	Copying bin\xndiff -> blib\script\xndiff
-	Deleting blib\script\xndiff.bak
-	Manifying blib\script/xndiff -> blib\bindoc\xndiff.1
-	HTMLifying blib\script\xndiff -> blib\binhtml\bin\xndiff.html
+	C:\xndiff>perl Build test
 	C:\xndiff>perl Build install
-	Installing C:\Perl\man\man1\xndiff.1
-	Installing C:\Perl\html\bin\xndiff.html
-	Installing C:\Perl\site\bin\xndiff
-	Installing C:\Perl\site\bin\xndiff.bat
+
+On a machine running Windows XP this procedure installed the following
+files:
+
+	C:\Perl\man\man1\xndiff.1
+	C:\Perl\html\bin\xndiff.html
+	C:\Perl\site\bin\xndiff
+	C:\Perl\site\bin\xndiff.bat
+
+Installing to an alternative location
+=====================================
+If you do not want to install to the default location, you can specify an
+alternative in the first installation command:
+
+        C:\xndiff>perl Build.PL --install_base N:\foobar
+	C:\xndiff>perl Build build
+	C:\xndiff>perl Build test
+	C:\xndiff>perl Build install
 
 References
 ==========
