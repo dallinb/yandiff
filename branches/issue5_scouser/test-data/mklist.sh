@@ -1,7 +1,5 @@
 #!/bin/bash
 #
-# A script that generates an XML file that resembles the output from Nmap.
-#
 ##############################################################################
 #
 # Copyright (c) 2008, League of Crafty Programmers Ltd <info@locp.co.uk>
@@ -26,45 +24,41 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ##############################################################################
+#
 
-# Generate a number of servers
-generate_hosts () {
-	max=$2
-	number=1
-
-	while (( $number <= $max )); do
-		if [ $1 = "server" ]; then
-			printf -v hostname "s%03d" $number
-			generate_server $hostname "ip" $(generate_mac_address)
-		else
-			printf -v hostname "w%03d" $number
-		fi
-
-		(( number += 1 ))
-	done
-}
-
-# Generate a host XML node
-generate_server () {
-	hostname=$1
-	ip=$2
-	mac=$3
-	echo "Hostname: $1 IP: $2 MAC: $3"
-}
-
-# Generate a fake Intel MAC address
-generate_mac_address () {
-	echo $RANDOM > $TMPFILE
-	mac=`md5sum $TMPFILE`
-	echo $mac | tr 'a-z' 'A-Z' | awk '
-	{
-	    printf("00:03:47:%s:%s:%s\n", substr($0, 0, 2), substr($0, 2, 2),
-	        substr($0, 4, 2));
+# Generate a MAC address in the format of  00:1E:4F:XX:XX:XX
+function generate_mac_address {
+	md5=$( echo $RANDOM | md5sum | cut -c1-6 | tr 'a-z' 'A-Z' )
+	echo $md5 | awk '{
+		printf("00:1E:4F:%s:%s:%s\n",
+			substr($0, 0, 2),
+			substr($0, 2, 2),
+			substr($0, 4, 2));
 	}'
-	#"00:03:47:6D:28:D7"
 }
 
-# Declare global variables
-TMPFILE=/tmp/$$tmp
+octet3=0
+octet4=254
+node=1
 
-generate_hosts server 25
+while (( node <= 1024 )); do
+	if (( node <= 16 )); then
+		printf -v hostname "s%03d.example.com" $node
+		template=server.xml
+	else
+		(( w = node - 16 ))
+		printf -v hostname "w%03d.example.com" $w
+		template=workstation.xml
+	fi
+
+	if (( octet4 >= 254 )); then
+		octet4=1
+		(( octet3 += 1 ))
+	else
+		(( octet4 += 1 ))
+	fi
+
+	ip=192.168.${octet3}.${octet4}
+	echo $hostname,$ip,$template,$( generate_mac_address )
+	(( node += 1 ))
+done

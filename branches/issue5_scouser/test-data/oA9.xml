@@ -37,7 +37,7 @@
 <port protocol="tcp" portid="23"><state state="open" /><service name="telnet"
    method="table" conf="3" /></port>
 <port protocol="tcp" portid="79"><state state="open" /><service name="finger"
-   method="table" conf="3" ></port>
+   method="table" conf="3" /></port>
 <port protocol="tcp" portid="110"><state state="open" /><service name="pop3"
    method="table" conf="3" /></port>
 <port protocol="tcp" portid="111"><state state="open" /><service name="rpcbind"
