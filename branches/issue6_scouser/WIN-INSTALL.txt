@@ -1,7 +1,7 @@
 Dependencies
 ============
 
-Before you can start, Xndiff requires Perl [1], the Nmap::Parser module and
+Before you can start, Xndiff required Perl [1], the Nmap::Parser module and
 the nmake utility [2]. Xndiff is written in Perl and the Nmap::Parser module
 requires nmake during installation. The directories where Perl and nmake are
 installed should be in the execution path [3]. When this has been configured

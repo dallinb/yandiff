@@ -15,8 +15,8 @@ used nmap’s "grepable" output, xndiff reads XML output using Nmap::Parser.
 Building a Distribution
 =======================
 
-This section is only useful if you intend to create a distribution.  They
-also assume you're using Subversion.
+This section is only useful if you intend to create a distribution.  It
+also assumes you're using Subversion.
 
 In a release branch, ensure that the manifest is up to date, if necessary
 run:
@@ -24,7 +24,7 @@ run:
 	perl Build.PL
 	perl Build manifest
 
-Ensure that the value sting is set correctly in bin/xndiff (in this example
+Ensure that the $VERSION string is set correctly in bin/xndiff (in this example
 it is version 0.4) and make sure that CHANGES.txt has been updated.  Then
 run the following:
  
@@ -35,7 +35,7 @@ run the following:
 	mv xndiff-0.4.tar.gz xndiff-0.4.tgz
 	tar xzf xndiff-0.4.tgz 
 	tar xzvf xndiff-0.4.tgz 
-	zip -Dvr xndiff-0.4.zip xndiff-0.4
+	zip -Dlvr xndiff-0.4.zip xndiff-0.4
 	perl Build realclean
 	svn status
 
