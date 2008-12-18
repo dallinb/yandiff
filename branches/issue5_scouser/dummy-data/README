@@ -1,1 +1,27 @@
-File oA9.xml is sample XML taken from http://www.networkuptime.com/nmap/page07-02.shtml.
+Files
+=====
+baseline.csv - CSV file generated using mklist.sh
+
+baseline.xml - XML file gnerated from baseline.csv
+
+list2xml.sh - Create a dummy Nmap XML file from a CSV list.
+
+mklist.sh - Create a CSV list.
+
+oA9.xml - A sample XML taken from
+http://www.networkuptime.com/nmap/page07-02.shtml.  Needed a bit of fixing as
+the entry for finger (as the entry for finger was wrong).
+
+CSV Format
+==========
+Comma seperated values one line for each host:
+
+Field 1 - Hostname
+Field 2 - IP Address
+Field 3 - XML Template Name
+Field 4 - MAC Address
+
+Exampe CSV Entry
+================
+s001.example.com,192.168.1.1,master-kdc.xml,00:1E:4F:C1:10:08
+
