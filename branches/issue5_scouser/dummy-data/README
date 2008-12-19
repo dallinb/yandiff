@@ -1,8 +1,8 @@
 Files
 =====
-baseline.csv - CSV file generated using mklist.sh
+baseline1024.csv - CSV file generated using mklist.sh
 
-baseline.xml - XML file gnerated from baseline.csv
+baseline1024.xml - XML file gnerated from baseline.csv
 
 list2xml.sh - Create a dummy Nmap XML file from a CSV list.
 
@@ -12,18 +12,18 @@ oA9.xml - A sample XML taken from
 http://www.networkuptime.com/nmap/page07-02.shtml.  Needed a bit of fixing as
 the entry for finger (as the entry for finger was wrong).
 
-observed.csv - Copy of baseline.csv except changed the primary Kerberos
+observed1024.csv - Copy of baseline.csv except changed the primary Kerberos
 server from s001 to s002 and making s001 a slave Kerberos KDC.  Also removed
 w001 and added w1009.
 
-observed.xml - XML file generated from observed.csv
+observed1024.xml - XML file generated from observed.csv
 
-observed2.csv - A copy of baseline.csv with these additional changes to the
+observed1024-2.csv - A copy of baseline.csv with these additional changes to the
 servers (s*).  The following ports have been closed 21/tcp, 23/tcp, 79/tcp,
 514/tcp and 886/tcp.  Port 2049/tcp has been changed from 'open' to
 'open/filtered' and 123/udp has been opened.
 
-observed2.xml - XML file generated from observed2.csv
+observed1024-2.xml - XML file generated from observed2.csv
 
 CSV Format
 ==========
