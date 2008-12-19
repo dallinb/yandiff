@@ -4,7 +4,7 @@
 <ports><extraports state="filtered" count="3161" />
 <port protocol="tcp" portid="22"><state state="open" /><service name="ssh" product="OpenSSH" version="4.3" extrainfo="protocol 2.0" method="probed" conf="10" /></port>
 <port protocol="tcp" portid="631"><state state="closed" /><service name="ipp" method="table" conf="3" /></port>
-<port protocol="tcp" portid="749"><state state="open" /><service name="rpc" method="probed" conf="10" /></port>
+<port protocol="tcp" portid="749"><state state="closed" /><service name="rpc" method="probed" conf="10" /></port>
 <port protocol="tcp" portid="754"><state state="open" /><service name="krb_prop" method="table" conf="3" /></port>
 <port protocol="udp" portid="88"><state state="open|filtered" /><service name="kerberos-sec" method="table" conf="3" /></port>
 <port protocol="udp" portid="631"><state state="open|filtered" /></port>
