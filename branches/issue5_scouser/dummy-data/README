@@ -12,10 +12,6 @@ list2xml.sh - Create a dummy Nmap XML file from a CSV list.
 
 mklist.sh - Create a CSV list.
 
-oA9.xml - A sample XML taken from
-http://www.networkuptime.com/nmap/page07-02.shtml.  Needed a bit of fixing as
-the entry for finger (as the entry for finger was wrong).
-
 observed128.csv - Copy of baseline128.csv except changed the primary Kerberos
 server from s001 to s002 and making s001 a slave Kerberos KDC.  Also removed
 w001 and added w113.
