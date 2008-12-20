@@ -6,5 +6,6 @@ INSTALL.txt
 MANIFEST			This list of files
 META.yml
 README.txt
-test.pl
+t/oA9.xml
+t/testexec.t
 WIN-INSTALL.txt
