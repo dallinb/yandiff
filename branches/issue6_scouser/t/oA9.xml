@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <?xml-stylesheet href="http://www.insecure.org/nmap/data/nmap.xsl" type="text/xsl"?>
 <!-- nmap 3.81 scan initiated Fri May 20 21:00:50 2005 as: ./nmap -v -sS -oA 
-   oA9 192.168.0.9 -->
+   oA9 192.168.0.9
+
+ Copied from http://www.networkuptime.com/nmap/page07-02.shtml and corrected
+ a non-closed node for service on line 44.
+-->
 <nmaprun scanner="nmap" args="./nmap -v -sS -oA oA9 192.168.0.9" start="1116637250" 
    startstr="Fri May 20 21:00:50 2005" version="3.81" xmloutputversion="1.01">
 <scaninfo type="syn" protocol="tcp" numservices="1663" services="1-1027,1029-1033,
