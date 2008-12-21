@@ -32,9 +32,7 @@ run the following:
 	perl disttest
 	perl Build disttest
 	perl Build dist
-	mv xndiff-0.4.tar.gz xndiff-0.4.tgz
-	tar xzf xndiff-0.4.tgz 
-	tar xzvf xndiff-0.4.tgz 
+	tar xzvf xndiff-0.4.tar.gz 
 	zip -Dlvr xndiff-0.4.zip xndiff-0.4
 	perl Build realclean
 	svn status
