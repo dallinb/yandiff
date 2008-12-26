@@ -1077,7 +1077,7 @@ c = changed hosts in the "observed" scan.
 
 The default is to show new, missing and changed hosts.
 
-= item B<--xoutput-ports> <ofcx>
+= item B<--output-ports> <ofcx>
 
 Specifies which ports to check. Open, filtered or closed ports.
 Any combination of [ofc] may be specified, as follows:
