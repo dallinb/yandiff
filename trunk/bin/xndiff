@@ -363,37 +363,35 @@ sub show_new_hosts {
 ##############################################################################
 
 # Declare and initialise variables.
-my $baseline_file = '';
-my $command_line = '';
+my $baseline_file;
+my $command_line;
 my $format = 'text';
-my $gen_stylesheet = '';
-my $help = 0;
-my $man = 0;
-my $observed_file = '';
-my $output_file = '';
-my $output_hosts = '';
-my $release = 2;
-my $run_date = `date`;
-my $show_version = 0;
+my $gen_stylesheet;
+my $help;
+my $man;
+my $observed_file;
+my $output_file;
+my $output_hosts;
+my $run_date;
+my $show_version;
 my $show_changed_hosts = 1;
 my $show_missing_hosts = 1;
 my $show_new_hosts = 1;
-my $stylesheet = '';
+my $stylesheet;
 
 # OK so all the other variables are in lowercase and local.  The reason why
 # version is specified differently is that that it is compatible with
 # Module::Build therefore making distribution and installing easier.
 $VERSION = '0.3';
 
+$run_date = localtime;
+
 ##############################################################################
 # Command line parsing.
 ##############################################################################
 
-for $entry (@ARGV) {
-	$command_line .= $entry . ' ';
-}
+$command_line = join(' ', @ARGV);
 
-chomp $command_line;
 GetOptions(
     'baseline=s' => \$baseline_file,
     'format=s' => \$format,
@@ -464,7 +462,7 @@ if ($output_file) {
 # Do the report.
 
 if ($format eq 'text') {
-	print 'xndiff run ', $run_date,
+	print 'xndiff run ', $run_date, "\n",
 	    'command line: ', $command_line, "\n",
 	    'baseline: ', $baseline_file, "\n",
 	    'observed: ', $observed_file, "\n";
@@ -475,7 +473,6 @@ if ($format eq 'text') {
 	    $stylesheet,
 	    '"?>',
 	    "\n" if ($stylesheet);
-	chomp $run_date;
 	print "<xndiff rundate=\"$run_date\"",
 	    ' version="', $VERSION, '"',
 	    ' command_line="', $command_line, '">', "\n";
