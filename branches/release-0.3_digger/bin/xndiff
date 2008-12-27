@@ -57,36 +57,33 @@ sub show_changed_hosts {
 		# Check for new or changed TCP services
         my @observed_services = ();
         my @baseline_services = ();
+        @baseline_services = $baseline_host->tcp_ports();
         if ($ports)
         {
             if ( $ports =~ m/o/i )
             {
                 push(@observed_services, $observed_host->tcp_ports('open'));
-                push(@baseline_services, $baseline_host->tcp_ports('open'));
             }
             if ( $ports =~ m/f/i )
             {
                 push(@observed_services, $observed_host->tcp_ports('filtered'));
-                push(@baseline_services, $baseline_host->tcp_ports('filtered'));
             }
             if ( $ports =~ m/c/i )
             {
                 push(@observed_services, $observed_host->tcp_ports('closed'));
-                push(@baseline_services, $baseline_host->tcp_ports('closed'));
             }
             if ( $ports =~ m/x/i )
             {
                 push(@observed_services, $observed_host->tcp_ports('unfiltered'));
-                push(@baseline_services, $baseline_host->tcp_ports('unfiltered'));
             }
         }
         else
         {
 		    @observed_services = $observed_host->tcp_ports();
-		    @baseline_services = $baseline_host->tcp_ports();
         }
 
 		for my $portid (@observed_services) {
+            # new services
 			my $s = $observed_host->tcp_service($portid);
 			my $service = Service->new();
 			$service->name($s->name());
@@ -101,6 +98,7 @@ sub show_changed_hosts {
 				next;
 			}
 
+            # must be a changed service
 			my $service2 = Service->new();
 			$service2->name($s->name());
 			$service2->portid($portid);
@@ -115,53 +113,51 @@ sub show_changed_hosts {
 		}
 
 		# Check for missing TCP ports
+        if (! $ports )
+        {
+            for my $portid (@baseline_services) {
+                my $s = $baseline_host->tcp_service($portid);
+                my $service = Service->new();
+                $service->name($s->name());
+                $service->portid($portid);
+                $service->proto("tcp");
+                $service->status(
+                    $baseline_host->tcp_port_state($portid));
 
-		for my $portid (@baseline_services) {
-			my $s = $baseline_host->tcp_service($portid);
-			my $service = Service->new();
-			$service->name($s->name());
-			$service->portid($portid);
-			$service->proto("tcp");
-			$service->status(
-			    $baseline_host->tcp_port_state($portid));
-
-			if (!grep {$_ eq $portid} @observed_services) {
-				$host_has_changed = 1;
-				push @missing_services, $service;
-				next;
-			}
-		}
+                if (!grep {$_ eq $portid} @observed_services) {
+                    $host_has_changed = 1;
+                    push @missing_services, $service;
+                    next;
+                }
+            }
+        }
 
 		# Check for new or changed UDP services
 		@observed_services = ();
 		@baseline_services = ();
+        @baseline_services = $baseline_host->udp_ports();
         if ($ports)
         {
             if ( $ports =~ m/o/i )
             {
                 push(@observed_services, $observed_host->udp_ports('open'));
-                push(@baseline_services, $baseline_host->udp_ports('open'));
             }
             if ( $ports =~ m/f/i )
             {
                 push(@observed_services, $observed_host->udp_ports('filtered'));
-                push(@baseline_services, $baseline_host->udp_ports('filtered'));
             }
             if ( $ports =~ m/c/i )
             {
                 push(@observed_services, $observed_host->udp_ports('closed'));
-                push(@baseline_services, $baseline_host->udp_ports('closed'));
             }
             if ( $ports =~ m/x/i )
             {
                 push(@observed_services, $observed_host->udp_ports('unfiltered'));
-                push(@baseline_services, $baseline_host->udp_ports('unfiltered'));
             }
         }
         else
         {
 		    @observed_services = $observed_host->udp_ports();
-		    @baseline_services = $baseline_host->udp_ports();
         }
 
 		for my $portid (@observed_services) {
@@ -193,22 +189,24 @@ sub show_changed_hosts {
 		}
 
 		# Check for missing UDP ports
+        if (! $ports )
+        {
+            for my $portid (@baseline_services) {
+                my $s = $baseline_host->udp_service($portid);
+                my $service = Service->new();
+                $service->name($s->name());
+                $service->portid($portid);
+                $service->proto("udp");
+                $service->status(
+                    $baseline_host->udp_port_state($portid));
 
-		for my $portid (@baseline_services) {
-			my $s = $baseline_host->udp_service($portid);
-			my $service = Service->new();
-			$service->name($s->name());
-			$service->portid($portid);
-			$service->proto("udp");
-			$service->status(
-			    $baseline_host->udp_port_state($portid));
-
-			if (!grep {$_ eq $portid} @observed_services) {
-				$host_has_changed = 1;
-				push @missing_services, $service;
-				next;
-			}
-		}
+                if (!grep {$_ eq $portid} @observed_services) {
+                    $host_has_changed = 1;
+                    push @missing_services, $service;
+                    next;
+                }
+            }
+        }
 
 		next if (!$host_has_changed);
 
@@ -1077,7 +1075,7 @@ c = changed hosts in the "observed" scan.
 
 The default is to show new, missing and changed hosts.
 
-= item B<--output-ports> <ofcx>
+=item B<--output-ports> <ofcx>
 
 Specifies which ports to check. Open, filtered or closed ports.
 Any combination of [ofc] may be specified, as follows:
