@@ -26,12 +26,13 @@ use Getopt::Long;
 use IO::Handle;
 use Nmap::Parser;
 use Pod::Usage;
+use strict;
 
 # Find hosts that are in both the observed and baseline scans.  Compare the
 # status of the host and the status of each of the individual ports.
 sub show_changed_hosts {
-	my ($format, $baseline, $observed) = @_;
-	$output = "\nChanged hosts:\n" if ($format eq 'text');
+	my ($format, $baseline, $observed, $ports) = @_;
+	my $output = "\nChanged hosts:\n" if ($format eq 'text');
 	$output = "" if ($format eq 'xml');
 
 	for my $baseline_ip ($baseline->get_ips()) {
@@ -53,10 +54,35 @@ sub show_changed_hosts {
 		    if ($observed_host->status() ne $baseline_host->status());
 
 		# Check for new or changed TCP services
-		my @observed_services = $observed_host->tcp_ports();
-		my @baseline_services = $baseline_host->tcp_ports();
+        my @observed_services = ();
+        my @baseline_services = ();
+        @baseline_services = $baseline_host->tcp_ports();
+        if ($ports)
+        {
+            if ( $ports =~ m/o/i )
+            {
+                push(@observed_services, $observed_host->tcp_ports('open'));
+            }
+            if ( $ports =~ m/f/i )
+            {
+                push(@observed_services, $observed_host->tcp_ports('filtered'));
+            }
+            if ( $ports =~ m/c/i )
+            {
+                push(@observed_services, $observed_host->tcp_ports('closed'));
+            }
+            if ( $ports =~ m/x/i )
+            {
+                push(@observed_services, $observed_host->tcp_ports('unfiltered'));
+            }
+        }
+        else
+        {
+		    @observed_services = $observed_host->tcp_ports();
+        }
 
 		for my $portid (@observed_services) {
+            # new services
 			my $s = $observed_host->tcp_service($portid);
 			my $service = Service->new();
 			$service->name($s->name());
@@ -71,6 +97,7 @@ sub show_changed_hosts {
 				next;
 			}
 
+            # must be a changed service
 			my $service2 = Service->new();
 			$service2->name($s->name());
 			$service2->portid($portid);
@@ -85,26 +112,52 @@ sub show_changed_hosts {
 		}
 
 		# Check for missing TCP ports
+        if (! $ports )
+        {
+            for my $portid (@baseline_services) {
+                my $s = $baseline_host->tcp_service($portid);
+                my $service = Service->new();
+                $service->name($s->name());
+                $service->portid($portid);
+                $service->proto("tcp");
+                $service->status(
+                    $baseline_host->tcp_port_state($portid));
 
-		for my $portid (@baseline_services) {
-			my $s = $baseline_host->tcp_service($portid);
-			my $service = Service->new();
-			$service->name($s->name());
-			$service->portid($portid);
-			$service->proto("tcp");
-			$service->status(
-			    $baseline_host->tcp_port_state($portid));
-
-			if (!grep {$_ eq $portid} @observed_services) {
-				$host_has_changed = 1;
-				push @missing_services, $service;
-				next;
-			}
-		}
+                if (!grep {$_ eq $portid} @observed_services) {
+                    $host_has_changed = 1;
+                    push @missing_services, $service;
+                    next;
+                }
+            }
+        }
 
 		# Check for new or changed UDP services
-		@observed_services = $observed_host->udp_ports();
-		@baseline_services = $baseline_host->udp_ports();
+		@observed_services = ();
+		@baseline_services = ();
+        @baseline_services = $baseline_host->udp_ports();
+        if ($ports)
+        {
+            if ( $ports =~ m/o/i )
+            {
+                push(@observed_services, $observed_host->udp_ports('open'));
+            }
+            if ( $ports =~ m/f/i )
+            {
+                push(@observed_services, $observed_host->udp_ports('filtered'));
+            }
+            if ( $ports =~ m/c/i )
+            {
+                push(@observed_services, $observed_host->udp_ports('closed'));
+            }
+            if ( $ports =~ m/x/i )
+            {
+                push(@observed_services, $observed_host->udp_ports('unfiltered'));
+            }
+        }
+        else
+        {
+		    @observed_services = $observed_host->udp_ports();
+        }
 
 		for my $portid (@observed_services) {
 			my $s = $observed_host->udp_service($portid);
@@ -135,22 +188,24 @@ sub show_changed_hosts {
 		}
 
 		# Check for missing UDP ports
+        if (! $ports )
+        {
+            for my $portid (@baseline_services) {
+                my $s = $baseline_host->udp_service($portid);
+                my $service = Service->new();
+                $service->name($s->name());
+                $service->portid($portid);
+                $service->proto("udp");
+                $service->status(
+                    $baseline_host->udp_port_state($portid));
 
-		for my $portid (@baseline_services) {
-			my $s = $baseline_host->udp_service($portid);
-			my $service = Service->new();
-			$service->name($s->name());
-			$service->portid($portid);
-			$service->proto("udp");
-			$service->status(
-			    $baseline_host->udp_port_state($portid));
-
-			if (!grep {$_ eq $portid} @observed_services) {
-				$host_has_changed = 1;
-				push @missing_services, $service;
-				next;
-			}
-		}
+                if (!grep {$_ eq $portid} @observed_services) {
+                    $host_has_changed = 1;
+                    push @missing_services, $service;
+                    next;
+                }
+            }
+        }
 
 		next if (!$host_has_changed);
 
@@ -372,17 +427,19 @@ my $man;
 my $observed_file;
 my $output_file;
 my $output_hosts;
+my $output_ports;
 my $run_date;
 my $show_version;
 my $show_changed_hosts = 1;
 my $show_missing_hosts = 1;
 my $show_new_hosts = 1;
 my $stylesheet;
+my ($c, $entry);
 
 # OK so all the other variables are in lowercase and local.  The reason why
 # version is specified differently is that that it is compatible with
 # Module::Build therefore making distribution and installing easier.
-$VERSION = '0.3';
+my $VERSION = '0.4';
 
 $run_date = localtime;
 
@@ -401,11 +458,12 @@ GetOptions(
     'observed=s' => \$observed_file,
     'output-file=s' => \$output_file,
     'output-hosts=s' => \$output_hosts,
+    'output-ports=s' => \$output_ports,
     'stylesheet=s' => \$stylesheet,
     'version' => \$show_version
     ) or pod2usage(1);
 
-pod2usage(1) if $help;
+pod2usage(0) if $help;
 pod2usage(-verbose => 2) if $man;
 
 if ($show_version) {
@@ -431,7 +489,24 @@ if ($output_hosts) {
 		} elsif ($c eq "n") {
 			$show_new_hosts = 1;
 		} else {
-			pod2usage(0);
+			pod2usage(1);
+		}
+	}
+}
+
+if ($output_ports) {
+	for (my $i = 0; $i < length($output_ports); $i++) {
+		$c = substr($output_ports, $i, 1);
+		if ($c eq 'o') {
+			next;
+		} elsif ($c eq 'f') {
+			next;
+		} elsif ($c eq 'c') {
+			next;
+		} elsif ($c eq 'x') {
+			next;
+		} else {
+			pod2usage(1);
 		}
 	}
 }
@@ -439,16 +514,16 @@ if ($output_hosts) {
 if ($format eq 'text' || $format eq 'xml') {
 	;
 } else {
-	pod2usage(0);
+	pod2usage(1);
 }
 
 ##############################################################################
 # Open and parse the files
 ##############################################################################
-pod2usage(0) if !$baseline_file;
+pod2usage(1) if !$baseline_file;
 my $baseline = new Nmap::Parser;
 $baseline->parsefile($baseline_file);
-pod2usage(0) if !$observed_file;
+pod2usage(1) if !$observed_file;
 my $observed = new Nmap::Parser;
 $observed->parsefile($observed_file);
 
@@ -456,7 +531,7 @@ $observed->parsefile($observed_file);
 # all command line checks and usage messages.
 if ($output_file) {
 	open OUTPUT, '>', $output_file or die $!;
-	STDOUT->fdopen(\*OUTPUT, 'w') or dir $!;
+	STDOUT->fdopen(\*OUTPUT, 'w') or die $!;
 }
 
 # Do the report.
@@ -486,7 +561,7 @@ if ($format eq 'text') {
 	    "  </baseline>\n";
         $session = $observed->get_session();
 	print "  <observed>\n",
-            "   <file>$baseline_file</file>\n",
+            "   <file>$observed_file</file>\n",
             '   <scan_args>', $session->scan_args, "</scan_args>\n",
             '   <nmap_version>', $session->nmap_version, "</nmap_version>\n",
             '   <scan_start>', $session->start_str, "</scan_start>\n",
@@ -496,7 +571,7 @@ if ($format eq 'text') {
 
 show_new_hosts($format, $baseline, $observed) if $show_new_hosts;
 show_missing_hosts($format, $baseline, $observed) if $show_missing_hosts;
-show_changed_hosts($format, $baseline, $observed) if $show_changed_hosts;
+show_changed_hosts($format, $baseline, $observed, $output_ports) if $show_changed_hosts;
 print "</xndiff>\n" if ($format eq 'xml');
 
 ##############################################################################
@@ -1173,6 +1248,7 @@ xndiff
 [--format <text | xml>]
 [--output-file file]
 [--output-hosts <nmc>]
+[--output-ports <ofcx>]
 [--stylesheet <file | URL>]
 --baseline file
 --observed file
@@ -1230,6 +1306,21 @@ m = missing hosts in the "observed" scan.
 c = changed hosts in the "observed" scan.
 
 The default is to show new, missing and changed hosts.
+
+=item B<--output-ports> <ofcx>
+
+Specifies which ports to check. Open, filtered or closed ports.
+Any combination of [ofc] may be specified, as follows:
+
+o = open ports in the "observed" scan.
+
+f = filtered ports in the "observed" scan.
+
+c = closed ports in the "observed" scan.
+
+x = unfiltered ports in the "observed" scan
+
+The default is to show all ports.
 
 =item B<--stylesheet> <file | URL>
 
