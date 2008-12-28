@@ -1,5 +1,5 @@
 #summary The Original Ndiff Manual
-<pre>
+{{{
 NDIFF(1)              User Contributed Perl Documentation             NDIFF(1)
 
 
@@ -7,9 +7,7 @@ NDIFF(1)              User Contributed Perl Documentation             NDIFF(1)
        ndiff - find differences between two nmap network scans
 
 SYNOPSIS
-       ndiff    [-b, -baseline  <file-or-:tag>]   [-o, -observed  <file-or-:tag>]
-                 [-op, -output-ports <ocufx>]      [-of, -output-hosts <nmc>]
-                 [-fmt‚-format <terse‚ minimal‚ verbose‚ machine‚ html‚ htmle>]
+       ndiff    [-b, -baseline  <file-or-:tag>]   [-o, -observed  <file-or-:tag>] [-op, -output-ports < ocufx >] [-of, -output-hosts < nmc >] [-fmt‚-format <terse‚ minimal‚ verbose‚ machine‚ html‚ htmle>]
 
 DESCRIPTION
        ndiff allows a network administrator or other interested party to eas-
@@ -71,8 +69,8 @@ OPTIONS
             m = missing hosts ( " " " )
             c = changed hosts ( " " " )
 
-       -of <file>
-       -output-file <file>
+       -of < file >
+       -output-file < file >
            Send the output to the specified file.  % substitutions are sup-
            ported in the filename, see "SUBSTITUTIONS" below.
 
@@ -123,4 +121,4 @@ AUTHOR
 
 
 perl v5.8.8                       2008-07-02                          NDIFF(1)
-</pre>
+}}}
