@@ -1,3 +1,12 @@
+28 December 2008 - Release 0.4. This release fixed the following bugs:
+
+ * issue9 - Script hangs on Windows.
+
+ It also added the following enhancement:
+
+ * issue1 - The script now allows the user to filter which changed ports should
+            be shown.  See the manual for details.
+
 10 December 2008 - Release 0.3. This release implemented a different install
 method to move towards a less Linux/Unix dependant release.  Also this script
 generates a different (and hopefully improved) XML stylesheet.
