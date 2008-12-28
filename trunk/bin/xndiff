@@ -19,8 +19,8 @@
 # (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 # LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+# THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ##############################################################################
 use Getopt::Long;
 use IO::Handle;
@@ -60,15 +60,18 @@ sub show_changed_hosts {
 
 		if ($ports) {
 			if ( $ports =~ m/o/i ) {
-				push(@observed_services, $observed_host->tcp_ports('open'));
+				push(@observed_services,
+				    $observed_host->tcp_ports('open'));
 			}
 
 			if ( $ports =~ m/f/i ) {
-				push(@observed_services, $observed_host->tcp_ports('filtered'));
+				push(@observed_services,
+				    $observed_host->tcp_ports('filtered'));
 			}
 
 			if ( $ports =~ m/c/i ) {
-				push(@observed_services, $observed_host->tcp_ports('closed'));
+				push(@observed_services,
+				    $observed_host->tcp_ports('closed'));
 			}
 
 			if ( $ports =~ m/x/i ) {
@@ -135,15 +138,18 @@ sub show_changed_hosts {
 
 		if ($ports) {
 			if ( $ports =~ m/o/i ) {
-				push(@observed_services, $observed_host->udp_ports('open'));
+				push(@observed_services,
+				    $observed_host->udp_ports('open'));
 			}
 
 			if ( $ports =~ m/f/i ) {
-				push(@observed_services, $observed_host->udp_ports('filtered'));
+				push(@observed_services,
+				    $observed_host->udp_ports('filtered'));
 			}
 
 			if ( $ports =~ m/c/i ) {
-				push(@observed_services, $observed_host->udp_ports('closed'));
+				push(@observed_services,
+				    $observed_host->udp_ports('closed'));
 			}
 
 			if ( $ports =~ m/x/i ) {
@@ -564,7 +570,8 @@ if ($format eq 'text') {
 
 show_new_hosts($format, $baseline, $observed) if $show_new_hosts;
 show_missing_hosts($format, $baseline, $observed) if $show_missing_hosts;
-show_changed_hosts($format, $baseline, $observed, $output_ports) if $show_changed_hosts;
+show_changed_hosts($format, $baseline, $observed, $output_ports)
+    if $show_changed_hosts;
 print "</xndiff>\n" if ($format eq 'xml');
 
 ##############################################################################
@@ -832,10 +839,11 @@ sub generate {
  See http://code.google.com/p/xndiff for details.
 -->
 
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet version="1.0"
+ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 <!-- ............... Set the VERSION here ....................... -->
-<xsl:variable name="xndiff_xsl_version">1.2</xsl:variable>
+<xsl:variable name="xndiff_xsl_version">1.3</xsl:variable>
 <!-- ............................................................ -->
 
 <xsl:template match="xndiff">
@@ -1281,7 +1289,8 @@ Print the manual page and exit.
 
 =item B<--observed> file
 
-Specifies the nmap results to use as the "observed results" for the comparison.
+Specifies the nmap results to use as the "observed results" for the
+comparison.
 
 =item B<--output-file> file
 
@@ -1302,8 +1311,8 @@ The default is to show new, missing and changed hosts.
 
 =item B<--output-ports> <ofcx>
 
-Specifies which ports to check. Open, filtered or closed ports.
-Any combination of [ofc] may be specified, as follows:
+Specifies which ports to check when outputting changed hosts. Open, filtered
+or closed ports.  Any combination of [ofcx] may be specified, as follows:
 
 o = open ports in the "observed" scan.
 

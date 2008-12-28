@@ -29,7 +29,6 @@ it is version 0.4) and make sure that CHANGES.txt has been updated.  Then
 run the following:
  
 	perl Build.PL 
-	perl disttest
 	perl Build disttest
 	perl Build dist
 	tar xzvf xndiff-0.4.tar.gz 
