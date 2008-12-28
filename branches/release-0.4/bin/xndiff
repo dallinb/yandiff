@@ -1312,7 +1312,7 @@ The default is to show new, missing and changed hosts.
 =item B<--output-ports> <ofcx>
 
 Specifies which ports to check. Open, filtered or closed ports.
-Any combination of [ofc] may be specified, as follows:
+Any combination of [ofcx] may be specified, as follows:
 
 o = open ports in the "observed" scan.
 
