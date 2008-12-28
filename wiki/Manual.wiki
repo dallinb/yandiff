@@ -35,7 +35,7 @@
 
 <b>--output-file file</b>Send the output to the specified file.
 
-<b>--output-hosts`<`nmc`>`</b> Specifies which types of hosts to display. Any combination of n, m or c may be specified, as follows:
+<b>--output-hosts `<`nmc`>`</b> Specifies which types of hosts to display. Any combination of n, m or c may be specified, as follows:
 
    *n = new hosts in the "observed" scan.
    *m = missing hosts in the "observed" scan.
@@ -43,8 +43,9 @@
 
 The default is to show new, missing and changed hosts.
 
-<b>--output-ports`<`ofcx`>`</b> Specifies which ports to check.  Open, filtered or closed
-ports.  Any combination of o, f, c or x may be specified, as follows:
+<b>--output-ports `<`ofcx`>`</b> Specifies which ports to check, when outputting
+changed hosts.  Open, filtered or closed ports.  Any combination of o, f, c or x may
+be specified, as follows:
 
    *o = open ports in the "observed" scan.
    *f = filtered ports in the "observed" scan.
