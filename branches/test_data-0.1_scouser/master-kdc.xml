@@ -1,0 +1,24 @@
+<host><status state="up" />
+<address addr="IP" addrtype="ipv4" />
+<hostnames><hostname name="HOST" type="PTR" /></hostnames>
+<ports><extraports state="filtered" count="3161" />
+<port protocol="tcp" portid="22"><state state="open" /><service name="ssh" product="OpenSSH" version="4.3" extrainfo="protocol 2.0" method="probed" conf="10" /></port>
+<port protocol="tcp" portid="631"><state state="closed" /><service name="ipp" method="table" conf="3" /></port>
+<port protocol="tcp" portid="749"><state state="open" /><service name="kerberos-adm" method="table" conf="3" /></port>
+<port protocol="tcp" portid="754"><state state="open" /><service name="krb_prop" method="table" conf="3" /></port>
+<port protocol="udp" portid="88"><state state="open|filtered" /><service name="kerberos-sec" method="table" conf="3" /></port>
+<port protocol="udp" portid="631"><state state="open|filtered" /></port>
+</ports>
+<os><portused state="open" proto="tcp" portid="22" />
+<portused state="closed" proto="tcp" portid="631" />
+<osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="2.4.X" accuracy="96" />
+<osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="2.5.X" accuracy="96" />
+<osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="2.6.X" accuracy="96" />
+<osclass type="broadband router" vendor="D-Link" osfamily="embedded" accuracy="93" />
+<osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="2.3.X" accuracy="93" />
+</os>
+<uptime seconds="1098536" lastboot="Fri Sep 26 09:02:04 2008" />
+<tcpsequence index="2882527" class="random positive increments" difficulty="Good luck!" values="16C85B8A,16730D11,16BC9FC3,160CC66B,16434AE1,1681DBCB" />
+<ipidsequence class="All zeros" values="0,0,0,0,0,0" />
+<tcptssequence class="1000HZ" values="417A56B6,417A572B,417A579E,417A580C,417A5865,417A58CA" />
+</host>
