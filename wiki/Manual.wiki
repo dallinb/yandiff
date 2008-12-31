@@ -1,5 +1,5 @@
 #summary Manual for xndiff
-#labels Phase-Deploy,Featured
+#labels Phase-Deploy
 
 = NAME =
 
