@@ -15,7 +15,7 @@ DESCRIPTION
        services.  It achieves this by comparing the results of two nmap scans,
        one designated the "baseline", the other "observation".
 
-       Both baseline and observation are stored in files generated via nmap's
+       Both baseline and observation are stored in files generated via nmap`'`s
        -m switch.
 
 OPTIONS
@@ -111,7 +111,7 @@ SUBSTITUTIONS
        %F = output of "hostname" on the local machine
 
 BUGS
-       It's too slow -- approx 3 scanned hosts per second on a Pentium II-300.
+       It`'`s too slow -- approx 3 scanned hosts per second on a Pentium II-300.
        No support for human-readable hostnames and portnames.  Port/protocol
        output formatting is inconsistent in certain places.
 
