@@ -1,0 +1,13 @@
+#labels Featured
+=summary Wiki Table of Contents
+=Wiki Table of Contents=
+
+==Installation Instructions==
+  * [WinInstall Windows]
+  * [INSTALL UNIX/Linux]
+
+==User Manuals==
+  * Xndiff [Manual]
+  * The Original Ndiff [NdiffManual Manual]
+
+For details on the relevant licences click [COPYING here].
