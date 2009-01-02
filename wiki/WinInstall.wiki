@@ -54,12 +54,12 @@ alternative in the first installation command:
 
 ==References==
 
-[1] - _Perl Downloads_, available from < http://www.activestate.com/downloads >
+`[1]` - _Perl Downloads_, available from < http://www.activestate.com/downloads >
 viewed on 14 December 2008.
 
-[2] - _Nmake from Microsoft_, available from
+`[2]` - _Nmake from Microsoft_, available from
 < http://download.microsoft.com/download/vc15/patch/1.52/w95/en-us/nmake15.exe >
 viewed on 14 December 2008.
 
-[3] - _How to set the path in Windows 2000 / Windows XP_, available from
+`[3]` - _How to set the path in Windows 2000 / Windows XP_, available from
 < http://www.computerhope.com/issues/ch000549.htm > viewed on 14 December 2008.
