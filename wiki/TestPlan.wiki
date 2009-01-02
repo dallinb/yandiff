@@ -1,0 +1,70 @@
+#summary Test Plan (Under Construction)
+
+=Test Plan=
+
+==Description==
+This is a description of the series of tests to be carried out to test the individual requirements of the utility.  This will include checking that hosts can be filtered on individual status (new, changed or missing) and that ports on changed hosts can be filtered depending on the status returned by Nmap.  These are open, close, filtered, unfiltered, open|filtered and close|filtered `[1]`.
+
+==Test Data==
+A minimal set of test data will be prepared to carry out the specific tests.
+
+===Baseline===
+The baseline file (baseline_qa.xml) will consist of two hosts called alpha and beta.  These hosts will have the following details:
+
+||*Host*||*IP*||
+||alpha||192.168.1.8||
+||bravo||192.168.1.16||
+
+Both of the hosts will have been configured with the following services:
+
+||*Protocol*||*Port*||*Name*||*Status*||
+||tcp||21||ftp||open||
+||tcp||22||ssh||open||
+||tcp||23||telnet||open||
+||tcp||79||finger||open||
+||tcp||110||pop3||open||
+||tcp||111||rpcbind||open||
+||tcp||514||shell||open||
+||tcp||886|N/A||open||
+||tcp||2049||nfs||open||
+
+===Observed===
+The changes in the observed scan (observed_qa.xml) will be that  alpha will be renamed to charlie and have the IP address changed to 192.168.1.24.  Except for these changes, the host will remain unchanged.  The bravo host will have the following services configured:
+
+||*Protocol*||*Port*||*Name*||*Status*||
+||tcp||21||ftp||closed||
+||tcp||22||ssh||filtered||
+||tcp||23||telnet||unfiltered||
+||tcp||79||finger||open|filtered||
+||tcp||110||pop3||closed|filtered||
+||tcp||111||rpcbind||open||
+||tcp||514||shell||open||
+||tcp||2049||nfs||open||
+||udp||123||nfs||open||
+
+==Test Schedule==
+1) `xndiff –baseline baseline_qa.xml –observed observed_qa.xml`
+
+The output should list charlie as a new host, bravo as a changed host with various ports in a changed status (which will be tested more thoughly later) and alpha as a missing host.
+
+2) `xndiff –baseline baseline_qa.xml –observed observed_qa.xml --output-hosts n`
+
+Should only return charlie.
+
+3) `xndiff –baseline baseline_qa.xml –observed observed_qa.xml --output-hosts c`
+
+Should only return bravo.
+
+4) `xndiff –baseline baseline_qa.xml –observed observed_qa.xml --output-hosts m`
+
+Should only return alpha.
+
+==TODO==
+To complete this document the following needs to be done:
+
+  # Add tests for individual port status'.
+  # Add performance tests.
+
+==References==
+
+`[1]` – _Nmap Reference Guide:  Port Scanning Basics_, available from < http://nmap.org/book/man-port-scanning-basics.html >, downloaded on 31 December 2008.
