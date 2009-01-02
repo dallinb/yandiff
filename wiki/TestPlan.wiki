@@ -25,7 +25,7 @@ Both of the hosts will have been configured with the following services:
 ||tcp||110||pop3||open||
 ||tcp||111||rpcbind||open||
 ||tcp||514||shell||open||
-||tcp||886|N/A||open||
+||tcp||886||N/A||open||
 ||tcp||2049||nfs||open||
 
 ===Observed===
