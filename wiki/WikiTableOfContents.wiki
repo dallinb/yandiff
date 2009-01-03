@@ -10,4 +10,9 @@
   * Xndiff [Manual]
   * The Original Ndiff [NdiffManual Manual]
 
+==Quality Assurance==
+  * [TestPlan Test Plan]
+  * [FunctionalTestTemplate Functional Test Template]
+  * [PerformanceTest20081219 Performance Test 19-Dec-2008]
+
 For details on the relevant licences click [COPYING here].
