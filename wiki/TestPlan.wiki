@@ -12,13 +12,13 @@ A minimal set of test data will be prepared to carry out the specific tests.
 ===Baseline===
 The baseline file (baseline_qa.xml) will consist of two hosts called alpha and beta.  These hosts will have the following details:
 
-||*Host*||*IP*||
+|| *Host* || *IP* ||
 ||alpha||192.168.1.8||
 ||bravo||192.168.1.16||
 
 Both of the hosts will have been configured with the following services:
 
-||*Protocol*||*Port*||*Name*||*Status*||
+|| *Protocol* || *Port* || *Name* || *Status* ||
 ||tcp||21||ftp||open||
 ||tcp||22||ssh||open||
 ||tcp||23||telnet||open||
@@ -32,7 +32,7 @@ Both of the hosts will have been configured with the following services:
 ===Observed===
 The changes in the observed scan (observed_qa.xml) will be that  alpha will be renamed to charlie and have the IP address changed to 192.168.1.24.  Except for these changes, the host will remain unchanged.  The bravo host will have the following services configured:
 
-||*Protocol*||*Port*||*Name*||*Status*||
+|| *Protocol* || *Port* || *Name* || *Status* ||
 ||tcp||21||ftp||closed||
 ||tcp||22||ssh||filtered||
 ||tcp||23||telnet||unfiltered||
@@ -78,10 +78,8 @@ Should return bravo and port 23/tcp.
 
 Results should be recorded using the [FunctionalTestTemplate].
 
-==TODO==
-To complete this document the following needs to be done:
-
-  # Add performance tests.
+==Performance Testing==
+James Levine stated that the original ndiff ran too slowly (3 scanned hosts per second).  While the majority of processing is parsing the XML files and this handled by Anthony Persaud's excellent Nmap::Parser we thought a benchmark test was required.  This was carried out in late 2008 using version 0.3 of xndiff.  The results were recorded [PerformanceTest20081219 here].  While attempting to adjust the results according the MHz speed of the system processors is not perfect, it is the best that can be done given the information provided.
 
 ==References==
 
