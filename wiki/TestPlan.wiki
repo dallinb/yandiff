@@ -1,4 +1,4 @@
-#summary Test Plan (Under Construction)
+#summary Test Plan
 #labels Phase-QA
 
 =Test Plan=
