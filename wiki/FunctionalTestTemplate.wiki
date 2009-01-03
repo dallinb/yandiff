@@ -11,49 +11,49 @@ Test Data Version:
 
 ==Tests==
 
-1) `xndiff –baseline baseline_qa.xml –observed observed_qa.xml`
+1) `xndiff --baseline baseline_qa.xml --observed observed_qa.xml`
 
 The output should list charlie as a new host, bravo as a changed host with various ports in a changed status (which will be tested more thoughly later) and alpha as a missing host.
 
 Result: PASS/FAIL
 
-2) `xndiff –baseline baseline_qa.xml –observed observed_qa.xml --output-hosts n`
+2) `xndiff --baseline baseline_qa.xml --observed observed_qa.xml --output-hosts n`
 
 Should only return charlie. 
 
 Result: PASS/FAIL
 
-3) `xndiff –baseline baseline_qa.xml –observed observed_qa.xml --output-hosts c`
+3) `xndiff --baseline baseline_qa.xml --observed observed_qa.xml --output-hosts c`
 
 Should only return bravo. 
 
 Result: PASS/FAIL
 
-4) `xndiff –baseline baseline_qa.xml –observed observed_qa.xml --output-hosts m`
+4) `xndiff --baseline baseline_qa.xml --observed observed_qa.xml --output-hosts m`
 
 Should only return alpha. 
 
 Result: PASS/FAIL
 
-5) `xndiff -baseline baseline_qa.xml –observed observed_qa.xml --output-hosts c -output-ports o` 
+5) `xndiff --baseline baseline_qa.xml --observed observed_qa.xml --output-hosts c --output-ports o` 
 
 Should return bravo and ports 79/tcp and 123/udp. 
 
 Result: PASS/FAIL
 
-6) `xndiff -baseline baseline_qa.xml –observed observed_qa.xml --output-hosts c -output-ports f` 
+6) `xndiff --baseline baseline_qa.xml --observed observed_qa.xml --output-hosts c --output-ports f` 
 
 Should return bravo and ports 22/tcp, 79/tcp and 110/tcp. 
 
 Result: PASS/FAIL
 
-7) `xndiff -baseline baseline_qa.xml –observed observed_qa.xml --output-hosts c -output-ports c`
+7) `xndiff --baseline baseline_qa.xml --observed observed_qa.xml --output-hosts c --output-ports c`
 
-Should return bravo and port 21/tcp. 
+Should return bravo and ports 21/tcp and 110/tcp. 
 
 Result: PASS/FAIL
 
-8) `xndiff -baseline baseline_qa.xml –observed observed_qa.xml --output-hosts c -output-ports x` 
+8) `xndiff --baseline baseline_qa.xml --observed observed_qa.xml --output-hosts c --output-ports x` 
 
 Should return bravo and port 23/tcp. 
 
