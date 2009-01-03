@@ -1,9 +1,10 @@
 #summary Test Plan (Under Construction)
+#labels Phase-QA
 
 =Test Plan=
 
 ==Description==
-This is a description of the series of tests to be carried out to test the individual requirements of the utility.  This will include checking that hosts can be filtered on individual status (new, changed or missing) and that ports on changed hosts can be filtered depending on the status returned by Nmap.  These are open, close, filtered, unfiltered, open|filtered and close|filtered `[1]`.
+This is a description of the series of tests to be carried out to test the individual requirements of the utility.  This will include checking that hosts can be filtered on individual status (new, changed or missing) and that ports on changed hosts can be filtered depending on the status returned by Nmap.  These are open, closed, filtered, unfiltered, open|filtered and close|filtered `[1]`.
 
 ==Test Data==
 A minimal set of test data will be prepared to carry out the specific tests.
@@ -40,7 +41,7 @@ The changes in the observed scan (observed_qa.xml) will be that  alpha will be r
 ||tcp||111||rpcbind||open||
 ||tcp||514||shell||open||
 ||tcp||2049||nfs||open||
-||udp||123||nfs||open||
+||udp||123||ntp||open||
 
 ==Test Schedule==
 1) `xndiff –baseline baseline_qa.xml –observed observed_qa.xml`
@@ -59,11 +60,27 @@ Should only return bravo.
 
 Should only return alpha.
 
+5) `xndiff -baseline baseline_qa.xml –observed observed_qa.xml --output-hosts c -output-ports o`
+
+Should return bravo and ports 79/tcp and 123/udp.
+
+6) `xndiff -baseline baseline_qa.xml –observed observed_qa.xml --output-hosts c -output-ports f`
+
+Should return bravo and ports 22/tcp, 79/tcp and 110/tcp.
+
+7) `xndiff -baseline baseline_qa.xml –observed observed_qa.xml --output-hosts c -output-ports c`
+
+Should return bravo and port 21/tcp.
+
+8) `xndiff -baseline baseline_qa.xml –observed observed_qa.xml --output-hosts c -output-ports x`
+
+Should return bravo and port 23/tcp.
+
 ==TODO==
 To complete this document the following needs to be done:
 
-  # Add tests for individual port status'.
   # Add performance tests.
+  # Create a template for recording the tests.
 
 ==References==
 
