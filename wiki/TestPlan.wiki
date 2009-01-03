@@ -76,11 +76,12 @@ Should return bravo and port 21/tcp.
 
 Should return bravo and port 23/tcp.
 
+Results should be recorded using the [FunctionalTestTemplate].
+
 ==TODO==
 To complete this document the following needs to be done:
 
   # Add performance tests.
-  # Create a template for recording the tests.
 
 ==References==
 
