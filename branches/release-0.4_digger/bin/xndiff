@@ -33,6 +33,7 @@ use strict;
 sub show_changed_hosts {
 	my ($format, $baseline, $observed, $ports) = @_;
 	my $output = "\nChanged hosts:\n" if ($format eq 'text');
+	my $portid;
 	$output = "" if ($format eq 'xml');
 
 	for my $baseline_ip ($baseline->get_ips()) {
@@ -65,8 +66,9 @@ sub show_changed_hosts {
 			}
 
 			if ( $ports =~ m/f/i ) {
-				push(@observed_services,
-				    $observed_host->tcp_ports('filtered'));
+				for $portid ($observed_host->tcp_ports('filtered')) {
+					push(@observed_services, $portid) if ($observed_host->tcp_port_state($portid) !~ m/unfiltered/i );
+				}
 			}
 
 			if ( $ports =~ m/c/i ) {
@@ -82,7 +84,7 @@ sub show_changed_hosts {
 			@observed_services = $observed_host->tcp_ports();
 		}
 
-		for my $portid (@observed_services) {
+		for $portid (@observed_services) {
 			# new services
 			my $s = $observed_host->tcp_service($portid);
 			my $service = Service->new();
@@ -143,8 +145,9 @@ sub show_changed_hosts {
 			}
 
 			if ( $ports =~ m/f/i ) {
-				push(@observed_services,
-				    $observed_host->udp_ports('filtered'));
+				for $portid ($observed_host->udp_ports('filtered')) {
+					push(@observed_services, $portid) if ($observed_host->tcp_port_state($portid) !~ m/unfiltered/i );
+				}
 			}
 
 			if ( $ports =~ m/c/i ) {
