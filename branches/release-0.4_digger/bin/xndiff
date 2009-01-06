@@ -148,7 +148,7 @@ sub show_changed_hosts {
 			if ( $ports =~ m/f/i ) {
 				for $portid ($observed_host->udp_ports('filtered')) {
 					push(@observed_services, $portid) 
-					    if ($observed_host->tcp_port_state($portid) !~ m/unfiltered/i );
+					    if ($observed_host->udp_port_state($portid) !~ m/unfiltered/i );
 				}
 			}
 
