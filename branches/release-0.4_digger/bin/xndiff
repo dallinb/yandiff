@@ -67,7 +67,8 @@ sub show_changed_hosts {
 
 			if ( $ports =~ m/f/i ) {
 				for $portid ($observed_host->tcp_ports('filtered')) {
-					push(@observed_services, $portid) if ($observed_host->tcp_port_state($portid) !~ m/unfiltered/i );
+					push(@observed_services, $portid) 
+					    if ($observed_host->tcp_port_state($portid) !~ m/unfiltered/i );
 				}
 			}
 
@@ -116,7 +117,7 @@ sub show_changed_hosts {
 
 		# Check for missing TCP ports
 		if (! $ports ) {
-			for my $portid (@baseline_services) {
+			for $portid (@baseline_services) {
 				my $s = $baseline_host->tcp_service($portid);
 				my $service = Service->new();
 				$service->name($s->name());
@@ -146,7 +147,8 @@ sub show_changed_hosts {
 
 			if ( $ports =~ m/f/i ) {
 				for $portid ($observed_host->udp_ports('filtered')) {
-					push(@observed_services, $portid) if ($observed_host->tcp_port_state($portid) !~ m/unfiltered/i );
+					push(@observed_services, $portid) 
+					    if ($observed_host->tcp_port_state($portid) !~ m/unfiltered/i );
 				}
 			}
 
@@ -163,7 +165,7 @@ sub show_changed_hosts {
 			@observed_services = $observed_host->udp_ports();
 		}
 
-		for my $portid (@observed_services) {
+		for $portid (@observed_services) {
 			my $s = $observed_host->udp_service($portid);
 			my $service = Service->new();
 			$service->name($s->name());
@@ -193,7 +195,7 @@ sub show_changed_hosts {
 
 		# Check for missing UDP ports
 		if (! $ports ) {
-			for my $portid (@baseline_services) {
+			for $portid (@baseline_services) {
 				my $s = $baseline_host->udp_service($portid);
 				my $service = Service->new();
 				$service->name($s->name());
