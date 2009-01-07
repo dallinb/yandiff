@@ -1,3 +1,7 @@
+07 January 2009 - Release 0.5.  This release fixed a bug (issue13) which
+had unfiltered ports being shown when only filtered ports were
+requested.
+
 28 December 2008 - Release 0.4. This release fixed the following bugs:
 
  * issue9 - Script hangs on Windows.
