@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 ##############################################################################
-# Copyright (c) 2008, League of Crafty Programmers Ltd <info@locp.co.uk>
+# Copyright (c) 2008-2009, League of Crafty Programmers Ltd <info@locp.co.uk>
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -33,6 +33,7 @@ use strict;
 sub show_changed_hosts {
 	my ($format, $baseline, $observed, $ports) = @_;
 	my $output = "\nChanged hosts:\n" if ($format eq 'text');
+	my $portid;
 	$output = "" if ($format eq 'xml');
 
 	for my $baseline_ip ($baseline->get_ips()) {
@@ -65,8 +66,12 @@ sub show_changed_hosts {
 			}
 
 			if ( $ports =~ m/f/i ) {
-				push(@observed_services,
-				    $observed_host->tcp_ports('filtered'));
+				for $portid
+				    ($observed_host->tcp_ports('filtered')) {
+					push(@observed_services, $portid) if
+					    ($observed_host->tcp_port_state(
+					    $portid) !~ m/unfiltered/i );
+				}
 			}
 
 			if ( $ports =~ m/c/i ) {
@@ -82,7 +87,7 @@ sub show_changed_hosts {
 			@observed_services = $observed_host->tcp_ports();
 		}
 
-		for my $portid (@observed_services) {
+		for $portid (@observed_services) {
 			# new services
 			my $s = $observed_host->tcp_service($portid);
 			my $service = Service->new();
@@ -114,7 +119,7 @@ sub show_changed_hosts {
 
 		# Check for missing TCP ports
 		if (! $ports ) {
-			for my $portid (@baseline_services) {
+			for $portid (@baseline_services) {
 				my $s = $baseline_host->tcp_service($portid);
 				my $service = Service->new();
 				$service->name($s->name());
@@ -123,7 +128,8 @@ sub show_changed_hosts {
 				$service->status(
 				    $baseline_host->tcp_port_state($portid));
 
-				if (!grep {$_ eq $portid} @observed_services) {
+				if (!grep {$_ eq $portid}
+				    @observed_services) {
 					$host_has_changed = 1;
 					push @missing_services, $service;
 					next;
@@ -143,8 +149,12 @@ sub show_changed_hosts {
 			}
 
 			if ( $ports =~ m/f/i ) {
-				push(@observed_services,
-				    $observed_host->udp_ports('filtered'));
+				for $portid (
+				    $observed_host->udp_ports('filtered')) {
+					push(@observed_services, $portid) if
+					    ($observed_host->udp_port_state(
+					    $portid) !~ m/unfiltered/i );
+				}
 			}
 
 			if ( $ports =~ m/c/i ) {
@@ -160,7 +170,7 @@ sub show_changed_hosts {
 			@observed_services = $observed_host->udp_ports();
 		}
 
-		for my $portid (@observed_services) {
+		for $portid (@observed_services) {
 			my $s = $observed_host->udp_service($portid);
 			my $service = Service->new();
 			$service->name($s->name());
@@ -190,7 +200,7 @@ sub show_changed_hosts {
 
 		# Check for missing UDP ports
 		if (! $ports ) {
-			for my $portid (@baseline_services) {
+			for $portid (@baseline_services) {
 				my $s = $baseline_host->udp_service($portid);
 				my $service = Service->new();
 				$service->name($s->name());
@@ -199,7 +209,8 @@ sub show_changed_hosts {
 				$service->status(
 				    $baseline_host->udp_port_state($portid));
 
-				if (!grep {$_ eq $portid} @observed_services) {
+				if (!grep {$_ eq $portid}
+				    @observed_services) {
 					$host_has_changed = 1;
 					push @missing_services, $service;
 					next;
@@ -315,8 +326,10 @@ sub show_missing_hosts {
 
 	my $output = '';
 	$output = "\nMissing hosts:\n" if ($format eq 'text');
-	$output = " <missing>\n" if (scalar(@hosts) != 0 && $format eq 'xml');
-	$output = " <missing/>\n" if (scalar(@hosts) == 0 && $format eq 'xml');
+	$output = " <missing>\n" if (scalar(@hosts) != 0
+	    && $format eq 'xml');
+	$output = " <missing/>\n" if (scalar(@hosts) == 0
+	    && $format eq 'xml');
 
 	for my $host (@hosts) {
 		$output .= "\t" . $host->to_string . "\n"
@@ -438,7 +451,7 @@ my ($c, $entry);
 # OK so all the other variables are in lowercase and local.  The reason why
 # version is specified differently is that that it is compatible with
 # Module::Build therefore making distribution and installing easier.
-my $VERSION = '0.4';
+my $VERSION = '0.5';
 
 $run_date = localtime;
 
