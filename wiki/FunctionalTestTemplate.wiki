@@ -13,7 +13,7 @@ Test Data Version:
 
 1) `xndiff --baseline baseline_qa.xml --observed observed_qa.xml`
 
-The output should list charlie as a new host, bravo as a changed host with various ports in a changed status (which will be tested more thoughly later) and alpha as a missing host.
+The output should list charlie as a new host, bravo as a changed host with various ports in a changed status (which will be tested more thoroughly later) and alpha as a missing host.
 
 Result: PASS/FAIL
 
