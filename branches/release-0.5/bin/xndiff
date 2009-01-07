@@ -66,9 +66,11 @@ sub show_changed_hosts {
 			}
 
 			if ( $ports =~ m/f/i ) {
-				for $portid ($observed_host->tcp_ports('filtered')) {
-					push(@observed_services, $portid) 
-					    if ($observed_host->tcp_port_state($portid) !~ m/unfiltered/i );
+				for $portid
+				    ($observed_host->tcp_ports('filtered')) {
+					push(@observed_services, $portid) if
+					    ($observed_host->tcp_port_state(
+					    $portid) !~ m/unfiltered/i );
 				}
 			}
 
@@ -126,7 +128,8 @@ sub show_changed_hosts {
 				$service->status(
 				    $baseline_host->tcp_port_state($portid));
 
-				if (!grep {$_ eq $portid} @observed_services) {
+				if (!grep {$_ eq $portid}
+				    @observed_services) {
 					$host_has_changed = 1;
 					push @missing_services, $service;
 					next;
@@ -146,9 +149,11 @@ sub show_changed_hosts {
 			}
 
 			if ( $ports =~ m/f/i ) {
-				for $portid ($observed_host->udp_ports('filtered')) {
-					push(@observed_services, $portid) 
-					    if ($observed_host->udp_port_state($portid) !~ m/unfiltered/i );
+				for $portid (
+				    $observed_host->udp_ports('filtered')) {
+					push(@observed_services, $portid) if
+					    ($observed_host->udp_port_state(
+					    $portid) !~ m/unfiltered/i );
 				}
 			}
 
@@ -204,7 +209,8 @@ sub show_changed_hosts {
 				$service->status(
 				    $baseline_host->udp_port_state($portid));
 
-				if (!grep {$_ eq $portid} @observed_services) {
+				if (!grep {$_ eq $portid}
+				    @observed_services) {
 					$host_has_changed = 1;
 					push @missing_services, $service;
 					next;
@@ -320,8 +326,10 @@ sub show_missing_hosts {
 
 	my $output = '';
 	$output = "\nMissing hosts:\n" if ($format eq 'text');
-	$output = " <missing>\n" if (scalar(@hosts) != 0 && $format eq 'xml');
-	$output = " <missing/>\n" if (scalar(@hosts) == 0 && $format eq 'xml');
+	$output = " <missing>\n" if (scalar(@hosts) != 0
+	    && $format eq 'xml');
+	$output = " <missing/>\n" if (scalar(@hosts) == 0
+	    && $format eq 'xml');
 
 	for my $host (@hosts) {
 		$output .= "\t" . $host->to_string . "\n"
