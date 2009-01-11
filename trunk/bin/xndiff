@@ -467,12 +467,12 @@ GetOptions(
 	'gen-stylesheet=s' => \$gen_stylesheet,
 	'help|?' => \$help,
 	'man' => \$man,
-	'observed=s' => \$observed_file,
-	'output-file=s' => \$output_file,
-	'output-hosts=s' => \$output_hosts,
-	'output-ports=s' => \$output_ports,
+	'observed|o=s' => \$observed_file,
+	'output-file|of=s' => \$output_file,
+	'output-hosts|os=s' => \$output_hosts,
+	'output-ports|op=s' => \$output_ports,
 	'stylesheet=s' => \$stylesheet,
-	'version' => \$show_version
+	'version|V' => \$show_version
 	) or pod2usage(1);
 
 pod2usage(0) if $help;
@@ -1259,11 +1259,11 @@ xndiff - find differences between two nmap network scans
 =head1 SYNOPSIS
 
 xndiff
-[--format <text | xml>]
-[--output-file file]
-[--output-hosts <nmc>]
-[--output-ports <ofcx>]
-[--stylesheet <file | URL>]
+[-f, --format <text | xml>]
+[-of, --output-file file]
+[-oh, --output-hosts <nmc>]
+[-op, --output-ports <ofcx>]
+[-s, --stylesheet <file | URL>]
 --baseline file
 --observed file
 
@@ -1279,35 +1279,51 @@ xndiff --version
 
 =over 8
 
+=item B<-b> file
+
 =item B<--baseline> file
 
 Specifies the nmap results to use as the baseline for the comparison.
 
+=item B<-f> <text | xml>
+
 =item B<--format> <text | xml>
 
 Specifies the output format (text is the default).
+
+=item B<-g> file
 
 =item B<--gen-stylesheet> file
 
 Generate an XML stylesheet (XSLT) suitable for use with the --stylesheet
 option.
 
+=item B<-h>
+
 =item B<--help>
 
 Print a brief help message and exit.
 
+=item B<-m>
+
 =item B<--man>
 
 Print the manual page and exit.
+
+=item B<-o> file
 
 =item B<--observed> file
 
 Specifies the nmap results to use as the "observed results" for the
 comparison.
 
+=item B<-of> file
+
 =item B<--output-file> file
 
 Send the output to the specified file.
+
+=item B<-oh> <nmc>
 
 =item B<--output-hosts> <nmc>
 
@@ -1321,6 +1337,8 @@ m = missing hosts in the "observed" scan.
 c = changed hosts in the "observed" scan.
 
 The default is to show new, missing and changed hosts.
+
+=item B<-op> <ofcx>
 
 =item B<--output-ports> <ofcx>
 
@@ -1337,11 +1355,15 @@ x = unfiltered ports in the "observed" scan
 
 The default is to show all ports.
 
+=item B<-s> <file | URL>
+
 =item B<--stylesheet> <file | URL>
 
 Specifies the location of an XML stylesheet to be referred to in any XML
 output.  A suitable stylesheet can be generated using the --gen-stylesheet
 option.
+
+=item B<-V>
 
 =item B<--version>
 
