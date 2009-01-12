@@ -1,9 +1,9 @@
 #summary Functional Test 7-Jan-2009
 #labels Phase-QA
 
-= Functional Test 7-May-2009 =
+= Functional Test 07-Jan-2009 =
 
-Date of Test: 07 Jan 2009
+Date of Test: 07-Jan-2009
 
 Xndiff Version: 0.5
 
