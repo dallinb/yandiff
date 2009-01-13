@@ -433,7 +433,7 @@ sub show_new_hosts {
 my $baseline_file;
 my ($c, $entry);
 my $command_line;
-my $format = 'text';
+my $format;
 my $gen_stylesheet;
 my $help;
 my $man;
@@ -480,15 +480,27 @@ pod2usage(0) if $help;
 pod2usage(-verbose => 2) if $man;
 
 if ($show_version) {
-	print "Version: $VERSION\n";
-	exit(0);
+	if ($baseline_file || $format || $gen_stylesheet || $help || $man ||
+	    $observed_file || $output_ports || $stylesheet) {
+		pod2usage(1);
+	} else {
+		print "Version: $VERSION\n";
+		exit(0);
+	}
 }
 
 if ($gen_stylesheet) {
-	$xslt = new Stylesheet;
-	$xslt->generate($gen_stylesheet);
-	exit(0);
+	if ($baseline_file || $format || $help || $man ||
+	    $observed_file || $output_ports || $show_version || $stylesheet) {
+		pod2usage(1);
+	} else {
+		$xslt = new Stylesheet;
+		$xslt->generate($gen_stylesheet);
+		exit(0);
+	}
 }
+
+$format = 'text' if (!$format);
 
 if ($stylesheet && ! -e $stylesheet) {
 	unless ($stylesheet =~ m/:\/\//i) {
