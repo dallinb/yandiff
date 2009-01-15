@@ -7,7 +7,7 @@
    method="table" conf="3" /></port>
 <port protocol="tcp" portid="22"><state state="filtered" /><service name="ssh"
    method="table" conf="3" /></port>
-<port protocol="tcp" portid="23"><state state="unfiltered" /><service name="telnet"
+<port protocol="tcp" portid="23"><state state="open" /><service name="telnet"
    method="table" conf="3" /></port>
 <port protocol="tcp" portid="79"><state state="open|filtered" /><service name="finger"
    method="table" conf="3" /></port>
