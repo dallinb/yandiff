@@ -47,6 +47,7 @@ The changes in the observed scan (observed_qa.xml) will be that  alpha will be r
 ||udp||514||syslog||open|filtered||
 ||udp||525||timed||unfiltered||
 ||udp||533||netwall||filtered||
+||udp||631||ipp||closed||
 ||udp||2049||nfs||closed|filtered||
 
 ==Test Schedule==
