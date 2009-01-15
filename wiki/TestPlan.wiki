@@ -42,7 +42,6 @@ The changes in the observed scan (observed_qa.xml) will be that  alpha will be r
 ||tcp||79||finger||open|filtered||
 ||tcp||110||pop3||closed|filtered||
 ||tcp||111||rpcbind||open||
-||tcp||514||shell||open||
 ||tcp||2049||nfs||open|filtered||
 ||udp||123||ntp||open||
 ||udp||514||syslog||open|filtered||
