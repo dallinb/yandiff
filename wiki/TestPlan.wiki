@@ -58,6 +58,9 @@ bravo with the follong port status:
 || *Reason* || *Port/Protocol* || *Observed Status*  ||
 || New || 749/tcp || open ||
 || New || 123/udp || open ||
+|| New || 525/udp || open|filtered ||
+|| New || 533/udp || filtered ||
+|| New || 631/udp || closed ||
 || Missing || 514/tcp || - ||
 || Missing || 161/udp || - ||
 || Changed || 21/tcp || closed ||
@@ -65,6 +68,8 @@ bravo with the follong port status:
 || Changed || 23/tcp || unfiltered ||
 || Changed || 79/tcp || open|filtered ||
 || Changed || 110/tcp || closed|filtered ||
+|| Changed || 514/udp || open|filtered ||
+|| Changed || 2049/udp || closed|filtered ||
 
 2) `xndiff –baseline baseline_qa.xml --observed observed_qa.xml --output-hosts n`
 
