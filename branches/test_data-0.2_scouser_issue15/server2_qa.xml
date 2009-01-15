@@ -15,15 +15,19 @@
    method="table" conf="3" /></port>
 <port protocol="tcp" portid="111"><state state="open" /><service name="rpcbind"
    method="table" conf="3" /></port>
-<port protocol="tcp" portid="514"><state state="open" /><service name="shell"
+<port protocol="tcp" portid="2049"><state state="open|filtered" /><service name="nfs"
    method="table" conf="3" /></port>
-<port protocol="tcp" portid="2049"><state state="open" /><service name="nfs"
+<port protocol="udp" portid="123"><state state="open" /><service name="ntp"
    method="table" conf="3" /></port>
-<port protocol="udp" portid="161"><state state="open" reason="udp-response" /><service name="snmp"
-   product="SNMPv1 server" method="table" conf="3" extrainfo="public" /></port>
-<port protocol="udp" portid="514"><state state="open" /><service name="syslog"
+<port protocol="udp" portid="514"><state state="open|filtered" /><service name="syslog"
    method="table" conf="3" /></port>
-<port protocol="udp" portid="2049"><state state="open" /><service name="nfs"
+<port protocol="udp" portid="525"><state state="unfiltered" /><service name="timed"
+   method="table" conf="3" /></port>
+<port protocol="udp" portid="533"><state state="filtered" /><service name="netwall"
+   method="table" conf="3" /></port>
+<port protocol="udp" portid="631"><state state="closed" /><service name="ipp"
+   method="table" conf="3" /></port>
+<port protocol="udp" portid="2049"><state state="closed|filtered" /><service name="ntp"
    method="table" conf="3" /></port>
 </ports>
 </host>
