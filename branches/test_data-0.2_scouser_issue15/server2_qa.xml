@@ -15,12 +15,13 @@
    method="table" conf="3" /></port>
 <port protocol="tcp" portid="111"><state state="open" /><service name="rpcbind"
    method="table" conf="3" /></port>
+<port protocol="tcp" portid="749"><state state="open" /><service name="kerberos-adm" method="table" conf="3" /></port>
 <port protocol="tcp" portid="2049"><state state="open|filtered" /><service name="nfs"
    method="table" conf="3" /></port>
 <port protocol="udp" portid="123"><state state="open" /><service name="ntp"
    method="table" conf="3" /></port>
-<port protocol="udp" portid="514"><state state="open|filtered" /><service name="syslog"
-   method="table" conf="3" /></port>
+<port protocol="udp" portid="514"><state state="open|filtered" />
+   <service name="syslog" method="table" conf="3" /></port>
 <port protocol="udp" portid="525"><state state="unfiltered" /><service name="timed"
    method="table" conf="3" /></port>
 <port protocol="udp" portid="533"><state state="filtered" /><service name="netwall"

@@ -15,8 +15,6 @@
    method="table" conf="3" /></port>
 <port protocol="tcp" portid="111"><state state="open" /><service name="rpcbind"
    method="table" conf="3" /></port>
-<port protocol="tcp" portid="514"><state state="open" /><service name="shell"
-   method="table" conf="3" /></port>
 <port protocol="tcp" portid="2049"><state state="open" /><service name="nfs"
    method="table" conf="3" /></port>
 <port protocol="udp" portid="161"><state state="open" reason="udp-response" /><service name="snmp"
