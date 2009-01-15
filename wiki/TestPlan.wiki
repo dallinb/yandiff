@@ -26,9 +26,10 @@ Both of the hosts will have been configured with the following services:
 ||tcp||110||pop3||open||
 ||tcp||111||rpcbind||open||
 ||tcp||514||shell||open||
-||udp||514||syslog||open||
 ||tcp||886||N/A||open||
 ||tcp||2049||nfs||open||
+||udp||161||snmp||open||
+||udp||514||syslog||open||
 ||udp||2049||nfs||open||
 
 ===Observed===
