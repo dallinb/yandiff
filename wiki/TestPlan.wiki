@@ -58,7 +58,7 @@ bravo with the follong port status:
 || *Reason* || *Port/Protocol* || *Observed Status*  ||
 || New || 749/tcp || open ||
 || New || 123/udp || open ||
-|| New || 525/udp || open|filtered ||
+|| New || 525/udp || unfiltered ||
 || New || 533/udp || filtered ||
 || New || 631/udp || closed ||
 || Missing || 514/tcp || - ||
@@ -85,15 +85,15 @@ Should only return alpha.
 
 5) `xndiff -baseline baseline_qa.xml --observed observed_qa.xml --output-hosts c -output-ports o`
 
-Should return bravo and ports 79/tcp, 123/udp, 514/udp and 2049/tcp.
+Should return bravo and ports 79/tcp, 749/tcp, 123/udp and 514/udp.
 
 6) `xndiff -baseline baseline_qa.xml --observed observed_qa.xml --output-hosts c -output-ports f`
 
-Should return bravo and ports 22/tcp, 79/tcp, 110/tcp, 514/udp, 533/udp, 2049/udp and 2049/tcp.
+Should return bravo and ports 22/tcp, 79/tcp, 110/tcp, 514/udp, 533/udp, 2049/udp.
 
 7) `xndiff -baseline baseline_qa.xml --observed observed_qa.xml --output-hosts c -output-ports c`
 
-Should return bravo and port 21/tcp, 110/tcp and 2049/udp.
+Should return bravo and port 21/tcp, 110/tcp, 631/udp and 2049/udp.
 
 8) `xndiff -baseline baseline_qa.xml --observed observed_qa.xml --output-hosts c -output-ports x`
 
