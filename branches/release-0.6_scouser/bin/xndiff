@@ -431,8 +431,9 @@ sub show_new_hosts {
 
 # Declare and initialise variables.
 my $baseline_file;
+my ($c, $entry);
 my $command_line;
-my $format = 'text';
+my $format;
 my $gen_stylesheet;
 my $help;
 my $man;
@@ -446,12 +447,12 @@ my $show_changed_hosts = 1;
 my $show_missing_hosts = 1;
 my $show_new_hosts = 1;
 my $stylesheet;
-my ($c, $entry);
+my $xslt;
 
 # OK so all the other variables are in lowercase and local.  The reason why
 # version is specified differently is that that it is compatible with
 # Module::Build therefore making distribution and installing easier.
-my $VERSION = '0.5';
+my $VERSION = '0.6';
 
 $run_date = localtime;
 
@@ -467,26 +468,48 @@ GetOptions(
 	'gen-stylesheet=s' => \$gen_stylesheet,
 	'help|?' => \$help,
 	'man' => \$man,
-	'observed=s' => \$observed_file,
-	'output-file=s' => \$output_file,
-	'output-hosts=s' => \$output_hosts,
-	'output-ports=s' => \$output_ports,
+	'observed|o=s' => \$observed_file,
+	'output-file|of=s' => \$output_file,
+	'output-hosts|os=s' => \$output_hosts,
+	'output-ports|op=s' => \$output_ports,
 	'stylesheet=s' => \$stylesheet,
-	'version' => \$show_version
+	'version|V' => \$show_version
 	) or pod2usage(1);
 
 pod2usage(0) if $help;
 pod2usage(-verbose => 2) if $man;
 
 if ($show_version) {
-	print "Version: $VERSION\n";
-	exit(0);
+	if ($baseline_file || $format || $gen_stylesheet || $help || $man ||
+	    $observed_file || $output_ports || $stylesheet) {
+		pod2usage(1);
+	} else {
+		print "Version: $VERSION\n";
+		exit(0);
+	}
 }
 
 if ($gen_stylesheet) {
-	my $xslt = new Stylesheet;
-	$xslt->generate($gen_stylesheet);
-	exit(0);
+	if ($baseline_file || $format || $help || $man ||
+	    $observed_file || $output_ports || $show_version || $stylesheet) {
+		pod2usage(1);
+	} else {
+		$xslt = new Stylesheet;
+		$xslt->generate($gen_stylesheet);
+		exit(0);
+	}
+}
+
+$format = 'text' if (!$format);
+
+if ($stylesheet && ! -e $stylesheet) {
+	unless ($stylesheet =~ m/:\/\//i) {
+		# To be here, a stylesheet has been specified that is not a
+		# URL (i.e. it is a file) and the file doesn't currently
+		# exist, so create it.
+		$xslt = new Stylesheet;
+		$xslt->generate($stylesheet);
+	}
 }
 
 if ($output_hosts) {
@@ -1259,11 +1282,11 @@ xndiff - find differences between two nmap network scans
 =head1 SYNOPSIS
 
 xndiff
-[--format <text | xml>]
-[--output-file file]
-[--output-hosts <nmc>]
-[--output-ports <ofcx>]
-[--stylesheet <file | URL>]
+[-f, --format <text | xml>]
+[-of, --output-file file]
+[-oh, --output-hosts <nmc>]
+[-op, --output-ports <ofcx>]
+[-s, --stylesheet <file | URL>]
 --baseline file
 --observed file
 
@@ -1279,35 +1302,51 @@ xndiff --version
 
 =over 8
 
+=item B<-b> file
+
 =item B<--baseline> file
 
 Specifies the nmap results to use as the baseline for the comparison.
 
+=item B<-f> <text | xml>
+
 =item B<--format> <text | xml>
 
 Specifies the output format (text is the default).
+
+=item B<-g> file
 
 =item B<--gen-stylesheet> file
 
 Generate an XML stylesheet (XSLT) suitable for use with the --stylesheet
 option.
 
+=item B<-h>
+
 =item B<--help>
 
 Print a brief help message and exit.
 
+=item B<-m>
+
 =item B<--man>
 
 Print the manual page and exit.
+
+=item B<-o> file
 
 =item B<--observed> file
 
 Specifies the nmap results to use as the "observed results" for the
 comparison.
 
+=item B<-of> file
+
 =item B<--output-file> file
 
 Send the output to the specified file.
+
+=item B<-oh> <nmc>
 
 =item B<--output-hosts> <nmc>
 
@@ -1321,6 +1360,8 @@ m = missing hosts in the "observed" scan.
 c = changed hosts in the "observed" scan.
 
 The default is to show new, missing and changed hosts.
+
+=item B<-op> <ofcx>
 
 =item B<--output-ports> <ofcx>
 
@@ -1337,11 +1378,16 @@ x = unfiltered ports in the "observed" scan
 
 The default is to show all ports.
 
+=item B<-s> <file | URL>
+
 =item B<--stylesheet> <file | URL>
 
 Specifies the location of an XML stylesheet to be referred to in any XML
-output.  A suitable stylesheet can be generated using the --gen-stylesheet
-option.
+output.  If the stylesheet specified is not a URL and is found to be a
+non-existent file then it will be generated.  A suitable stylesheet can also
+be generated using the --gen-stylesheet option.
+
+=item B<-V>
 
 =item B<--version>
 
