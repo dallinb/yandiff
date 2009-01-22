@@ -1,7 +1,7 @@
-#summary Test Plan
+#summary Test Plan (Draft)
 #labels Phase-QA
 
-=Test Plan=
+=Test Plan (Draft)=
 
 ==Description==
 This is a description of the series of tests to be carried out to test the individual requirements of the utility.  This will include checking that hosts can be filtered on individual status (new, changed or missing) and that ports on changed hosts can be filtered depending on the status returned by Nmap.  These are open, closed, filtered, unfiltered, open|filtered and closed|filtered `[1]`.
@@ -80,13 +80,14 @@ bravo with the following port status for both TCP and UDP:
 || New || 9 || closed ||
 || New || 10 || filtered ||
 || New || 11 || unfiltered ||
-|| New || 12 || closed|filtered ||
-|| New || 13 || open|filtered ||
+|| New || 12 || open|filtered ||
+|| New || 13 || closed|filtered ||
+|| Missing || 1 || N/A ||
 || Changed || 3 || closed ||
 || Changed || 4 || filtered ||
 || Changed || 5 || unfiltered ||
-|| Changed || 6 || closed|filtered ||
-|| Changed || 7 || open|filtered ||
+|| Changed || 6 || open|filtered ||
+|| Changed || 7 || closed|filtered ||
 || Changed || 14 || open ||
 
 2) `xndiff –baseline baseline_qa.xml --observed observed_qa.xml --output-hosts n`
