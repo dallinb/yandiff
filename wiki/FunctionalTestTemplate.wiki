@@ -7,55 +7,76 @@ Date of Test: dd mmm yyyy
 
 Xndiff Version:
 
-Test Data Version:
+Test Data Version: 0.2
 
+############################################################################
 ==Tests==
+1) `xndiff –baseline baseline_qa.xml --observed observed_qa.xml`
 
-1) `xndiff --baseline baseline_qa.xml --observed observed_qa.xml`
+The output should list charlie as a new host, alpha as a missing host and
+bravo with the following port status for both TCP and UDP:
 
-The output should list charlie as a new host, bravo as a changed host with various ports in a changed status (which will be tested more thoroughly later) and alpha as a missing host.
-
-Result: PASS/FAIL
-
-2) `xndiff --baseline baseline_qa.xml --observed observed_qa.xml --output-hosts n`
-
-Should only return charlie. 
-
-Result: PASS/FAIL
-
-3) `xndiff --baseline baseline_qa.xml --observed observed_qa.xml --output-hosts c`
-
-Should only return bravo. 
-
-Result: PASS/FAIL
-
-4) `xndiff --baseline baseline_qa.xml --observed observed_qa.xml --output-hosts m`
-
-Should only return alpha. 
+|| *Reason* || *Port* || *Observed Status*  ||
+|| New || 8 || open ||
+|| New || 9 || closed ||
+|| New || 10 || filtered ||
+|| New || 11 || unfiltered ||
+|| New || 12 || closed|filtered ||
+|| New || 13 || open|filtered ||
+|| Changed || 3 || closed ||
+|| Changed || 4 || filtered ||
+|| Changed || 5 || unfiltered ||
+|| Changed || 6 || closed|filtered ||
+|| Changed || 7 || open|filtered ||
 
 Result: PASS/FAIL
 
-5) `xndiff --baseline baseline_qa.xml --observed observed_qa.xml --output-hosts c --output-ports o` 
 
-Should return bravo and ports 79/tcp and 123/udp. 
+2) `xndiff –baseline baseline_qa.xml --observed observed_qa.xml --output-hosts n`
 
-Result: PASS/FAIL
-
-6) `xndiff --baseline baseline_qa.xml --observed observed_qa.xml --output-hosts c --output-ports f` 
-
-Should return bravo and ports 22/tcp, 79/tcp and 110/tcp. 
+Should only return charlie.
 
 Result: PASS/FAIL
 
-7) `xndiff --baseline baseline_qa.xml --observed observed_qa.xml --output-hosts c --output-ports c`
 
-Should return bravo and ports 21/tcp and 110/tcp. 
+3) `xndiff –baseline baseline_qa.xml --observed observed_qa.xml --output-hosts c`
+
+Should only return bravo.
 
 Result: PASS/FAIL
 
-8) `xndiff --baseline baseline_qa.xml --observed observed_qa.xml --output-hosts c --output-ports x` 
 
-Should return bravo and port 23/tcp. 
+4) `xndiff –baseline baseline_qa.xml --observed observed_qa.xml --output-hosts m`
+
+Should only return alpha.
+
+Result: PASS/FAIL
+
+
+5) `xndiff -baseline baseline_qa.xml --observed observed_qa.xml --output-hosts c -output-ports o`
+
+Should return bravo and ports 8, 7 and 13 for both TCP and UDP.
+
+Result: PASS/FAIL
+
+
+6) `xndiff -baseline baseline_qa.xml --observed observed_qa.xml --output-hosts c -output-ports f`
+
+Should return bravo and ports 4, 6, 7, 10, 12 and 13 for both TCP and UDP.
+
+Result: PASS/FAIL
+
+
+7) `xndiff -baseline baseline_qa.xml --observed observed_qa.xml --output-hosts c -output-ports c`
+
+Should return bravo and ports 3, 6, 9 and 12 for both TCP and UDP.
+
+Result: PASS/FAIL
+
+
+8) `xndiff -baseline baseline_qa.xml --observed observed_qa.xml --output-hosts c -output-ports x`
+
+Should return bravo and ports 5 and 11 for both TCP and UDP.
 
 Result: PASS/FAIL
 
