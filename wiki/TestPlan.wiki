@@ -28,6 +28,7 @@ Both of the hosts will have been configured with the following services:
 ||tcp||5||open||
 ||tcp||6||open||
 ||tcp||7||open||
+||tcp||14||filtered||
 ||udp||1||open||
 ||udp||2||open||
 ||udp||3||open||
@@ -35,37 +36,38 @@ Both of the hosts will have been configured with the following services:
 ||udp||5||open||
 ||udp||6||open||
 ||udp||7||open||
+||udp||14||filtered||
 
 ===Observed===
 The changes in the observed scan (observed_qa.xml) will be that  alpha will be renamed to charlie and have the IP address changed to 192.168.1.24.  Except for these changes, the host will remain unchanged.  The bravo host will have the following services configured:
 
 || *Protocol* || *Port* || *Status* ||
-||tcp||1||open||
 ||tcp||2||open||
-||tcp||3||open||
-||tcp||4||open||
-||tcp||5||open||
-||tcp||6||open||
-||tcp||7||open||
+||tcp||3||closed||
+||tcp||4||filtered||
+||tcp||5||unfiltered||
+||tcp||6||open|filtered||
+||tcp||7||closed|filtered||
 ||tcp||8||open||
-||tcp||9||open||
-||tcp||10||open||
-||tcp||11||open||
-||tcp||12||open||
-||tcp||13||open||
-||udp||1||open||
+||tcp||9||closed||
+||tcp||10||filtered||
+||tcp||11||unfiltered||
+||tcp||12||open|filtered||
+||tcp||13||closed|filtered||
+||tcp||14||open||
 ||udp||2||open||
-||udp||3||open||
-||udp||4||open||
-||udp||5||open||
-||udp||6||open||
-||udp||7||open||
+||udp||3||closed||
+||udp||4||filtered||
+||udp||5||unfiltered||
+||udp||6||open|filtered||
+||udp||7||closed|filtered||
 ||udp||8||open||
-||udp||9||open||
-||udp||10||open||
-||udp||11||open||
-||udp||12||open||
-||udp||13||open||
+||udp||9||closed||
+||udp||10||filtered||
+||udp||11||unfiltered||
+||udp||12||open|filtered||
+||udp||13||closed|filtered||
+||udp||14||open||
 
 ==Test Schedule==
 1) `xndiff –baseline baseline_qa.xml --observed observed_qa.xml`
@@ -85,6 +87,7 @@ bravo with the following port status for both TCP and UDP:
 || Changed || 5 || unfiltered ||
 || Changed || 6 || closed|filtered ||
 || Changed || 7 || open|filtered ||
+|| Changed || 14 || open ||
 
 2) `xndiff –baseline baseline_qa.xml --observed observed_qa.xml --output-hosts n`
 
@@ -100,7 +103,7 @@ Should only return alpha.
 
 5) `xndiff -baseline baseline_qa.xml --observed observed_qa.xml --output-hosts c -output-ports o`
 
-Should return bravo and ports 8, 7 and 13 for both TCP and UDP.
+Should return bravo and ports 6, 8, 12 and 14 for both TCP and UDP.
 
 6) `xndiff -baseline baseline_qa.xml --observed observed_qa.xml --output-hosts c -output-ports f`
 
@@ -108,7 +111,7 @@ Should return bravo and ports 4, 6, 7, 10, 12 and 13 for both TCP and UDP.
 
 7) `xndiff -baseline baseline_qa.xml --observed observed_qa.xml --output-hosts c -output-ports c`
 
-Should return bravo and ports 3, 6, 9 and 12 for both TCP and UDP.
+Should return bravo and ports 3, 7, 9 and 13 for both TCP and UDP.
 
 8) `xndiff -baseline baseline_qa.xml --observed observed_qa.xml --output-hosts c -output-ports x`
 

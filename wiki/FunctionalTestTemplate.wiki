@@ -1,13 +1,13 @@
-#summary Functional Test Template
+#summary Functional Test Template (Draft)
 #labels Phase-QA
 
-= Functional Test Template =
+= Functional Test Template (Draft) =
 
 Date of Test: dd mmm yyyy
 
 Xndiff Version:
 
-Test Data Version: 0.2
+Test Data Version: 0.3
 
 ############################################################################
 ==Tests==
@@ -28,6 +28,7 @@ bravo with the following port status for both TCP and UDP:
 || Changed || 5 || unfiltered ||
 || Changed || 6 || closed|filtered ||
 || Changed || 7 || open|filtered ||
+|| Changed || 14 || open ||
 
 Result: PASS/FAIL
 
@@ -55,7 +56,7 @@ Result: PASS/FAIL
 
 5) `xndiff -baseline baseline_qa.xml --observed observed_qa.xml --output-hosts c -output-ports o`
 
-Should return bravo and ports 8, 7 and 13 for both TCP and UDP.
+Should return bravo and ports 6, 8, 12 and 14 for both TCP and UDP.
 
 Result: PASS/FAIL
 
@@ -69,7 +70,7 @@ Result: PASS/FAIL
 
 7) `xndiff -baseline baseline_qa.xml --observed observed_qa.xml --output-hosts c -output-ports c`
 
-Should return bravo and ports 3, 6, 9 and 12 for both TCP and UDP.
+Should return bravo and ports 3, 7, 9 and 13 for both TCP and UDP.
 
 Result: PASS/FAIL
 
