@@ -10,6 +10,7 @@
 <port protocol="tcp" portid="5"><state state="open" /></port>
 <port protocol="tcp" portid="6"><state state="open" /></port>
 <port protocol="tcp" portid="7"><state state="open" /></port>
+<port protocol="tcp" portid="14"><state state="unfiltered" /></port>
 <port protocol="udp" portid="1"><state state="open" /></port>
 <port protocol="udp" portid="2"><state state="open" /></port>
 <port protocol="udp" portid="3"><state state="open" /></port>
@@ -17,5 +18,6 @@
 <port protocol="udp" portid="5"><state state="open" /></port>
 <port protocol="udp" portid="6"><state state="open" /></port>
 <port protocol="udp" portid="7"><state state="open" /></port>
+<port protocol="udp" portid="14"><state state="unfiltered" /></port>
 </ports>
 </host>
