@@ -1,98 +1,135 @@
 #summary Manual for xndiff
 #labels Phase-Deploy
-
-= NAME =
-
- xndiff - find differences between two nmap network scans
+{{{
+XNDIFF(1p)            User Contributed Perl Documentation           XNDIFF(1p)
 
 
-= SYNOPSIS =
 
- xndiff [--format `<`text | xml`>`] [--output-file file] [--output-hosts `<`nmc`>`] [--output-ports `<`ofcx`>`] [--stylesheet `<`file | URL`>`] --baseline file --observed file
+NAME
+       xndiff - find differences between two nmap network scans
 
- xndiff --gen-stylesheet file
+SYNOPSIS
+       xndiff [-f, --format <text | xml>] [-of, --output-file file] [-oh,
+       --output-hosts <nmc>] [-op, --output-ports <ofcx>] [-s, --stylesheet
+       <file | URL>] --baseline file --observed file
 
- xndiff --help | -?
+       xndiff --gen-stylesheet file
 
- xndiff --man
+       xndiff --help | -?
 
- xndiff --version
+       xndiff --man
+
+       xndiff --version
+
+OPTIONS
+       -b file
+       --baseline file
+               Specifies the nmap results to use as the baseline for the com‐
+               parison.
+
+       -f <text | xml>
+       --format <text | xml>
+               Specifies the output format (text is the default).
+
+       -g file
+       --gen-stylesheet file
+               Generate an XML stylesheet (XSLT) suitable for use with the
+               --stylesheet option.
+
+       -h
+       --help  Print a brief help message and exit.
+
+       -m
+       --man   Print the manual page and exit.
+
+       -o file
+       --observed file
+               Specifies the nmap results to use as the "observed results" for
+               the comparison.
+
+       -of file
+       --output-file file
+               Send the output to the specified file.
+
+       -oh <nmc>
+       --output-hosts <nmc>
+               Specifies which types of hosts to display.  Any combination of
+               n, m, or c may be specified, as follows:
+
+               n = new hosts in the "observed" scan.
+
+               m = missing hosts in the "observed" scan.
+
+               c = changed hosts in the "observed" scan.
+
+               The default is to show new, missing and changed hosts.
+
+       -op <ofcx>
+       --output-ports <ofcx>
+               Specifies which ports to check when outputting changed hosts.
+               Open, filtered or closed ports.  Any combination of [ofcx] may
+               be specified, as follows:
+
+               o = open ports in the "observed" scan.
+
+               f = filtered ports in the "observed" scan.
+
+               c = closed ports in the "observed" scan.
+
+               x = unfiltered ports in the "observed" scan
+
+               The default is to show all ports.
+
+       -s <file | URL>
+       --stylesheet <file | URL>
+               Specifies the location of an XML stylesheet to be referred to
+               in any XML output.  If the stylesheet specified is not a URL
+               and is found to be a non-existent file then it will be gener‐
+               ated.  A suitable stylesheet can also be generated using the
+               --gen-stylesheet option.
+
+       -V
+       --version
+               Print the version and exit.
+
+DESCRIPTION
+       xndiff is a command line utility (written in Perl) that allows users to
+       monitor networks for changes in port states and running services. It
+       does this by comparing the XML output of two nmap scans, one designated
+       the "baseline", the other the "observation". Alternatively a third XML
+       file can be created containing the differences.
+
+EXAMPLES
+       To generate a report to screen:
+
+               xndiff --baseline baseline.xml --observed observed.xml
+
+       To generate a stylesheet to file:
+
+               xndiff --gen-stylesheet xndiff.xsl
+
+       To generate a report to an XML file and using the stylesheet generated
+       in the previous example:
+
+               xndiff --baseline baseline.xml --observed observed.xml \
+                    --format xml --output-file report.xml
+
+HISTORY
+       Xndiff is loosely based on ndiff written by James Levine, except where
+       ndiff used "grepable" output from nmap, xndiff reads XML output using
+       Nmap::Parser.
+
+AUTHORS
+       The Xndiff project at http://code.google.com/p/xndiff
+
+BUGS
+       The project members graciously accept that there may be bugs.  If there
+       are any found, please report them at the link below or browse the
+       issues reported to see if a fix is either available or in progress.
+
+       http://code.google.com/p/xndiff/issues
 
 
-= OPTIONS =
 
-<b>--baseline file</b> Specifies the nmap results to use as the baseline for the comparison.
-
-<b>--format `<`text | xml`>`</b> Specifies the output format (text is the default).
-
-<b>--gen-stylesheet file</b> Generate an XML stylesheet (XSLT) suitable for use with the --stylesheet option.
-
-<b>--help</b> Print a brief help message and exit.
-
-<b>--man</b> Print the manual page and exit.
-
-<b>--observed file</b> Specifies the nmap results to use as the "observed results" for the comparison.
-
-<b>--output-file file</b>Send the output to the specified file.
-
-<b>--output-hosts `<`nmc`>`</b> Specifies which types of hosts to display. Any combination of n, m or c may be specified, as follows:
-
-   *n = new hosts in the "observed" scan.
-   *m = missing hosts in the "observed" scan.
-   *c = changed hosts in the "observed" scan.
-
-The default is to show new, missing and changed hosts.
-
-<b>--output-ports `<`ofcx`>`</b> Specifies which ports to check, when outputting
-changed hosts.  Open, filtered or closed ports.  Any combination of o, f, c or x may
-be specified, as follows:
-
-   *o = open ports in the "observed" scan.
-   *f = filtered ports in the "observed" scan.
-   *c = closed ports in the "observed" scan.
-   *x = unfiltered ports in the "observed" scan.
-
-The default is to show all ports.
-
-<b>--stylesheet `<`file | URL`>`</b> Specifies the location of an XML stylesheet to be referred to in any XML output. A suitable stylesheet can be generated using the --gen-stylesheet option.
-
-<b>--version</b> Print the version and exit.
-
-
-= DESCRIPTION =
-
- <b>xndiff</b> allows a network administrator or other interested party to easily monitor one or more networks for changes in port states and running services. It achieves this by comparing the results of two nmap scans, one designated the "baseline", the other "observation".
-
- Both baseline and observation are stored in files generated via nmap's -oX switch for XML output.
-
-
-= EXAMPLES =
-
- To generate a report to screen:
-
-  `xndiff --baseline baseline.xml --observed observed.xml`
-
- To generate a stylesheet to file:
-
-  `xndiff --gen-stylesheet xndiff.xsl`
-
- To generate a report to an XML file and using the stylesheet generated in the previous example.
-
-  `xndiff --baseline baseline.xml --observed observed.xml --format xml --output-file report.xml`
-
-
-= HISTORY =
-
- Xndiff is loosely based on ndiff written by James Levine, except where ndiff used "grepable" output from nmap, xndiff reads XML output using Nmap::Parser.
-
-
-= AUTHORS =
-
- The Xndiff project at http://code.google.com/p/xndiff
-
-
-= BUGS =
-
- The project members graciously accept that there may be bugs. If there are any found, please report them at the link below or browse the issues reported to see if a fix is either available or in progress.
-
- http://code.google.com/p/xndiff/issues
+perl v5.8.8                       2009-01-24                        XNDIFF(1p)
+}}}
