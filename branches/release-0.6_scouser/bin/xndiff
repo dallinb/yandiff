@@ -1397,13 +1397,11 @@ Print the version and exit.
 
 =head1 DESCRIPTION
 
-B<xndiff> allows a network administrator or other interested party to easily
-monitor one or more networks for changes in port states and running
-services.  It achieves this by comparing the results of two nmap scans,
-one designated the "baseline", the other "observation".
-
-Both baseline and observation are stored in files generated via nmap's
--oX switch for XML output.
+B<xndiff> is a command line utility (written in Perl) that allows users to
+monitor networks for changes in port states and running services. It does this
+by comparing the XML output of two nmap scans, one designated the "baseline",
+the other the "observation". Alternatively a third XML file can be created
+containing the differences.
 
 =head1 EXAMPLES
 
