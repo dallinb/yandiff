@@ -15,5 +15,6 @@
   * [FunctionalTestTemplate Functional Test Template]
   * [PerformanceTest20081219 Performance Test 19-Dec-2008]
   * [FunctionalTest20090107 Functional Test 07-Jan-2009]
+  * [FunctionalTest20090124 Functional Test 24-Jan-2009]
 
 For details on the relevant licences click [COPYING here].
