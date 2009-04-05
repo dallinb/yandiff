@@ -1,0 +1,15 @@
+<host><status state="up" />
+<address addr="IP" addrtype="ipv4" />
+<address addr="MAC" addrtype="mac" />
+<hostnames><hostname name="HOST" type="PTR" /></hostnames>
+<ports><extraports state="closed" count="1654" />
+<port protocol="tcp" portid="22"><state state="open" /><service name="ssh"
+   method="table" conf="3" /></port>
+<port protocol="tcp" portid="110"><state state="open" /><service name="pop3"
+   method="table" conf="3" /></port>
+<port protocol="tcp" portid="111"><state state="open" /><service name="rpcbind"
+   method="table" conf="3" /></port>
+<port protocol="tcp" portid="2049"><state state="open|filtered" /><service name="nfs" method="table" conf="3" /></port>
+<port protocol="udp" portid="123"><state state="open" /><service name="ntp" product="NTP" version="v4" method="probed" conf="10" /></port>
+</ports>
+</host>
