@@ -1,0 +1,11 @@
+bin/xndiff
+Build.PL
+CHANGES.txt
+COPYING.txt
+INSTALL.txt
+MANIFEST			This list of files
+META.yml
+README.txt
+t/oA9.xml
+t/testexec.t
+WIN-INSTALL.txt
