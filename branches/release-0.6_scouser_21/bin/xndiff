@@ -113,6 +113,7 @@ sub show_changed_hosts {
 
 			if ($service->compare($service2) != 0) {
 				$host_has_changed = 1;
+				$service->previous($service2->status);
 				push @changed_services, $service;
 			}
 		}
@@ -194,6 +195,7 @@ sub show_changed_hosts {
 
 			if ($service->compare($service2) != 0) {
 				$host_has_changed = 1;
+				$service->previous($service2->status);
 				push @changed_services, $service;
 			}
 		}
@@ -635,6 +637,7 @@ sub new {
 	my $self = {};
 	$self->{HOSTNAME} = undef;
 	$self->{IP_ADDR} = undef;
+	$self->{PREVIOUS} = undef;
 	$self->{STATUS} = undef;
 	$self->{SERVICES} = [];
 	bless($self);
@@ -754,6 +757,7 @@ sub to_xml {
 #	$service->portid(22);
 #	$service->proto("tcp");
 #	$service->status("open");
+#	$service->previous("closed");
 #	$service->compare($another_service);
 ##############################################################################
 package Service;
@@ -765,7 +769,7 @@ sub new {
 	$self->{NAME} = '';
 	$self->{PORTID} = undef;
 	$self->{PROTO} = undef;
-	$self->{STATUS} = '';
+	$self->{STATUS} = 'unknown';
 	bless($self);
 	return $self;
 }
@@ -802,6 +806,13 @@ sub portid {
 	return $self->{PORTID};
 }
 
+# Get or set the previous status of the service.
+sub previous {
+	my $self = shift;
+	$self->{PREVIOUS} = shift if (@_);
+	return $self->{PREVIOUS};
+}
+
 # Get or set the protocol of the service ("tcp" or "udp").
 sub proto {
 	my $self = shift;
@@ -823,6 +834,8 @@ sub to_string {
 	$s .= "$self->{PROTO}/";
 	$s .= "$self->{STATUS}";
 	$s .= " ($self->{NAME})" if ($self->{NAME});
+	$s .= ' (previously ' . $self->{PREVIOUS} . ')' if defined
+	    $self->{PREVIOUS};
 	return $s;
 }
 
@@ -833,6 +846,7 @@ sub to_xml {
 	    . ' proto="' . $self->{PROTO} . '"'
 	    . ' status="' . $self->{STATUS} . '"';
 	$s .= ' name="' . $self->{NAME} . '"' if ($self->{NAME});
+	$s .= ' previous="' . $self->{PREVIOUS} . '"' if ($self->{PREVIOUS});
 	$s .= '/>';
 	return $s;
 }
