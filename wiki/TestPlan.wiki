@@ -12,14 +12,13 @@ This data is not intended to be realistic from a scanning point of view.  It
 is merely to test the functionality of the script.
 
 ===Baseline===
-The baseline file (baseline_qa.xml) will consist of three hosts called alpha, beta and delta.  These hosts will have the following details:
+The baseline file (baseline_qa.xml) will consist of two hosts called alpha and beta.  These hosts will have the following details:
 
 || *Host* || *IP* ||
 ||alpha||192.168.1.8||
 ||bravo||192.168.1.16||
-||delta||192.168.1.32||
 
-All of the hosts will have been configured with the following services:
+Both of the hosts will have been configured with the following services:
 
 || *Protocol* || *Port* || *Status* ||
 ||tcp||1||open||
@@ -69,8 +68,6 @@ The changes in the observed scan (observed_qa.xml) will be that  alpha will be r
 ||udp||12||open|filtered||
 ||udp||13||closed|filtered||
 ||udp||14||open||
-
-Also the host status of delta will have changed from unknown to up.
 
 ==Test Schedule==
 
