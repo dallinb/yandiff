@@ -460,6 +460,11 @@ $run_date = localtime;
 # Command line parsing.
 ##############################################################################
 
+if ($#ARGV == 1 and -f $ARGV[0] and -f $ARGV[1])
+{
+	@ARGV = ('--baseline', $ARGV[0], '--observed', $ARGV[1]);
+}
+
 $command_line = join(' ', @ARGV);
 
 GetOptions(
@@ -1290,6 +1295,8 @@ xndiff
 --baseline file
 --observed file
 
+xndiff file file
+
 xndiff --gen-stylesheet file
 
 xndiff --help | -?
@@ -1307,6 +1314,7 @@ xndiff --version
 =item B<--baseline> file
 
 Specifies the nmap results to use as the baseline for the comparison.
+May be ommitted if the baseline and observed files are the only two arguments given.
 
 =item B<-f> <text | xml>
 
@@ -1339,6 +1347,7 @@ Print the manual page and exit.
 
 Specifies the nmap results to use as the "observed results" for the
 comparison.
+May be ommitted if the baseline and observed files are the only two arguments given.
 
 =item B<-of> file
 
@@ -1406,6 +1415,14 @@ containing the differences.
 =head1 EXAMPLES
 
 To generate a report to screen:
+
+=over 8
+
+xndiff baseline.xml observed.xml
+
+=back
+
+which is equivalent to
 
 =over 8
 
