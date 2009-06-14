@@ -987,32 +987,6 @@ sub generate {
 <body>
  <h1>Xndiff</h1>
 
- <h2>Host Summary</h2>
-
- <xsl:if test="new">
-  <p><b>New</b>:
-  <xsl:for-each select="new">
-   <xsl:apply-templates select="host"/>
-  </xsl:for-each>
-  </p>
- </xsl:if>
-
- <xsl:if test="missing">
-  <p><b>Missing</b>:
-  <xsl:for-each select="missing">
-   <xsl:apply-templates select="host"/>
-  </xsl:for-each>
-  </p>
- </xsl:if>
-
- <xsl:if test="changed">
-  <p><b>Changed</b>:
-  <xsl:for-each select="changed">
-   <xsl:apply-templates select="host"/>
-  </xsl:for-each>
-  </p>
- </xsl:if>
-
  <h2>Run Parameters</h2>
 
  <table border="1">
@@ -1062,6 +1036,32 @@ sub generate {
    <td><i><xsl:value-of select="parameters/observed/scan_args"/></i></td>
   </tr>
  </table>
+
+ <h2>Host Summary</h2>
+
+ <xsl:if test="new">
+  <p><b>New</b>:
+  <xsl:for-each select="new">
+   <xsl:apply-templates select="host"/>
+  </xsl:for-each>
+  </p>
+ </xsl:if>
+
+ <xsl:if test="missing">
+  <p><b>Missing</b>:
+  <xsl:for-each select="missing">
+   <xsl:apply-templates select="host"/>
+  </xsl:for-each>
+  </p>
+ </xsl:if>
+
+ <xsl:if test="changed">
+  <p><b>Changed</b>:
+  <xsl:for-each select="changed">
+   <xsl:apply-templates select="host"/>
+  </xsl:for-each>
+  </p>
+ </xsl:if>
 
  <xsl:if test="new">
   <h2>New</h2>
