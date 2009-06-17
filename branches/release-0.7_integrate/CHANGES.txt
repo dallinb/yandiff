@@ -1,3 +1,8 @@
+17 June 2009 - Release 0.7.  Allows the user to use a slightly less verbose
+command line for a quick check (issue27).  Also the output of both text and
+XML reports now show what the previous status of a port was (issue21 and
+issue24).
+ 
 24 January 2009 - Release 0.6.  Sorted out how the command line worked by
 allowing shorted options for the user (issue16), tightened up the logic when
 the --version or --gen-stylesheet options were used (issue18) and a
