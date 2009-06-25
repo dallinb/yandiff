@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 ##############################################################################
-# Copyright (c) 2008-2009, League of Crafty Programmers Ltd <info@locp.co.uk>
+# Copyright (c) 2008, League of Crafty Programmers Ltd <info@locp.co.uk>
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -19,21 +19,19 @@
 # (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 # LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-# THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ##############################################################################
 use Getopt::Long;
 use IO::Handle;
 use Nmap::Parser;
 use Pod::Usage;
-use strict;
 
 # Find hosts that are in both the observed and baseline scans.  Compare the
 # status of the host and the status of each of the individual ports.
 sub show_changed_hosts {
-	my ($format, $baseline, $observed, $ports) = @_;
-	my $output = "\nChanged hosts:\n" if ($format eq 'text');
-	my $portid;
+	my ($format, $baseline, $observed) = @_;
+	$output = "\nChanged hosts:\n" if ($format eq 'text');
 	$output = "" if ($format eq 'xml');
 
 	for my $baseline_ip ($baseline->get_ips()) {
@@ -55,40 +53,10 @@ sub show_changed_hosts {
 		    if ($observed_host->status() ne $baseline_host->status());
 
 		# Check for new or changed TCP services
-		my @observed_services = ();
-		my @baseline_services = ();
-		@baseline_services = $baseline_host->tcp_ports();
+		my @observed_services = $observed_host->tcp_ports();
+		my @baseline_services = $baseline_host->tcp_ports();
 
-		if ($ports) {
-			if ( $ports =~ m/o/i ) {
-				push(@observed_services,
-				    $observed_host->tcp_ports('open'));
-			}
-
-			if ( $ports =~ m/f/i ) {
-				for $portid
-				    ($observed_host->tcp_ports('filtered')) {
-					push(@observed_services, $portid) if
-					    ($observed_host->tcp_port_state(
-					    $portid) !~ m/unfiltered/i );
-				}
-			}
-
-			if ( $ports =~ m/c/i ) {
-				push(@observed_services,
-				    $observed_host->tcp_ports('closed'));
-			}
-
-			if ( $ports =~ m/x/i ) {
-				push(@observed_services,
-				    $observed_host->tcp_ports('unfiltered'));
-			}
-		} else {
-			@observed_services = $observed_host->tcp_ports();
-		}
-
-		for $portid (@observed_services) {
-			# new services
+		for my $portid (@observed_services) {
 			my $s = $observed_host->tcp_service($portid);
 			my $service = Service->new();
 			$service->name($s->name());
@@ -103,7 +71,6 @@ sub show_changed_hosts {
 				next;
 			}
 
-			# must be a changed service
 			my $service2 = Service->new();
 			$service2->name($s->name());
 			$service2->portid($portid);
@@ -113,65 +80,33 @@ sub show_changed_hosts {
 
 			if ($service->compare($service2) != 0) {
 				$host_has_changed = 1;
-				$service->previous($service2->status);
 				push @changed_services, $service;
 			}
 		}
 
 		# Check for missing TCP ports
-		if (! $ports ) {
-			for $portid (@baseline_services) {
-				my $s = $baseline_host->tcp_service($portid);
-				my $service = Service->new();
-				$service->name($s->name());
-				$service->portid($portid);
-				$service->proto("tcp");
-				$service->status(
-				    $baseline_host->tcp_port_state($portid));
 
-				if (!grep {$_ eq $portid}
-				    @observed_services) {
-					$host_has_changed = 1;
-					push @missing_services, $service;
-					next;
-				}
+		for my $portid (@baseline_services) {
+			my $s = $baseline_host->tcp_service($portid);
+			my $service = Service->new();
+			$service->name($s->name());
+			$service->portid($portid);
+			$service->proto("tcp");
+			$service->status(
+			    $baseline_host->tcp_port_state($portid));
+
+			if (!grep {$_ eq $portid} @observed_services) {
+				$host_has_changed = 1;
+				push @missing_services, $service;
+				next;
 			}
 		}
 
 		# Check for new or changed UDP services
-		@observed_services = ();
-		@baseline_services = ();
+		@observed_services = $observed_host->udp_ports();
 		@baseline_services = $baseline_host->udp_ports();
 
-		if ($ports) {
-			if ( $ports =~ m/o/i ) {
-				push(@observed_services,
-				    $observed_host->udp_ports('open'));
-			}
-
-			if ( $ports =~ m/f/i ) {
-				for $portid (
-				    $observed_host->udp_ports('filtered')) {
-					push(@observed_services, $portid) if
-					    ($observed_host->udp_port_state(
-					    $portid) !~ m/unfiltered/i );
-				}
-			}
-
-			if ( $ports =~ m/c/i ) {
-				push(@observed_services,
-				    $observed_host->udp_ports('closed'));
-			}
-
-			if ( $ports =~ m/x/i ) {
-				push(@observed_services,
-				    $observed_host->udp_ports('unfiltered'));
-			}
-		} else {
-			@observed_services = $observed_host->udp_ports();
-		}
-
-		for $portid (@observed_services) {
+		for my $portid (@observed_services) {
 			my $s = $observed_host->udp_service($portid);
 			my $service = Service->new();
 			$service->name($s->name());
@@ -195,28 +130,25 @@ sub show_changed_hosts {
 
 			if ($service->compare($service2) != 0) {
 				$host_has_changed = 1;
-				$service->previous($service2->status);
 				push @changed_services, $service;
 			}
 		}
 
 		# Check for missing UDP ports
-		if (! $ports ) {
-			for $portid (@baseline_services) {
-				my $s = $baseline_host->udp_service($portid);
-				my $service = Service->new();
-				$service->name($s->name());
-				$service->portid($portid);
-				$service->proto("udp");
-				$service->status(
-				    $baseline_host->udp_port_state($portid));
 
-				if (!grep {$_ eq $portid}
-				    @observed_services) {
-					$host_has_changed = 1;
-					push @missing_services, $service;
-					next;
-				}
+		for my $portid (@baseline_services) {
+			my $s = $baseline_host->udp_service($portid);
+			my $service = Service->new();
+			$service->name($s->name());
+			$service->portid($portid);
+			$service->proto("udp");
+			$service->status(
+			    $baseline_host->udp_port_state($portid));
+
+			if (!grep {$_ eq $portid} @observed_services) {
+				$host_has_changed = 1;
+				push @missing_services, $service;
+				next;
 			}
 		}
 
@@ -247,6 +179,7 @@ sub show_changed_hosts {
 				$output .= "\t\t\t" . $service->to_string()
 				    . "\n";
 			}
+
 		} else {
 			# XML output for differing hosts.
 			$output .= "  " . $host->to_xml(0) . "\n";
@@ -328,10 +261,8 @@ sub show_missing_hosts {
 
 	my $output = '';
 	$output = "\nMissing hosts:\n" if ($format eq 'text');
-	$output = " <missing>\n" if (scalar(@hosts) != 0
-	    && $format eq 'xml');
-	$output = " <missing/>\n" if (scalar(@hosts) == 0
-	    && $format eq 'xml');
+	$output = " <missing>\n" if (scalar(@hosts) != 0 && $format eq 'xml');
+	$output = " <missing/>\n" if (scalar(@hosts) == 0 && $format eq 'xml');
 
 	for my $host (@hosts) {
 		$output .= "\t" . $host->to_string . "\n"
@@ -432,91 +363,62 @@ sub show_new_hosts {
 ##############################################################################
 
 # Declare and initialise variables.
-my $baseline_file;
-my ($c, $entry);
-my $command_line;
-my $format;
-my $gen_stylesheet;
-my $help;
-my $man;
-my $observed_file;
-my $output_file;
-my $output_hosts;
-my $output_ports;
-my $run_date;
-my $show_version;
+my $baseline_file = '';
+my $command_line = '';
+my $format = 'text';
+my $gen_stylesheet = '';
+my $help = 0;
+my $man = 0;
+my $observed_file = '';
+my $output_file = '';
+my $output_hosts = '';
+my $release = 2;
+my $run_date = `date`;
+my $show_version = 0;
 my $show_changed_hosts = 1;
 my $show_missing_hosts = 1;
 my $show_new_hosts = 1;
-my $stylesheet;
-my $xslt;
+my $stylesheet = '';
 
 # OK so all the other variables are in lowercase and local.  The reason why
 # version is specified differently is that that it is compatible with
 # Module::Build therefore making distribution and installing easier.
-my $VERSION = '0.7';
-
-$run_date = localtime;
+$VERSION = '0.3';
 
 ##############################################################################
 # Command line parsing.
 ##############################################################################
 
-if ($#ARGV == 1 and -f $ARGV[0] and -f $ARGV[1])
-{
-	@ARGV = ('--baseline', $ARGV[0], '--observed', $ARGV[1]);
+for $entry (@ARGV) {
+	$command_line .= $entry . ' ';
 }
 
-$command_line = join(' ', @ARGV);
-
+chomp $command_line;
 GetOptions(
-	'baseline=s' => \$baseline_file,
-	'format=s' => \$format,
-	'gen-stylesheet=s' => \$gen_stylesheet,
-	'help|?' => \$help,
-	'man' => \$man,
-	'observed|o=s' => \$observed_file,
-	'output-file|of=s' => \$output_file,
-	'output-hosts|os=s' => \$output_hosts,
-	'output-ports|op=s' => \$output_ports,
-	'stylesheet=s' => \$stylesheet,
-	'version|V' => \$show_version
-	) or pod2usage(1);
+    'baseline=s' => \$baseline_file,
+    'format=s' => \$format,
+    'gen-stylesheet=s' => \$gen_stylesheet,
+    'help|?' => \$help,
+    'man' => \$man,
+    'observed=s' => \$observed_file,
+    'output-file=s' => \$output_file,
+    'output-hosts=s' => \$output_hosts,
+    'stylesheet=s' => \$stylesheet,
+    'version' => \$show_version
+    ) or pod2usage(1);
 
-pod2usage(0) if $help;
+pod2usage(1) if $help;
 pod2usage(-verbose => 2) if $man;
 
 if ($show_version) {
-	if ($baseline_file || $format || $gen_stylesheet || $help || $man ||
-	    $observed_file || $output_ports || $stylesheet) {
-		pod2usage(1);
-	} else {
-		print "Version: $VERSION\n";
-		exit(0);
-	}
+	print "Version: $VERSION\n";
+	exit(0);
 }
 
 if ($gen_stylesheet) {
-	if ($baseline_file || $format || $help || $man ||
-	    $observed_file || $output_ports || $show_version || $stylesheet) {
-		pod2usage(1);
-	} else {
-		$xslt = new Stylesheet;
-		$xslt->generate($gen_stylesheet);
-		exit(0);
-	}
-}
-
-$format = 'text' if (!$format);
-
-if ($stylesheet && ! -e $stylesheet) {
-	unless ($stylesheet =~ m/:\/\//i) {
-		# To be here, a stylesheet has been specified that is not a
-		# URL (i.e. it is a file) and the file doesn't currently
-		# exist, so create it.
-		$xslt = new Stylesheet;
-		$xslt->generate($stylesheet);
-	}
+	my $xslt = new Stylesheet;
+	$xslt->generate($gen_stylesheet);
+	exit(0);
 }
 
 if ($output_hosts) {
@@ -531,24 +433,7 @@ if ($output_hosts) {
 		} elsif ($c eq "n") {
 			$show_new_hosts = 1;
 		} else {
-			pod2usage(1);
-		}
-	}
-}
-
-if ($output_ports) {
-	for (my $i = 0; $i < length($output_ports); $i++) {
-		$c = substr($output_ports, $i, 1);
-		if ($c eq 'o') {
-			next;
-		} elsif ($c eq 'f') {
-			next;
-		} elsif ($c eq 'c') {
-			next;
-		} elsif ($c eq 'x') {
-			next;
-		} else {
-			pod2usage(1);
+			pod2usage(0);
 		}
 	}
 }
@@ -556,16 +441,16 @@ if ($output_ports) {
 if ($format eq 'text' || $format eq 'xml') {
 	;
 } else {
-	pod2usage(1);
+	pod2usage(0);
 }
 
 ##############################################################################
 # Open and parse the files
 ##############################################################################
-pod2usage(1) if !$baseline_file;
+pod2usage(0) if !$baseline_file;
 my $baseline = new Nmap::Parser;
 $baseline->parsefile($baseline_file);
-pod2usage(1) if !$observed_file;
+pod2usage(0) if !$observed_file;
 my $observed = new Nmap::Parser;
 $observed->parsefile($observed_file);
 
@@ -573,13 +458,13 @@ $observed->parsefile($observed_file);
 # all command line checks and usage messages.
 if ($output_file) {
 	open OUTPUT, '>', $output_file or die $!;
-	STDOUT->fdopen(\*OUTPUT, 'w') or die $!;
+	STDOUT->fdopen(\*OUTPUT, 'w') or dir $!;
 }
 
 # Do the report.
 
 if ($format eq 'text') {
-	print 'xndiff run ', $run_date, "\n",
+	print 'xndiff run ', $run_date,
 	    'command line: ', $command_line, "\n",
 	    'baseline: ', $baseline_file, "\n",
 	    'observed: ', $observed_file, "\n";
@@ -590,31 +475,31 @@ if ($format eq 'text') {
 	    $stylesheet,
 	    '"?>',
 	    "\n" if ($stylesheet);
+	chomp $run_date;
 	print "<xndiff rundate=\"$run_date\"",
 	    ' version="', $VERSION, '"',
 	    ' command_line="', $command_line, '">', "\n";
 	print " <parameters>\n";
-	my $session = $baseline->get_session();
+        my $session = $baseline->get_session();
 	print "  <baseline>\n",
-	    "   <file>$baseline_file</file>\n",
-	    '   <scan_args>', $session->scan_args, "</scan_args>\n",
-	    '   <nmap_version>', $session->nmap_version, "</nmap_version>\n",
-	    '   <scan_start>', $session->start_str, "</scan_start>\n",
+            "   <file>$baseline_file</file>\n",
+            '   <scan_args>', $session->scan_args, "</scan_args>\n",
+            '   <nmap_version>', $session->nmap_version, "</nmap_version>\n",
+            '   <scan_start>', $session->start_str, "</scan_start>\n",
 	    "  </baseline>\n";
-	$session = $observed->get_session();
+        $session = $observed->get_session();
 	print "  <observed>\n",
-	    "   <file>$observed_file</file>\n",
-	    '   <scan_args>', $session->scan_args, "</scan_args>\n",
-	    '   <nmap_version>', $session->nmap_version, "</nmap_version>\n",
-	    '   <scan_start>', $session->start_str, "</scan_start>\n",
+            "   <file>$baseline_file</file>\n",
+            '   <scan_args>', $session->scan_args, "</scan_args>\n",
+            '   <nmap_version>', $session->nmap_version, "</nmap_version>\n",
+            '   <scan_start>', $session->start_str, "</scan_start>\n",
 	    "  </observed>\n";
 	print " </parameters>\n";
 }
 
 show_new_hosts($format, $baseline, $observed) if $show_new_hosts;
 show_missing_hosts($format, $baseline, $observed) if $show_missing_hosts;
-show_changed_hosts($format, $baseline, $observed, $output_ports)
-    if $show_changed_hosts;
+show_changed_hosts($format, $baseline, $observed) if $show_changed_hosts;
 print "</xndiff>\n" if ($format eq 'xml');
 
 ##############################################################################
@@ -625,14 +510,14 @@ print "</xndiff>\n" if ($format eq 'xml');
 #
 # Example:
 #
-#	$host = Host->new();
-#	$host->hostname("example");
-#	$host->status("up");
-#	$host->ip_addr("192.168.0.1");
+#    $host = Host->new();
+#    $host->hostname("example");
+#    $host->status("up");
+#    $host->ip_addr("192.168.0.1");
 #
-#	...
+#    ...
 #
-#	$host->add_service($service);
+#    $host->add_service($service);
 ##############################################################################
 package Host;
 use strict;
@@ -642,7 +527,6 @@ sub new {
 	my $self = {};
 	$self->{HOSTNAME} = undef;
 	$self->{IP_ADDR} = undef;
-	$self->{PREVIOUS} = undef;
 	$self->{STATUS} = undef;
 	$self->{SERVICES} = [];
 	bless($self);
@@ -665,7 +549,7 @@ sub by_number_ascending
 #
 # Example:
 #
-#	$service = $host->get_service(80, "tcp");
+#    $service = $host->get_service(80, "tcp");
 sub get_service {
 	my $self = shift;
 	my $portid = shift;
@@ -757,13 +641,12 @@ sub to_xml {
 #
 # Example:
 #
-#	$service = Service->new();
-#	$service->name("ssh");
-#	$service->portid(22);
-#	$service->proto("tcp");
-#	$service->status("open");
-#	$service->previous("closed");
-#	$service->compare($another_service);
+#    $service = Service->new();
+#    $service->name("ssh");
+#    $service->portid(22);
+#    $service->proto("tcp");
+#    $service->status("open");
+#    $service->compare($another_service);
 ##############################################################################
 package Service;
 use strict;
@@ -774,7 +657,7 @@ sub new {
 	$self->{NAME} = '';
 	$self->{PORTID} = undef;
 	$self->{PROTO} = undef;
-	$self->{STATUS} = 'unknown';
+	$self->{STATUS} = '';
 	bless($self);
 	return $self;
 }
@@ -811,13 +694,6 @@ sub portid {
 	return $self->{PORTID};
 }
 
-# Get or set the previous status of the service.
-sub previous {
-	my $self = shift;
-	$self->{PREVIOUS} = shift if (@_);
-	return $self->{PREVIOUS};
-}
-
 # Get or set the protocol of the service ("tcp" or "udp").
 sub proto {
 	my $self = shift;
@@ -839,8 +715,6 @@ sub to_string {
 	$s .= "$self->{PROTO}/";
 	$s .= "$self->{STATUS}";
 	$s .= " ($self->{NAME})" if ($self->{NAME});
-	$s .= ' (previously ' . $self->{PREVIOUS} . ')' if defined
-	    $self->{PREVIOUS};
 	return $s;
 }
 
@@ -851,7 +725,6 @@ sub to_xml {
 	    . ' proto="' . $self->{PROTO} . '"'
 	    . ' status="' . $self->{STATUS} . '"';
 	$s .= ' name="' . $self->{NAME} . '"' if ($self->{NAME});
-	$s .= ' previous="' . $self->{PREVIOUS} . '"' if ($self->{PREVIOUS});
 	$s .= '/>';
 	return $s;
 }
@@ -894,11 +767,10 @@ sub generate {
  See http://code.google.com/p/xndiff for details.
 -->
 
-<xsl:stylesheet version="1.0"
- xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 <!-- ............... Set the VERSION here ....................... -->
-<xsl:variable name="xndiff_xsl_version">1.4</xsl:variable>
+<xsl:variable name="xndiff_xsl_version">1.2</xsl:variable>
 <!-- ............................................................ -->
 
 <xsl:template match="xndiff">
@@ -994,17 +866,43 @@ sub generate {
  tr.filtered { background-color: #FFDDBB; color: #000000; }
 
  tr.closed { background-color: #FFAFAF; color: #000000; }
-
+    
  td { padding:2px; }
-
+    
  .status { display:none; }
-
- #menu li { display: inline; margin: 0; padding: 0; list-style-type: none; }
+    
+ #menu li { display: inline; margin: 0; padding: 0; list-style-type: none; }    
 }
 </style>
 </head>
 <body>
  <h1>Xndiff</h1>
+
+ <h2>Host Summary</h2>
+
+ <xsl:if test="new">
+  <p><b>New</b>:
+  <xsl:for-each select="new">
+   <xsl:apply-templates select="host"/>
+  </xsl:for-each>
+  </p>
+ </xsl:if>
+
+ <xsl:if test="missing">
+  <p><b>Missing</b>:
+  <xsl:for-each select="missing">
+   <xsl:apply-templates select="host"/>
+  </xsl:for-each>
+  </p>
+ </xsl:if>
+
+ <xsl:if test="changed">
+  <p><b>Changed</b>:
+  <xsl:for-each select="changed">
+   <xsl:apply-templates select="host"/>
+  </xsl:for-each>
+  </p>
+ </xsl:if>
 
  <h2>Run Parameters</h2>
 
@@ -1055,32 +953,6 @@ sub generate {
    <td><i><xsl:value-of select="parameters/observed/scan_args"/></i></td>
   </tr>
  </table>
-
- <h2>Host Summary</h2>
-
- <xsl:if test="new">
-  <p><b>New</b>:
-  <xsl:for-each select="new">
-   <xsl:apply-templates select="host"/>
-  </xsl:for-each>
-  </p>
- </xsl:if>
-
- <xsl:if test="missing">
-  <p><b>Missing</b>:
-  <xsl:for-each select="missing">
-   <xsl:apply-templates select="host"/>
-  </xsl:for-each>
-  </p>
- </xsl:if>
-
- <xsl:if test="changed">
-  <p><b>Changed</b>:
-  <xsl:for-each select="changed">
-   <xsl:apply-templates select="host"/>
-  </xsl:for-each>
-  </p>
- </xsl:if>
 
  <xsl:if test="new">
   <h2>New</h2>
@@ -1230,15 +1102,7 @@ sub generate {
    </xsl:if>
    <td><xsl:value-of select="\@portid"/></td>
    <td><xsl:value-of select="\@proto"/></td>
-   <xsl:choose>
-    <xsl:when test="\@previous">
-     <td><xsl:value-of select="\@status"/> (previously <xsl:value-of
-      select="\@previous"/>)</td>
-    </xsl:when>
-    <xsl:otherwise>
-     <td><xsl:value-of select="\@status"/></td>
-    </xsl:otherwise>
-   </xsl:choose>
+   <td><xsl:value-of select="\@status"/></td>
    <td><xsl:value-of select="\@name"/></td>
   </tr>
  </xsl:when>
@@ -1255,15 +1119,7 @@ sub generate {
    </xsl:if>
    <td><xsl:value-of select="\@portid"/></td>
    <td><xsl:value-of select="\@proto"/></td>
-   <xsl:choose>
-    <xsl:when test="\@previous">
-     <td><xsl:value-of select="\@status"/> (previously <xsl:value-of
-      select="\@previous"/>)</td>
-    </xsl:when>
-    <xsl:otherwise>
-     <td><xsl:value-of select="\@status"/></td>
-    </xsl:otherwise>
-   </xsl:choose>
+   <td><xsl:value-of select="\@status"/></td>
    <td><xsl:value-of select="\@name"/></td>
   </tr>
  </xsl:when>
@@ -1280,15 +1136,7 @@ sub generate {
    </xsl:if>
    <td><xsl:value-of select="\@portid"/></td>
    <td><xsl:value-of select="\@proto"/></td>
-   <xsl:choose>
-    <xsl:when test="\@previous">
-     <td><xsl:value-of select="\@status"/> (previously <xsl:value-of
-      select="\@previous"/>)</td>
-    </xsl:when>
-    <xsl:otherwise>
-     <td><xsl:value-of select="\@status"/></td>
-    </xsl:otherwise>
-   </xsl:choose>
+   <td><xsl:value-of select="\@status"/></td>
    <td><xsl:value-of select="\@name"/></td>
   </tr>
  </xsl:when>
@@ -1305,15 +1153,7 @@ sub generate {
    </xsl:if>
    <td><xsl:value-of select="\@portid"/></td>
    <td><xsl:value-of select="\@proto"/></td>
-   <xsl:choose>
-    <xsl:when test="\@previous">
-     <td><xsl:value-of select="\@status"/> (previously <xsl:value-of
-      select="\@previous"/>)</td>
-    </xsl:when>
-    <xsl:otherwise>
-     <td><xsl:value-of select="\@status"/></td>
-    </xsl:otherwise>
-   </xsl:choose>
+   <td><xsl:value-of select="\@status"/></td>
    <td><xsl:value-of select="\@name"/></td>
   </tr>
  </xsl:otherwise>
@@ -1333,15 +1173,12 @@ xndiff - find differences between two nmap network scans
 =head1 SYNOPSIS
 
 xndiff
-[-f, --format <text | xml>]
-[-of, --output-file file]
-[-oh, --output-hosts <nmc>]
-[-op, --output-ports <ofcx>]
-[-s, --stylesheet <file | URL>]
+[--format <text | xml>]
+[--output-file file]
+[--output-hosts <nmc>]
+[--stylesheet <file | URL>]
 --baseline file
 --observed file
-
-xndiff file file
 
 xndiff --gen-stylesheet file
 
@@ -1355,53 +1192,34 @@ xndiff --version
 
 =over 8
 
-=item B<-b> file
-
 =item B<--baseline> file
 
 Specifies the nmap results to use as the baseline for the comparison.
-May be ommitted if the baseline and observed files are the only two arguments given.
-
-=item B<-f> <text | xml>
 
 =item B<--format> <text | xml>
 
 Specifies the output format (text is the default).
-
-=item B<-g> file
 
 =item B<--gen-stylesheet> file
 
 Generate an XML stylesheet (XSLT) suitable for use with the --stylesheet
 option.
 
-=item B<-h>
-
 =item B<--help>
 
 Print a brief help message and exit.
-
-=item B<-m>
 
 =item B<--man>
 
 Print the manual page and exit.
 
-=item B<-o> file
-
 =item B<--observed> file
 
-Specifies the nmap results to use as the "observed results" for the
-comparison.
-May be ommitted if the baseline and observed files are the only two arguments given.
-
-=item B<-of> file
+Specifies the nmap results to use as the "observed results" for the comparison.
 
 =item B<--output-file> file
 
 Send the output to the specified file.
-
-=item B<-oh> <nmc>
 
 =item B<--output-hosts> <nmc>
 
@@ -1416,33 +1234,11 @@ c = changed hosts in the "observed" scan.
 
 The default is to show new, missing and changed hosts.
 
-=item B<-op> <ofcx>
-
-=item B<--output-ports> <ofcx>
-
-Specifies which ports to check when outputting changed hosts. Open, filtered
-or closed ports.  Any combination of [ofcx] may be specified, as follows:
-
-o = open ports in the "observed" scan.
-
-f = filtered ports in the "observed" scan.
-
-c = closed ports in the "observed" scan.
-
-x = unfiltered ports in the "observed" scan
-
-The default is to show all ports.
-
-=item B<-s> <file | URL>
-
 =item B<--stylesheet> <file | URL>
 
 Specifies the location of an XML stylesheet to be referred to in any XML
-output.  If the stylesheet specified is not a URL and is found to be a
-non-existent file then it will be generated.  A suitable stylesheet can also
-be generated using the --gen-stylesheet option.
-
-=item B<-V>
+output.  A suitable stylesheet can be generated using the --gen-stylesheet
+option.
 
 =item B<--version>
 
@@ -1452,23 +1248,17 @@ Print the version and exit.
 
 =head1 DESCRIPTION
 
-B<xndiff> is a command line utility (written in Perl) that allows users to
-monitor networks for changes in port states and running services. It does this
-by comparing the XML output of two nmap scans, one designated the "baseline",
-the other the "observation". Alternatively a third XML file can be created
-containing the differences.
+B<xndiff> allows a network administrator or other interested party to easily
+monitor one or more networks for changes in port states and running
+services.  It achieves this by comparing the results of two nmap scans,
+one designated the "baseline", the other "observation".
+
+Both baseline and observation are stored in files generated via nmap's
+-oX switch for XML output.
 
 =head1 EXAMPLES
 
 To generate a report to screen:
-
-=over 8
-
-xndiff baseline.xml observed.xml
-
-=back
-
-which is equivalent to
 
 =over 8
 
@@ -1490,7 +1280,7 @@ previous example:
 =over 8
 
 xndiff --baseline baseline.xml --observed observed.xml \
-	--format xml --output-file report.xml
+    --format xml --output-file report.xml
 
 =back
 

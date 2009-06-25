@@ -17,7 +17,6 @@ where it was extracted to:
 
 	perl Build.PL
 	perl Build build
-	perl Build test
 	perl Build install
 
 To install in an alternative location specify a prefix for where the software
@@ -26,7 +25,6 @@ software in a directory called $HOME/xndiff:
 
 	perl Build.PL --install_base $HOME/xndiff
 	perl Build build
-	perl Build test
 	perl Build install
 
 If you had specified the alternative prefix (as above) then the following
