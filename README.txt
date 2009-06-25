@@ -23,14 +23,14 @@ run:
 	perl Build manifest
 
 Ensure that the $VERSION string is set correctly in bin/xndiff (in this example
-it is version 0.7) and make sure that CHANGES.txt has been updated.  Then
+it is version 0.6) and make sure that CHANGES.txt has been updated.  Then
 run the following:
  
 	perl Build.PL 
 	perl Build disttest
 	perl Build dist
-	tar xzvf xndiff-0.7.tar.gz 
-	zip -Dlvr xndiff-0.7.zip xndiff-0.7
+	tar xzvf xndiff-0.6.tar.gz 
+	zip -Dlvr xndiff-0.6.zip xndiff-0.6
 	perl Build realclean
 	svn status
 

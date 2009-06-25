@@ -1,6 +1,6 @@
 ---
 name: xndiff
-version: 0.7
+version: 0.6
 author:
   - http://code.google.com/p/xndiff
 abstract: find differences between two nmap network scans
