@@ -1,8 +1,8 @@
 Dependencies
 ============
 
-Before you can start, Xndiff required Perl [1], the Nmap::Parser module and
-the nmake utility [2]. Xndiff is written in Perl and the Nmap::Parser module
+Before you can start, Yandiff required Perl [1], the Nmap::Parser module and
+the nmake utility [2]. Yandiff is written in Perl and the Nmap::Parser module
 requires nmake during installation. The directories where Perl and nmake are
 installed should be in the execution path [3]. When this has been configured
 correctly, the Nmap::Parser module needs to be installed by typing the
@@ -12,36 +12,36 @@ following command:
 
 You will be prompted for some yes/no answers and for most users the defaults
 are sufficient. This should be the final dependency require to be installed
-and you should be able to proceed to install the xndiff utility.
+and you should be able to proceed to install the yandiff utility.
 
 Installation
 ============
 
-In the example below, the archive has been extracted to C:\xndiff and that is
+In the example below, the archive has been extracted to C:\yandiff and that is
 also the current working directory:
  
-	C:\xndiff>perl Build.PL
-	C:\xndiff>perl Build build
-	C:\xndiff>perl Build test
-	C:\xndiff>perl Build install
+	C:\yandiff>perl Build.PL
+	C:\yandiff>perl Build build
+	C:\yandiff>perl Build test
+	C:\yandiff>perl Build install
 
 On a machine running Windows XP this procedure installed the following
 files:
 
-	C:\Perl\man\man1\xndiff.1
-	C:\Perl\html\bin\xndiff.html
-	C:\Perl\site\bin\xndiff
-	C:\Perl\site\bin\xndiff.bat
+	C:\Perl\man\man1\yandiff.1
+	C:\Perl\html\bin\yandiff.html
+	C:\Perl\site\bin\yandiff
+	C:\Perl\site\bin\yandiff.bat
 
 Installing to an alternative location
 =====================================
 If you do not want to install to the default location, you can specify an
 alternative in the first installation command:
 
-        C:\xndiff>perl Build.PL --install_base N:\foobar
-	C:\xndiff>perl Build build
-	C:\xndiff>perl Build test
-	C:\xndiff>perl Build install
+        C:\yandiff>perl Build.PL --install_base N:\foobar
+	C:\yandiff>perl Build build
+	C:\yandiff>perl Build test
+	C:\yandiff>perl Build install
 
 References
 ==========
