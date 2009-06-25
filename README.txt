@@ -1,11 +1,13 @@
 Description
 ===========
 
-Xndiff is a command line utility (written in Perl) that allows users to monitor
-networks for changes in port states and running services. It does this by
-comparing the XML output of two nmap scans, one designated the "baseline", the
-other the "observation". Alternatively a third XML file can be created
-containing the differences.
+xndiff allows a network administrator or other interested party to easily
+monitor one or more networks for changes in port states and running
+services.  It achieves this by comparing the results of two nmap scans,
+one designated the "baseline", the other "observation".
+
+Both baseline and observation are stored in files generated via nmap’s -oX
+switch for XML output.
 
 Xndiff is loosely based on ndiff written by James Levine, except where ndiff
 used nmap’s "grepable" output, xndiff reads XML output using Nmap::Parser.
@@ -23,14 +25,14 @@ run:
 	perl Build manifest
 
 Ensure that the $VERSION string is set correctly in bin/xndiff (in this example
-it is version 0.7) and make sure that CHANGES.txt has been updated.  Then
+it is version 0.4) and make sure that CHANGES.txt has been updated.  Then
 run the following:
  
 	perl Build.PL 
 	perl Build disttest
 	perl Build dist
-	tar xzvf xndiff-0.7.tar.gz 
-	zip -Dlvr xndiff-0.7.zip xndiff-0.7
+	tar xzvf xndiff-0.4.tar.gz 
+	zip -Dlvr xndiff-0.4.zip xndiff-0.4
 	perl Build realclean
 	svn status
 
