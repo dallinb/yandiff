@@ -17,7 +17,13 @@ Another script to compare Nmap output files (this time the XML) was developed in
 
 During 2007 and 2008 I was working in roles that required a lot of analysis of Nmap output.  Having found mention of the original Ndiff and struggled with the grepable output.  I eventually started writing custom scripts utilising Anthony G. Persaud's (http://search.cpan.org/dist/Nmap-Parser/).  In mid 2008, unaware of the development taking place during the Google Summer of Code I decided to work seriously on a functional equivalent of the original Ndiff, also developed in Perl but using the XML output (as now suggested by Fyodor).
 
-In late November 2008 I uploaded the software as an open source project at Google code and was helped by Pete Stubbs into making seven releases of xndiff which included a couple of bug fixes and further enhancements.
+The name Xndiff was chosen to represent the origin of the function of the script and the fact that XML was was used.
+
+In late November 2008 I uploaded the software as an open source project at Google code and was helped by Pete Stubbs into making [XndiffHistory seven releases of xndiff] which included a couple of bug fixes and further enhancements.
+
+== Rename of Xndiff to Yandiff ==
+
+In June 2009 having been aware of the existence of the new Ndiff project for a few months we decided to rename the project to Yandiff (yet another Nmap differential) and what had been Xndiff version 0.7 was renamed to Yandiff-0.1.  All future enhancements or fixes will be made on Yandiff.  After a suitable period of mourning, the Xndiff project will be deleted.
 
 == References ==
 
