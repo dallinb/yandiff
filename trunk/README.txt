@@ -1,14 +1,19 @@
 Description
 ===========
 
-Xndiff is a command line utility (written in Perl) that allows users to monitor
-networks for changes in port states and running services. It does this by
-comparing the XML output of two nmap scans, one designated the "baseline", the
-other the "observation". Alternatively a third XML file can be created
-containing the differences.
+Yandiff (previously called xndiff) is a command line utility (written in Perl)
+that allows users to monitor networks for changes in port states and running
+services. It does this by comparing the XML output of two nmap scans, one
+designated the "baseline", the other the "observation". Alternatively a third
+XML file can be created containing the differences.
 
-Xndiff is loosely based on ndiff written by James Levine, except where ndiff
-used nmap’s "grepable" output, xndiff reads XML output using Nmap::Parser.
+Yandiff and it's predecessor Xndiff are loosely based on ndiff written by
+James Levine (~ 2001), except where ndiff used nmap’s "grepable" output,
+yandiff reads XML output using Nmap::Parser.
+
+The 0.1 release of yandiff is the functional equivalent of what was the 0.7
+release of xndiff before the project was renamed.
+
 
 Building a Distribution
 =======================
@@ -22,15 +27,15 @@ run:
 	perl Build.PL
 	perl Build manifest
 
-Ensure that the $VERSION string is set correctly in bin/xndiff (in this example
-it is version 0.7) and make sure that CHANGES.txt has been updated.  Then
-run the following:
+Ensure that the $VERSION string is set correctly in bin/yandiff (in this
+example it is version 0.1) and make sure that CHANGES.txt has been updated.
+Then run the following:
  
 	perl Build.PL 
 	perl Build disttest
 	perl Build dist
-	tar xzvf xndiff-0.7.tar.gz 
-	zip -Dlvr xndiff-0.7.zip xndiff-0.7
+	tar xzvf yandiff-0.1.tar.gz 
+	zip -Dlvr yandiff-0.1.zip yandiff-0.1
 	perl Build realclean
 	svn status
 
