@@ -1,8 +1,8 @@
 ---
-name: xndiff
-version: 0.7
+name: yandiff
+version: 0.1
 author:
-  - http://code.google.com/p/xndiff
+  - http://code.google.com/p/yandiff
 abstract: find differences between two nmap network scans
 license: bsd
 resources:

@@ -22,9 +22,9 @@ where it was extracted to:
 
 To install in an alternative location specify a prefix for where the software
 is to be installed.  For example, this set of commands will install the
-software in a directory called $HOME/xndiff:
+software in a directory called $HOME/yandiff:
 
-	perl Build.PL --install_base $HOME/xndiff
+	perl Build.PL --install_base $HOME/yandiff
 	perl Build build
 	perl Build test
 	perl Build install
@@ -32,5 +32,5 @@ software in a directory called $HOME/xndiff:
 If you had specified the alternative prefix (as above) then the following
 files would be installed:
 
-	$HOME/xndiff/man/man1/xndiff.1p
-	$HOME/xndiff/bin/xndiff
+	$HOME/yandiff/man/man1/yandiff.1p
+	$HOME/yandiff/bin/yandiff
