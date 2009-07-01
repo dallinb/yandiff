@@ -115,7 +115,7 @@ To generate a stylesheet to file:
 
 To generate a report to an XML file and using the stylesheet generated in the previous example:
 
- yandiff --baseline baseline.xml --observed observed.xml \ --format xml --output-file report.xml
+ yandiff --baseline baseline.xml --observed observed.xml --format xml --output-file report.xml
 
 ==HISTORY==
 Yandiff is loosely based on ndiff written by James Levine, except where ndiff used "grepable" output from nmap, yandiff reads XML output using Nmap::Parser.
