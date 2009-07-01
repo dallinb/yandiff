@@ -4,10 +4,10 @@
 Dependencies
 ============
 
-Before you can start, Xndiff required Perl [1], the Nmap::Parser module and
-the nmake utility [2]. Xndiff is written in Perl and the Nmap::Parser module
+Before you can start, Xndiff required Perl `[1]`, the Nmap::Parser module and
+the nmake utility `[2]`. Xndiff is written in Perl and the Nmap::Parser module
 requires nmake during installation. The directories where Perl and nmake are
-installed should be in the execution path [3]. When this has been configured
+installed should be in the execution path `[3]`. When this has been configured
 correctly, the Nmap::Parser module needs to be installed by typing the
 following command:
 
@@ -57,12 +57,12 @@ alternative in the first installation command:
 References
 ==========
 
-[1] - Perl Downloads, available from <http://www.activestate.com/downloads>
+`[1]` - Perl Downloads, available from <http://www.activestate.com/downloads>
 viewed on 14 December 2008.
 
-[2] - Nmake from Microsoft, available from
+`[2]` - Nmake from Microsoft, available from
 <http://download.microsoft.com/download/vc15/patch/1.52/w95/en-us/nmake15.exe>
 viewed on 14 December 2008.
 
-[3] - How to set the path in Windows 2000 / Windows XP, available from
+`[3]` - How to set the path in Windows 2000 / Windows XP, available from
 <http://www.computerhope.com/issues/ch000549.htm> viewed on 14 December 2008.
