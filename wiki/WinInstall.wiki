@@ -1,3 +1,6 @@
+#summary Windows Install Instructions
+#labels Phase-Deploy
+
 Dependencies
 ============
 
