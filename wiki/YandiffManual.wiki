@@ -1,4 +1,5 @@
 #summary Yandiff Manual.
+#labels Phase-Support,Phase-Deploy
 
 ==NAME==
  yandiff - Yet Another Nmap Differential Script
