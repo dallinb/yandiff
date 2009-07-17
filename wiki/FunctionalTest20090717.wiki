@@ -9,7 +9,7 @@ Yandiff Version:
 Test Data Version: 0.3
 
 ==Tests==
-1) `xndiff --baseline baseline_qa.xml --observed observed_qa.xml`
+1) `yandiff --baseline baseline_qa.xml --observed observed_qa.xml`
 
 The output should list charlie as a new host, alpha as a missing host and
 bravo with the following port status for both TCP and UDP:
