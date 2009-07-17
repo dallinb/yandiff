@@ -19,7 +19,7 @@
 
 Carried out 3 scans using the following command line:
 
-  `xndiff --baseline baseline1024.xml --observed observed1024.xml`
+  `time xndiff --baseline baseline1024.xml --observed observed1024.xml`
 
 Both XML files contain 1024 hosts.  The timeings were:
 
@@ -27,10 +27,10 @@ Both XML files contain 1024 hosts.  The timeings were:
 ||1||41.781||
 ||2||41.711||
 ||3||41.635||
-||*Average*||*41.635*||
+||*Average*||*41.709*||
 
 Processor (MHz) adjustment: (300 / 1600) `*` 100 = 18.75%
 
-Average Number of Hosts Processed Per Second: 1024 / 41.635  = 24.495
+Average Number of Hosts Processed Per Second: 1024 / 41.709  = 24.551
 
-18.75% of 24.495 = 4.593
+18.75% of 24.495 = 4.604
