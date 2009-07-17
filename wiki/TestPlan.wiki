@@ -76,7 +76,8 @@ The changes in the observed scan (observed_qa.xml) will be that  alpha will be r
 Results should be recorded using the [FunctionalTestTemplate].
 
 ==Performance Testing==
-James Levine stated that the original ndiff ran too slowly (3 scanned hosts per second).  While the majority of processing is parsing the XML files and this handled by Anthony Persaud's excellent Nmap::Parser we thought a benchmark test was required.  This was carried out in late 2008 using version 0.3 of xndiff.  This test will be repeated using yandiff in the near future.
+James Levine stated that the original ndiff ran too slowly (3 scanned hosts per second).  While the majority of processing is parsing the XML files and this handled by Anthony Persaud's excellent Nmap::Parser we thought a benchmark test was required.  This was carried out in [late 2008 using version 0.3 of xndiff
+http://code.google.com/p/yandiff/wiki/PerformanceTest20081219].  This test will be repeated using yandiff in the near future.
 
 ==References==
 
