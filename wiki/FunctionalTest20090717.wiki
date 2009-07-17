@@ -1,10 +1,11 @@
-#summary Functional Test Template
+#summary Functional Test 17-Jul-2009
+#labels Phase-QA
 
 = Functional Test Template =
 
-Date of Test: dd mmm yyyy
+Date of Test: 17 Jul 2009
 
-Yandiff Version:
+Yandiff Version: 1.0
 
 Test Data Version: 0.3
 
@@ -29,56 +30,56 @@ bravo with the following port status for both TCP and UDP:
 || Changed || 7 || closed|filtered ||
 || Changed || 14 || open ||
 
-Result: PASS/FAIL
+Result: PASS
 
 
 2) `yandiff --baseline baseline_qa.xml --observed observed_qa.xml --output-hosts n`
 
 Should only return charlie.
 
-Result: PASS/FAIL
+Result: PASS
 
 
 3) `yandiff --baseline baseline_qa.xml --observed observed_qa.xml --output-hosts c`
 
 Should only return bravo.
 
-Result: PASS/FAIL
+Result: PASS
 
 
 4) `yandiff --baseline baseline_qa.xml --observed observed_qa.xml --output-hosts m`
 
 Should only return alpha.
 
-Result: PASS/FAIL
+Result: PASS
 
 
 5) `yandiff --baseline baseline_qa.xml --observed observed_qa.xml --output-hosts c -output-ports o`
 
 Should return bravo and ports 6, 8, 12 and 14 for both TCP and UDP.
 
-Result: PASS/FAIL
+Result: PASS
 
 
 6) `yandiff --baseline baseline_qa.xml --observed observed_qa.xml --output-hosts c -output-ports f`
 
 Should return bravo and ports 4, 6, 7, 10, 12 and 13 for both TCP and UDP.
 
-Result: PASS/FAIL
+Result: PASS
 
 
 7) `yandiff --baseline baseline_qa.xml --observed observed_qa.xml --output-hosts c -output-ports c`
 
 Should return bravo and ports 3, 7, 9 and 13 for both TCP and UDP.
 
-Result: PASS/FAIL
+Result: PASS
 
 
 8) `yandiff --baseline baseline_qa.xml --observed observed_qa.xml --output-hosts c -output-ports x`
 
 Should return bravo and ports 5 and 11 for both TCP and UDP.
 
-Result: PASS/FAIL
+Result: PASS
 
 ==Summary==
 
