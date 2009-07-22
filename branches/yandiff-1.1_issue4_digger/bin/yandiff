@@ -853,7 +853,7 @@ sub to_string {
 	$s .= "$self->{STATUS}";
 	$s .= " ($self->{NAME})" if ($self->{NAME});
 	$s .= ' (previously ' . $self->{PREVIOUS} . ')' if defined
-	    $self->{PREVIOUS};
+		$self->{PREVIOUS};
 	return $s;
 }
 
