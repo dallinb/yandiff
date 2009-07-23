@@ -1,0 +1,23 @@
+<host><status state="up" />
+<address addr="IP" addrtype="ipv4" />
+<address addr="MAC" addrtype="mac" />
+<hostnames><hostname name="HOST" type="PTR" /></hostnames>
+<ports><extraports state="closed" count="1654" />
+<port protocol="tcp" portid="1"><state state="open" /></port>
+<port protocol="tcp" portid="2"><state state="open" /></port>
+<port protocol="tcp" portid="3"><state state="open" /></port>
+<port protocol="tcp" portid="4"><state state="open" /></port>
+<port protocol="tcp" portid="5"><state state="open" /></port>
+<port protocol="tcp" portid="6"><state state="open" /></port>
+<port protocol="tcp" portid="7"><state state="open" /></port>
+<port protocol="tcp" portid="14"><state state="unfiltered" /></port>
+<port protocol="udp" portid="1"><state state="open" /></port>
+<port protocol="udp" portid="2"><state state="open" /></port>
+<port protocol="udp" portid="3"><state state="open" /></port>
+<port protocol="udp" portid="4"><state state="open" /></port>
+<port protocol="udp" portid="5"><state state="open" /></port>
+<port protocol="udp" portid="6"><state state="open" /></port>
+<port protocol="udp" portid="7"><state state="open" /></port>
+<port protocol="udp" portid="14"><state state="unfiltered" /></port>
+</ports>
+</host>

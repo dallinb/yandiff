@@ -1,0 +1,33 @@
+<host><status state="up" />
+<address addr="IP" addrtype="ipv4" />
+<address addr="MAC" addrtype="mac" />
+<hostnames><hostname name="HOST" type="PTR" /></hostnames>
+<ports><extraports state="closed" count="1654" />
+<port protocol="tcp" portid="2"><state state="open" /></port>
+<port protocol="tcp" portid="3"><state state="closed" /></port>
+<port protocol="tcp" portid="4"><state state="filtered" /></port>
+<port protocol="tcp" portid="5"><state state="unfiltered" /></port>
+<port protocol="tcp" portid="6"><state state="open|filtered" /></port>
+<port protocol="tcp" portid="7"><state state="closed|filtered" /></port>
+<port protocol="tcp" portid="8"><state state="open" /></port>
+<port protocol="tcp" portid="9"><state state="closed" /></port>
+<port protocol="tcp" portid="10"><state state="filtered" /></port>
+<port protocol="tcp" portid="11"><state state="unfiltered" /></port>
+<port protocol="tcp" portid="12"><state state="open|filtered" /></port>
+<port protocol="tcp" portid="13"><state state="closed|filtered" /></port>
+<port protocol="tcp" portid="14"><state state="open" /></port>
+<port protocol="udp" portid="2"><state state="open" /></port>
+<port protocol="udp" portid="3"><state state="closed" /></port>
+<port protocol="udp" portid="4"><state state="filtered" /></port>
+<port protocol="udp" portid="5"><state state="unfiltered" /></port>
+<port protocol="udp" portid="6"><state state="open|filtered" /></port>
+<port protocol="udp" portid="7"><state state="closed|filtered" /></port>
+<port protocol="udp" portid="8"><state state="open" /></port>
+<port protocol="udp" portid="9"><state state="closed" /></port>
+<port protocol="udp" portid="10"><state state="filtered" /></port>
+<port protocol="udp" portid="11"><state state="unfiltered" /></port>
+<port protocol="udp" portid="12"><state state="open|filtered" /></port>
+<port protocol="udp" portid="13"><state state="closed|filtered" /></port>
+<port protocol="udp" portid="14"><state state="open" /></port>
+</ports>
+</host>
