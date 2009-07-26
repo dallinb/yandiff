@@ -436,13 +436,17 @@ sub show_new_hosts {
 
 # Declare and initialise variables.
 my $baseline_file;
+my %baseline_keys;
 my ($c, $entry);
 my $command_line;
 my $format;
 my $gen_stylesheet;
 my $help;
+my $hostname_key;
 my $man;
+my $node_key = "IP";
 my $observed_file;
+my %observed_keys;
 my $output_file;
 my $output_hosts;
 my $output_ports;
@@ -452,6 +456,7 @@ my $show_changed_hosts = 1;
 my $show_missing_hosts = 1;
 my $show_new_hosts = 1;
 my $stylesheet;
+my $unique_hostnames;
 my $xslt;
 
 # OK so all the other variables are in lowercase and local.  The reason why
@@ -477,6 +482,7 @@ GetOptions(
 	'format=s' => \$format,
 	'gen-stylesheet=s' => \$gen_stylesheet,
 	'help|?' => \$help,
+	'hostname-key|hk' => \$hostname_key,
 	'man' => \$man,
 	'observed|o=s' => \$observed_file,
 	'output-file|of=s' => \$output_file,
@@ -500,7 +506,7 @@ if ($show_version) {
 }
 
 if ($gen_stylesheet) {
-	if ($baseline_file || $format || $help || $man ||
+	if ($baseline_file || $format || $help || $hostname_key || $man ||
 	    $observed_file || $output_ports || $show_version || $stylesheet) {
 		pod2usage(1);
 	} else {
@@ -572,6 +578,42 @@ pod2usage(1) if !$observed_file;
 my $observed = new Nmap::Parser;
 $observed->parsefile($observed_file);
 
+if ($hostname_key) {
+	$unique_hostnames = 1;
+
+	for my $ip ($baseline->get_ips()) {
+		my $hostname = $baseline->get_host($ip)->hostname;
+		$hostname = $ip if ($hostname eq '');
+
+		if (defined($baseline_keys{$hostname})) {
+			$unique_hostnames = 0;
+			last;
+		} else {
+			$baseline_keys{$hostname} = $ip;
+		}
+	}
+
+	if ($unique_hostnames) {
+		for my $ip ($observed->get_ips()) {
+			my $hostname = $observed->get_host($ip)->hostname;
+			$hostname = $ip if ($hostname eq '');
+
+			if (defined($observed_keys{$hostname})) {
+				$unique_hostnames = 0;
+				last;
+			} else {
+				$observed_keys{$hostname} = $ip;
+			}
+		}
+	}
+
+	if (!$unique_hostnames) {
+		print STDERR "Can't use non-unique hostnames as keys\n";
+	} else {
+		$node_key = "Hostname";
+	}
+}
+
 # Redirect the output if requested.  Obviously this must be called after
 # all command line checks and usage messages.
 if ($output_file) {
@@ -585,7 +627,8 @@ if ($format eq 'text') {
 	print 'yandiff run ', $run_date, "\n",
 	    'command line: ', $command_line, "\n",
 	    'baseline: ', $baseline_file, "\n",
-	    'observed: ', $observed_file, "\n";
+	    'observed: ', $observed_file, "\n",
+	    'node key: ', $node_key;
 } else {
 	print '<?xml version="1.0" encoding="utf-8"?>',
 	    "\n";
@@ -1346,6 +1389,7 @@ yandiff - Yet Another Nmap Differential Script
 =head1 SYNOPSIS
 
 yandiff
+[-hk, --hostname-key]
 [-f, --format <text | xml>]
 [-of, --output-file file]
 [-oh, --output-hosts <nmc>]
@@ -1394,6 +1438,15 @@ option.
 =item B<--help>
 
 Print a brief help message and exit.
+
+=item B<-hk>
+
+=item B<--hostname-key>
+
+If possible, sort the output order of hosts on their name rather than the
+IP address.  This option also tries to match hostnames to changed IP addresses
+so it is useful in DNS environments where hostnames a static on a machine, but
+may be allocated new IP addresses.
 
 =item B<-m>
 
@@ -1526,5 +1579,9 @@ any found, please report them at the link below or browse the issues reported
 to see if a fix is either available or in progress.
 
 http://code.google.com/p/yandiff/issues
+
+Also it could be said that there are too many command line switches.  Even
+the authors require the occassional reference to the manual.  Sorry, we have
+tried to simplify it.
 
 =cut
