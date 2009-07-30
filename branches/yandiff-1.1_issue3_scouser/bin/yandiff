@@ -31,13 +31,33 @@ use strict;
 # Find hosts that are in both the observed and baseline scans.  Compare the
 # status of the host and the status of each of the individual ports.
 sub show_changed_hosts {
-	my ($format, $baseline, $observed, $ports) = @_;
+	my ($format, $baseline, $observed, $ports, $unique_hostnames,
+	    %baseline_keys) = @_;
 	my $output = "\nChanged hosts:\n" if ($format eq 'text');
 	my $portid;
+	my @ip_list;
 	$output = "" if ($format eq 'xml');
 
+	if ($unique_hostnames) {
+		@ip_list = keys(%baseline_keys);
+	} else {
+		@ip_list = $baseline->get_ips();
+	}
+
 	for my $baseline_ip ($baseline->get_ips()) {
-		my $observed_host = $observed->get_host($baseline_ip);
+		my $observed_host;
+		my $observed_ip = $baseline_ip;
+
+		if ($unique_hostnames) {
+			print "DEBUG: Looking to translate IP - $baseline_ip\n";
+			my $hostname = $main::baseline_ip2h{$baseline_ip};
+			print "DEBUG: hostname - $hostname\n";
+			$observed_ip = $main::observed_h2ip{$hostname};
+			print "DEBUG: New IP - $observed_ip\n";
+			next if (!$observed_ip);
+		}
+
+		$observed_host = $observed->get_host($observed_ip);
 		next if (!defined($observed_host));
 
 		# To have reached here the host exists in both the baseline
@@ -433,10 +453,11 @@ sub show_new_hosts {
 ##############################################################################
 # Main processing starts here.
 ##############################################################################
+# Decalare global variables
+use vars qw(%baseline_h2ip %baseline_ip2h %observed_h2ip %observed_ip2h);
 
-# Declare and initialise variables.
+# Declare and initialise local variables.
 my $baseline_file;
-my %baseline_keys;
 my ($c, $entry);
 my $command_line;
 my $format;
@@ -446,7 +467,6 @@ my $hostname_key;
 my $man;
 my $node_key = "IP";
 my $observed_file;
-my %observed_keys;
 my $output_file;
 my $output_hosts;
 my $output_ports;
@@ -585,11 +605,12 @@ if ($hostname_key) {
 		my $hostname = $baseline->get_host($ip)->hostname;
 		$hostname = $ip if ($hostname eq '');
 
-		if (defined($baseline_keys{$hostname})) {
+		if (defined($baseline_h2ip{$hostname})) {
 			$unique_hostnames = 0;
 			last;
 		} else {
-			$baseline_keys{$hostname} = $ip;
+			$baseline_h2ip{$hostname} = $ip;
+			$baseline_ip2h{$ip} = $hostname;
 		}
 	}
 
@@ -598,11 +619,12 @@ if ($hostname_key) {
 			my $hostname = $observed->get_host($ip)->hostname;
 			$hostname = $ip if ($hostname eq '');
 
-			if (defined($observed_keys{$hostname})) {
+			if (defined($observed_h2ip{$hostname})) {
 				$unique_hostnames = 0;
 				last;
 			} else {
-				$observed_keys{$hostname} = $ip;
+				$observed_h2ip{$hostname} = $ip;
+				$observed_ip2h{$ip} = $hostname;
 			}
 		}
 	}
@@ -659,8 +681,8 @@ if ($format eq 'text') {
 
 show_new_hosts($format, $baseline, $observed) if $show_new_hosts;
 show_missing_hosts($format, $baseline, $observed) if $show_missing_hosts;
-show_changed_hosts($format, $baseline, $observed, $output_ports)
-    if $show_changed_hosts;
+show_changed_hosts($format, $baseline, $observed, $output_ports,
+    $unique_hostnames) if $show_changed_hosts;
 print "</yandiff>\n" if ($format eq 'xml');
 
 ##############################################################################
