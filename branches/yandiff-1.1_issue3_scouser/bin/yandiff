@@ -31,7 +31,8 @@ use strict;
 # Find hosts that are in both the observed and baseline scans.  Compare the
 # status of the host and the status of each of the individual ports.
 sub show_changed_hosts {
-	my ($format, $baseline, $observed, $ports, $unique_hostnames) = @_;
+	my ($format, $baseline, $observed, $ports, $unique_hostnames,
+	    $baseline_ip2h, $observed_h2ip) = @_;
 	my $output = "\nChanged hosts:\n" if ($format eq 'text');
 	my $portid;
 	my @ip_list;
@@ -41,8 +42,8 @@ sub show_changed_hosts {
 		my $observed_ip = $baseline_ip;
 
 		if ($unique_hostnames) {
-			my $hostname = $main::baseline_ip2h{$baseline_ip};
-			$observed_ip = $main::observed_h2ip{$hostname};
+			my $hostname = $baseline_ip2h->{$baseline_ip};
+			$observed_ip = $observed_h2ip->{$hostname};
 			next if (!$observed_ip);
 		}
 
@@ -321,15 +322,16 @@ sub show_changed_hosts {
 # Find hosts that are defined in the baseline but are missing from the
 # observed scan.
 sub show_missing_hosts {
-	my ($format, $baseline, $observed, $unique_hostnames) = @_;
+	my ($format, $baseline, $observed, $unique_hostnames,
+	    $baseline_ip2h, $observed_h2ip) = @_;
 	my @hosts = ();
 
 	for my $baseline_ip ($baseline->get_ips()) {
 		my $observed_ip = $baseline_ip;
 
 		if ($unique_hostnames) {
-			my $hostname = $main::baseline_ip2h{$baseline_ip};
-			$observed_ip = $main::observed_h2ip{$hostname};
+			my $hostname = $baseline_ip2h->{$baseline_ip};
+			$observed_ip = $observed_h2ip->{$hostname};
 			next if (!$observed_ip);
 		}
 
@@ -367,15 +369,16 @@ sub show_missing_hosts {
 # Find hosts that are defined in the baseline scan, but are missing from the
 # observed scan.
 sub show_new_hosts {
-	my ($format, $baseline, $observed, $unique_hostnames) = @_;
+	my ($format, $baseline, $observed, $unique_hostnames, $observed_ip2h,
+	    $baseline_h2ip) = @_;
 	my @hosts = ();
 
 	for my $observed_ip ($observed->get_ips()) {
 		my $baseline_ip = $observed_ip;
 
 		if ($unique_hostnames) {
-			my $hostname = $main::observed_ip2h{$observed_ip};
-			$baseline_ip = $main::baseline_h2ip{$hostname};
+			my $hostname = $observed_ip2h->{$observed_ip};
+			$baseline_ip = $baseline_h2ip->{$hostname};
 			next if (!$observed_ip);
 		}
 
@@ -458,11 +461,11 @@ sub show_new_hosts {
 ##############################################################################
 # Main processing starts here.
 ##############################################################################
-# Decalare global variables
-use vars qw(%baseline_h2ip %baseline_ip2h %observed_h2ip %observed_ip2h);
 
 # Declare and initialise local variables.
 my $baseline_file;
+my %baseline_h2ip;
+my %baseline_ip2h;
 my ($c, $entry);
 my $command_line;
 my $format;
@@ -472,6 +475,8 @@ my $hostname_key;
 my $man;
 my $node_key = "IP";
 my $observed_file;
+my %observed_h2ip;
+my %observed_ip2h;
 my $output_file;
 my $output_hosts;
 my $output_ports;
@@ -605,9 +610,10 @@ $observed->parsefile($observed_file);
 
 if ($hostname_key) {
 	$unique_hostnames = 1;
+	my $hostname;
 
 	for my $ip ($baseline->get_ips()) {
-		my $hostname = $baseline->get_host($ip)->hostname;
+		$hostname = $baseline->get_host($ip)->hostname;
 		$hostname = $ip if ($hostname eq '');
 
 		if (defined($baseline_h2ip{$hostname})) {
@@ -621,7 +627,7 @@ if ($hostname_key) {
 
 	if ($unique_hostnames) {
 		for my $ip ($observed->get_ips()) {
-			my $hostname = $observed->get_host($ip)->hostname;
+			$hostname = $observed->get_host($ip)->hostname;
 			$hostname = $ip if ($hostname eq '');
 
 			if (defined($observed_h2ip{$hostname})) {
@@ -635,7 +641,8 @@ if ($hostname_key) {
 	}
 
 	if (!$unique_hostnames) {
-		print STDERR "Can't use non-unique hostnames as keys\n";
+		print STDERR "Can't use non-unique hostnames as keys (",
+		    $hostname, ").\n";
 	} else {
 		$node_key = "Hostname";
 	}
@@ -666,7 +673,7 @@ if ($format eq 'text') {
 	print "<yandiff rundate=\"$run_date\"",
 	    ' version="', $VERSION, '"',
 	    ' command_line="', $command_line, '">', "\n";
-	print " <parameters>\n";
+	print " <parameters node_key=\"$node_key\">\n";
 	my $session = $baseline->get_session();
 	print "  <baseline>\n",
 	    "   <file>$baseline_file</file>\n",
@@ -685,11 +692,14 @@ if ($format eq 'text') {
 }
 
 show_new_hosts($format, $baseline, $observed,
-    $unique_hostnames) if $show_new_hosts;
+    $unique_hostnames, \%observed_ip2h, \%baseline_h2ip)
+    if $show_new_hosts;
 show_missing_hosts($format, $baseline, $observed,
-    $unique_hostnames) if $show_missing_hosts;
+    $unique_hostnames, \%baseline_ip2h, \%observed_h2ip)
+    if $show_missing_hosts;
 show_changed_hosts($format, $baseline, $observed, $output_ports,
-    $unique_hostnames) if $show_changed_hosts;
+    $unique_hostnames, \%baseline_ip2h, \%observed_h2ip)
+    if $show_changed_hosts;
 print "</yandiff>\n" if ($format eq 'xml');
 
 ##############################################################################
@@ -1610,7 +1620,7 @@ to see if a fix is either available or in progress.
 http://code.google.com/p/yandiff/issues
 
 Also it could be said that there are too many command line switches.  Even
-the authors require the occassional reference to the manual.  Sorry, we have
-tried to simplify it.
+the authors require the occassional reference to the manual.  We're sorry, we
+have tried to keep it simple.
 
 =cut
