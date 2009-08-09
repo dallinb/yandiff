@@ -742,8 +742,8 @@ sub status {
 # Return the host details (not any associated ports) as a string.
 sub to_string {
 	my $self = shift;
-	my $s = $self->{IP_ADDR} . ', ' . $self->{MAC_ADDR} . 
-	    ' (' . $self->{HOSTNAME} . ')';
+	my $s = $self->{IP_ADDR} . ', ' . $self->{MAC_ADDR};
+	$s .= ' (' . $self->{HOSTNAME} . ')' if ($self->{HOSTNAME});
 	$s .= ' - ' . $self->{STATUS} if defined $self->{STATUS};
 	return $s;
 }
@@ -753,8 +753,8 @@ sub to_xml {
 	my $self = shift;
 	my $close_fully = shift;
 	my $s = "<host ip_addr=\"" . $self->{IP_ADDR} . "\" "
-	    . "mac_addr=\"" . $self->{MAC_ADDR} . "\" "
-	    . "hostname=\"" . $self->{HOSTNAME} . "\" ";
+	    . "mac_addr=\"" . $self->{MAC_ADDR} . "\" ";
+	$s .= "hostname=\"" . $self->{HOSTNAME} . "\" " if ($self->{HOSTNAME});
 	$s .= ' status="' . $self->{STATUS} . '"' if defined $self->{STATUS};
 	my $close = ($close_fully) ? '/>' : '>';
 	$s .= $close;
