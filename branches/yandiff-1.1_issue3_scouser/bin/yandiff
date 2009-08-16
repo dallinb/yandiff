@@ -41,6 +41,8 @@ sub show_changed_hosts {
 	for my $baseline_ip ($baseline->get_ips()) {
 		my $observed_ip = $baseline_ip;
 
+		# check that the hostname of the baseline host appears in the
+		# observed file
 		if ($unique_hostnames) {
 			my $hostname = $baseline_ip2h->{$baseline_ip};
 			$observed_ip = $observed_h2ip->{$hostname};
@@ -329,6 +331,8 @@ sub show_missing_hosts {
 	for my $baseline_ip ($baseline->get_ips()) {
 		my $observed_ip = $baseline_ip;
 
+		# check that the hostname of the baseline host appears in the
+		# observed file
 		if ($unique_hostnames) {
 			my $hostname = $baseline_ip2h->{$baseline_ip};
 			$observed_ip = $observed_h2ip->{$hostname};
@@ -608,6 +612,8 @@ pod2usage(1) if !$observed_file;
 my $observed = new Nmap::Parser;
 $observed->parsefile($observed_file);
 
+# Load hostname and IP address details from baseline and observed files
+# checking for unique hostnames
 if ($hostname_key) {
 	$unique_hostnames = 1;
 	my $hostname;
@@ -1484,8 +1490,8 @@ Print a brief help message and exit.
 
 If possible, sort the output order of hosts on their name rather than the
 IP address.  This option also tries to match hostnames to changed IP addresses
-so it is useful in DNS environments where hostnames a static on a machine, but
-may be allocated new IP addresses.
+so it is useful in DNS environments where hostnames are static on a machine,
+but may be allocated new IP addresses.
 
 =item B<-m>
 
