@@ -332,7 +332,7 @@ sub show_missing_hosts {
 		my $observed_ip = $baseline_ip;
 		my $observed_host;
 
-		# check that the hostname of the baseline host appears in the
+		# check if the hostname of the baseline host appears in the
 		# observed file
 		if ($unique_hostnames) {
 			my $hostname = $baseline_ip2h->{$baseline_ip};
@@ -342,6 +342,8 @@ sub show_missing_hosts {
 		$observed_host = $observed->get_host($observed_ip)
 		    if defined($observed_ip);
 
+		# If we get to this point but either the observed_ip or
+		# observed_host is not set then we have a missing host.
 		if ((!defined($observed_ip)) || (!defined($observed_host))) {
 			my $baseline_host = $baseline->get_host($baseline_ip);
 			my $host = Host->new();
