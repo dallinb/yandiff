@@ -56,7 +56,7 @@ sub show_changed_hosts {
 		# and the observed scans.
 		my $host = Host->new();
 		$host->hostname($observed_host->hostname());
-		$host->ip_addr($baseline_ip);
+		$host->ip_addr($observed_ip);
 		$host->mac_addr($observed_host->mac_addr());
 		$host->status($observed_host->status());
 		my $host_has_changed = 0;
@@ -393,10 +393,13 @@ sub show_new_hosts {
 			    if (exists($baseline_h2ip->{$hostname}));
 		}
 
-		$baseline_host = $baseline->get_host($baseline_ip)
-			if defined($baseline_ip);
+		if (defined($baseline_ip)) {
+			$baseline_host = $baseline->get_host($baseline_ip)
+		} else {
+			$baseline_host = undef;
+		}
 
-		if ((!defined($baseline_host)) || (!defined($baseline_ip))) {
+		if (!defined($baseline_host)) {
 			my $observed_host = $observed->get_host($observed_ip);
 			my $host = Host->new();
 			$host->hostname($observed_host->hostname());
