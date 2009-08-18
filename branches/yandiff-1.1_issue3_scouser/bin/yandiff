@@ -389,7 +389,8 @@ sub show_new_hosts {
 			# can also be found in the baseline scan.  If it is
 			# then this is not a new host.
 			my $hostname = $observed_ip2h->{$observed_ip};
-			$baseline_ip = $baseline_h2ip->{$hostname};
+			$baseline_ip = $baseline_h2ip->{$hostname}
+			    if (exists($baseline_h2ip->{$hostname}));
 		}
 
 		$baseline_host = $baseline->get_host($baseline_ip)
