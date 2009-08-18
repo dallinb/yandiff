@@ -379,7 +379,7 @@ sub show_new_hosts {
 	my ($format, $baseline, $observed, $unique_hostnames, $observed_ip2h,
 	    $baseline_h2ip) = @_;
 	my @hosts = ();
-	my $baseline_host = 0;
+	my $baseline_host;
 
 	for my $observed_ip ($observed->get_ips()) {
 		my $baseline_ip = $observed_ip;
