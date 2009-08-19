@@ -5,11 +5,11 @@
  yandiff - Yet Another Nmap Differential Script
 
 ==SYNOPSIS==
- yandiff `[`-f, --format <text | xml>`]` `[`-of, --output-file file`]` `[`-oh, --output-hosts `<`nmc`>]` `[`-op, --output-ports `<`ofcx`>]` `[`-s, --stylesheet <file | URL>`]` --baseline file --observed file
+ yandiff `[`-f, --format <text | xml>`]` `[`-hk, --hostname-key`]` `[`-of, --output-file file`]` `[`-oh, --output-hosts `<`nmc`>]` `[`-op, --output-ports `<`ofcx`>]` `[`-s, --stylesheet <file | URL>`]` --baseline file --observed file
 
  yandiff file file
 
-  yandiff --gen-stylesheet file
+ yandiff --gen-stylesheet file
 
  yandiff --help | -?
 
@@ -38,6 +38,14 @@
 
        --help
         Print a brief help message and exit.
+
+       -hk
+
+       --hostname-key
+        If possible, sort the output order of hosts on their name rather than the
+        IP address.  This option also tries to match hostnames to changed IP addresses
+        so it is useful in DNS environments where hostnames are static on a machine,
+        but may be allocated new IP addresses.
 
        -m
 
@@ -128,3 +136,7 @@ The Yandiff project at http://code.google.com/p/yandiff
 The project members graciously accept that there may be bugs. If there are any found, please report them at the link below or browse the issues reported to see if a fix is either available or in progress.
 
 http://code.google.com/p/yandiff/issues
+
+Also it could be said that there are too many command line switches.  Even
+the authors require the occassional reference to the manual.  We're sorry, we
+have tried to keep it simple.
