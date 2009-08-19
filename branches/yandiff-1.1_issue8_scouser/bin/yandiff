@@ -1011,7 +1011,7 @@ sub generate {
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 <!-- ............... Set the VERSION here ....................... -->
-<xsl:variable name="yandiff_xsl_version">1.0</xsl:variable>
+<xsl:variable name="yandiff_xsl_version">1.1</xsl:variable>
 <!-- ............................................................ -->
 
 <xsl:template match="yandiff">
@@ -1208,13 +1208,19 @@ sub generate {
    <xsl:choose>
     <xsl:when test="\@status = 'up'">
      <h2 class="green">
-      <xsl:value-of select="\@ip_addr"/>/<xsl:value-of select="\@hostname"/>
+      <xsl:value-of select="\@ip_addr"/>
+      <xsl:if test="\@hostname">
+       / <xsl:value-of select="\@hostname"/>
+      </xsl:if>
       (<xsl:value-of select="\@status"/>)
      </h2>
     </xsl:when>
     <xsl:otherwise>
      <h2 class="red">
-      <xsl:value-of select="\@ip_addr"/>/<xsl:value-of select="\@hostname"/>
+      <xsl:value-of select="\@ip_addr"/>
+      <xsl:if test="\@hostname">
+       / <xsl:value-of select="\@hostname"/>
+      </xsl:if>
       (<xsl:value-of select="\@status"/>)
      </h2>
     </xsl:otherwise>
@@ -1245,8 +1251,10 @@ sub generate {
      <xsl:value-of select="translate(\@ip_addr, '.', '_') " />
     </xsl:attribute>
    </xsl:element>
-   <li><b><xsl:value-of select="\@ip_addr"/>/<xsl:value-of
-    select="\@hostname"/>
+   <li><b><xsl:value-of select="\@ip_addr"/>
+      <xsl:if test="\@hostname">
+       / <xsl:value-of select="\@hostname"/>
+      </xsl:if>
    </b></li>
   </xsl:for-each>
   </ul>
@@ -1264,13 +1272,19 @@ sub generate {
    <xsl:choose>
     <xsl:when test="\@status = 'up'">
      <h2 class="green">
-      <xsl:value-of select="\@ip_addr"/>/<xsl:value-of select="\@hostname"/>
+      <xsl:value-of select="\@ip_addr"/>
+      <xsl:if test="\@hostname">
+       / <xsl:value-of select="\@hostname"/>
+      </xsl:if>
       (<xsl:value-of select="\@status"/>)
      </h2>
     </xsl:when>
     <xsl:otherwise>
      <h2 class="red">
-      <xsl:value-of select="\@ip_addr"/>/<xsl:value-of select="\@hostname"/>
+      <xsl:value-of select="\@ip_addr"/>
+      <xsl:if test="\@hostname">
+       / <xsl:value-of select="\@hostname"/>
+      </xsl:if>
       (<xsl:value-of select="\@status"/>)
      </h2>
     </xsl:otherwise>
@@ -1323,8 +1337,8 @@ sub generate {
    <xsl:attribute name="href">
     #<xsl:value-of select="translate(\@ip_addr, '.', '_') "/>
    </xsl:attribute>
-    <xsl:value-of select="\@ip_addr"/><xsl:text> / </xsl:text><xsl:value-of
-    select="\@hostname"/>
+    <xsl:value-of select="\@ip_addr"/><xsl:if test="\@hostname"> /
+    <xsl:value-of select="\@hostname"/></xsl:if>
    </xsl:element>&gt;
 </xsl:template>
 
