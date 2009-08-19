@@ -31,20 +31,33 @@ use strict;
 # Find hosts that are in both the observed and baseline scans.  Compare the
 # status of the host and the status of each of the individual ports.
 sub show_changed_hosts {
-	my ($format, $baseline, $observed, $ports) = @_;
+	my ($format, $baseline, $observed, $ports, $unique_hostnames,
+	    $baseline_ip2h, $observed_h2ip) = @_;
 	my $output = "\nChanged hosts:\n" if ($format eq 'text');
 	my $portid;
+	my @ip_list;
 	$output = "" if ($format eq 'xml');
 
 	for my $baseline_ip ($baseline->get_ips()) {
-		my $observed_host = $observed->get_host($baseline_ip);
+		my $observed_ip = $baseline_ip;
+
+		# check that the hostname of the baseline host appears in the
+		# observed file
+		if ($unique_hostnames) {
+			my $hostname = $baseline_ip2h->{$baseline_ip};
+			$observed_ip = $observed_h2ip->{$hostname};
+			next if (!$observed_ip);
+		}
+
+		my $observed_host = $observed->get_host($observed_ip);
 		next if (!defined($observed_host));
 
 		# To have reached here the host exists in both the baseline
 		# and the observed scans.
 		my $host = Host->new();
 		$host->hostname($observed_host->hostname());
-		$host->ip_addr($baseline_ip);
+		$host->ip_addr($observed_ip);
+		$host->mac_addr($observed_host->mac_addr());
 		$host->mac_addr($observed_host->mac_addr());
 		$host->status($observed_host->status());
 		my $host_has_changed = 0;
@@ -312,13 +325,27 @@ sub show_changed_hosts {
 # Find hosts that are defined in the baseline but are missing from the
 # observed scan.
 sub show_missing_hosts {
-	my ($format, $baseline, $observed) = @_;
+	my ($format, $baseline, $observed, $unique_hostnames,
+	    $baseline_ip2h, $observed_h2ip) = @_;
 	my @hosts = ();
 
 	for my $baseline_ip ($baseline->get_ips()) {
-		my $observed_host = $observed->get_host($baseline_ip);
+		my $observed_ip = $baseline_ip;
+		my $observed_host;
 
-		if (!defined($observed_host)) {
+		# check if the hostname of the baseline host appears in the
+		# observed file
+		if ($unique_hostnames) {
+			my $hostname = $baseline_ip2h->{$baseline_ip};
+			$observed_ip = $observed_h2ip->{$hostname};
+		}
+
+		$observed_host = $observed->get_host($observed_ip)
+		    if defined($observed_ip);
+
+		# If we get to this point but either the observed_ip or
+		# observed_host is not set then we have a missing host.
+		if ((!defined($observed_ip)) || (!defined($observed_host))) {
 			my $baseline_host = $baseline->get_host($baseline_ip);
 			my $host = Host->new();
 			$host->hostname($baseline_host->hostname());
@@ -350,11 +377,28 @@ sub show_missing_hosts {
 # Find hosts that are defined in the baseline scan, but are missing from the
 # observed scan.
 sub show_new_hosts {
-	my ($format, $baseline, $observed) = @_;
+	my ($format, $baseline, $observed, $unique_hostnames, $observed_ip2h,
+	    $baseline_h2ip) = @_;
 	my @hosts = ();
+	my $baseline_host;
 
 	for my $observed_ip ($observed->get_ips()) {
-		my $baseline_host = $baseline->get_host($observed_ip);
+		my $baseline_ip = $observed_ip;
+
+		if ($unique_hostnames) {
+			# Check if the hostname found in the observed scan
+			# can also be found in the baseline scan.  If it is
+			# then this is not a new host.
+			my $hostname = $observed_ip2h->{$observed_ip};
+			$baseline_ip = $baseline_h2ip->{$hostname}
+			    if (exists($baseline_h2ip->{$hostname}));
+		}
+
+		if (defined($baseline_ip)) {
+			$baseline_host = $baseline->get_host($baseline_ip)
+		} else {
+			$baseline_host = undef;
+		}
 
 		if (!defined($baseline_host)) {
 			my $observed_host = $observed->get_host($observed_ip);
@@ -434,15 +478,21 @@ sub show_new_hosts {
 # Main processing starts here.
 ##############################################################################
 
-# Declare and initialise variables.
+# Declare and initialise local variables.
 my $baseline_file;
+my %baseline_h2ip;
+my %baseline_ip2h;
 my ($c, $entry);
 my $command_line;
 my $format;
 my $gen_stylesheet;
 my $help;
+my $hostname_key;
 my $man;
+my $node_key = "IP";
 my $observed_file;
+my %observed_h2ip;
+my %observed_ip2h;
 my $output_file;
 my $output_hosts;
 my $output_ports;
@@ -452,6 +502,7 @@ my $show_changed_hosts = 1;
 my $show_missing_hosts = 1;
 my $show_new_hosts = 1;
 my $stylesheet;
+my $unique_hostnames;
 my $xslt;
 
 # OK so all the other variables are in lowercase and local.  The reason why
@@ -477,6 +528,7 @@ GetOptions(
 	'format=s' => \$format,
 	'gen-stylesheet=s' => \$gen_stylesheet,
 	'help|?' => \$help,
+	'hostname-key|hk' => \$hostname_key,
 	'man' => \$man,
 	'observed|o=s' => \$observed_file,
 	'output-file|of=s' => \$output_file,
@@ -500,7 +552,7 @@ if ($show_version) {
 }
 
 if ($gen_stylesheet) {
-	if ($baseline_file || $format || $help || $man ||
+	if ($baseline_file || $format || $help || $hostname_key || $man ||
 	    $observed_file || $output_ports || $show_version || $stylesheet) {
 		pod2usage(1);
 	} else {
@@ -572,6 +624,48 @@ pod2usage(1) if !$observed_file;
 my $observed = new Nmap::Parser;
 $observed->parsefile($observed_file);
 
+# Load hostname and IP address details from baseline and observed files
+# checking for unique hostnames
+if ($hostname_key) {
+	$unique_hostnames = 1;
+	my $hostname;
+
+	for my $ip ($baseline->get_ips()) {
+		$hostname = $baseline->get_host($ip)->hostname;
+		$hostname = $ip if ($hostname eq '');
+
+		if (defined($baseline_h2ip{$hostname})) {
+			$unique_hostnames = 0;
+			last;
+		} else {
+			$baseline_h2ip{$hostname} = $ip;
+			$baseline_ip2h{$ip} = $hostname;
+		}
+	}
+
+	if ($unique_hostnames) {
+		for my $ip ($observed->get_ips()) {
+			$hostname = $observed->get_host($ip)->hostname;
+			$hostname = $ip if ($hostname eq '');
+
+			if (defined($observed_h2ip{$hostname})) {
+				$unique_hostnames = 0;
+				last;
+			} else {
+				$observed_h2ip{$hostname} = $ip;
+				$observed_ip2h{$ip} = $hostname;
+			}
+		}
+	}
+
+	if (!$unique_hostnames) {
+		print STDERR "Can't use non-unique hostnames as keys (",
+		    $hostname, ").\n";
+	} else {
+		$node_key = "Hostname";
+	}
+}
+
 # Redirect the output if requested.  Obviously this must be called after
 # all command line checks and usage messages.
 if ($output_file) {
@@ -585,7 +679,8 @@ if ($format eq 'text') {
 	print 'yandiff run ', $run_date, "\n",
 	    'command line: ', $command_line, "\n",
 	    'baseline: ', $baseline_file, "\n",
-	    'observed: ', $observed_file, "\n";
+	    'observed: ', $observed_file, "\n",
+	    'node key: ', $node_key;
 } else {
 	print '<?xml version="1.0" encoding="utf-8"?>',
 	    "\n";
@@ -596,7 +691,7 @@ if ($format eq 'text') {
 	print "<yandiff rundate=\"$run_date\"",
 	    ' version="', $VERSION, '"',
 	    ' command_line="', $command_line, '">', "\n";
-	print " <parameters>\n";
+	print " <parameters node_key=\"$node_key\">\n";
 	my $session = $baseline->get_session();
 	print "  <baseline>\n",
 	    "   <file>$baseline_file</file>\n",
@@ -614,9 +709,14 @@ if ($format eq 'text') {
 	print " </parameters>\n";
 }
 
-show_new_hosts($format, $baseline, $observed) if $show_new_hosts;
-show_missing_hosts($format, $baseline, $observed) if $show_missing_hosts;
-show_changed_hosts($format, $baseline, $observed, $output_ports)
+show_new_hosts($format, $baseline, $observed,
+    $unique_hostnames, \%observed_ip2h, \%baseline_h2ip)
+    if $show_new_hosts;
+show_missing_hosts($format, $baseline, $observed,
+    $unique_hostnames, \%baseline_ip2h, \%observed_h2ip)
+    if $show_missing_hosts;
+show_changed_hosts($format, $baseline, $observed, $output_ports,
+    $unique_hostnames, \%baseline_ip2h, \%observed_h2ip)
     if $show_changed_hosts;
 print "</yandiff>\n" if ($format eq 'xml');
 
@@ -1347,6 +1447,7 @@ yandiff - Yet Another Nmap Differential Script
 
 yandiff
 [-f, --format <text | xml>]
+[-hk, --hostname-key]
 [-of, --output-file file]
 [-oh, --output-hosts <nmc>]
 [-op, --output-ports <ofcx>]
@@ -1394,6 +1495,15 @@ option.
 =item B<--help>
 
 Print a brief help message and exit.
+
+=item B<-hk>
+
+=item B<--hostname-key>
+
+If possible, sort the output order of hosts on their name rather than the
+IP address.  This option also tries to match hostnames to changed IP addresses
+so it is useful in DNS environments where hostnames are static on a machine,
+but may be allocated new IP addresses.
 
 =item B<-m>
 
@@ -1526,5 +1636,9 @@ any found, please report them at the link below or browse the issues reported
 to see if a fix is either available or in progress.
 
 http://code.google.com/p/yandiff/issues
+
+Also it could be said that there are too many command line switches.  Even
+the authors require the occassional reference to the manual.  We're sorry, we
+have tried to keep it simple.
 
 =cut
