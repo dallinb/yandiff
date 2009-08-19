@@ -1446,8 +1446,8 @@ yandiff - Yet Another Nmap Differential Script
 =head1 SYNOPSIS
 
 yandiff
-[-hk, --hostname-key]
 [-f, --format <text | xml>]
+[-hk, --hostname-key]
 [-of, --output-file file]
 [-oh, --output-hosts <nmc>]
 [-op, --output-ports <ofcx>]
