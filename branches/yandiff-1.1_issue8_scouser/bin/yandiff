@@ -1135,6 +1135,12 @@ sub generate {
    <td>Command Arguments</td>
    <td><i><xsl:value-of select="\@command_line"/></i></td>
   </tr>
+  <xsl:if test="parameters/\@node_key">
+   <tr>
+    <td>Node Key</td>
+    <td><xsl:value-of select="parameters/\@node_key"/></td>
+   </tr>
+  </xsl:if>
  </table>
 
  <table border="1">
