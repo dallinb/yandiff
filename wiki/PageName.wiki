@@ -1,0 +1,25 @@
+#labels Featured,Phase-Support
+#Index
+
+=Index=
+
+==Overview==
+  * [history History] of Yandiff and it's predecessor Xndiff.
+
+==Installation Instructions==
+  * [WinInstall Windows]
+  * [INSTALL UNIX/Linux]
+
+==User Manuals==
+  * [YandiffManual]
+  * The Original Ndiff [NdiffManual Manual]
+
+==Quality Assurance==
+  * [TestPlan Test Plan]
+  * [FunctionalTestTemplate Functional Test Template]
+  * [PerformanceTest20081219 Performance Test 19-Dec-2008]
+  * [PerformanceTest20090717 Performance Test 17-Jul-2008]
+  * [FunctionalTest20090717 Functional Test 17-Jul-2009]
+  * [FunctionalTest20090822 Functional Test 22-Aug-2009]
+
+For details on the relevant licences click [COPYING here].
