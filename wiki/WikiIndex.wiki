@@ -1,7 +1,7 @@
-#summary WikiIndex
+#summary Wiki Index
 #labels Featured
 
-=WikiIndex=
+=Wiki Index=
 
 ==Overview==
   * [history History] of Yandiff and it's predecessor Xndiff.
