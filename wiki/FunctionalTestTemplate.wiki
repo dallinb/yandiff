@@ -8,7 +8,7 @@ Date of Test: dd mmm yyyy
 Yandiff Version:
 
 ==Tests==
-1) `yandiff --baseline ./t/baseline_qa.xml --observed ./t/observed_qa.xml`
+1) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/observed_qa.xml`
 
 The output should list charlie as a new host, alpha as a missing host and
 bravo with the following port status for both TCP and UDP:
@@ -31,55 +31,55 @@ bravo with the following port status for both TCP and UDP:
 Result: PASS/FAIL
 
 
-2) `yandiff --baseline ./t/baseline_qa.xml --observed ./t/observed_qa.xml --output-hosts n`
+2) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/observed_qa.xml --output-hosts n`
 
 Should only return charlie.
 
 Result: PASS/FAIL
 
 
-3) `yandiff --baseline ./t/baseline_qa.xml --observed ./t/observed_qa.xml --output-hosts c`
+3) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/observed_qa.xml --output-hosts c`
 
 Should only return bravo.
 
 Result: PASS/FAIL
 
 
-4) `yandiff --baseline ./t/baseline_qa.xml --observed ./t/observed_qa.xml --output-hosts m`
+4) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/observed_qa.xml --output-hosts m`
 
 Should only return alpha.
 
 Result: PASS/FAIL
 
 
-5) `yandiff --baseline ./t/baseline_qa.xml --observed ./t/observed_qa.xml --output-hosts c -output-ports o`
+5) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/observed_qa.xml --output-hosts c -output-ports o`
 
 Should return bravo and ports 6, 8, 12 and 14 for both TCP and UDP.
 
 Result: PASS/FAIL
 
 
-6) `yandiff --baseline ./t/baseline_qa.xml --observed ./t/observed_qa.xml --output-hosts c -output-ports f`
+6) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/observed_qa.xml --output-hosts c -output-ports f`
 
 Should return bravo and ports 4, 6, 7, 10, 12 and 13 for both TCP and UDP.
 
 Result: PASS/FAIL
 
 
-7) `yandiff --baseline ./t/baseline_qa.xml --observed ./t/observed_qa.xml --output-hosts c -output-ports c`
+7) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/observed_qa.xml --output-hosts c -output-ports c`
 
 Should return bravo and ports 3, 7, 9 and 13 for both TCP and UDP.
 
 Result: PASS/FAIL
 
 
-8) `yandiff --baseline ./t/baseline_qa.xml --observed ./t/observed_qa.xml --output-hosts c -output-ports x`
+8) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/observed_qa.xml --output-hosts c -output-ports x`
 
 Should return bravo and ports 5 and 11 for both TCP and UDP.
 
 Result: PASS/FAIL
 
-9) `yandiff --baseline ./t/baseline_qa.xml --observed ./t/dns3.xml --hk`
+9) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/dns3.xml --hk`
 
 The output should list charlie as a new host, alpha as a missing host and
 bravo with the following port status for both TCP and UDP:
@@ -102,49 +102,49 @@ bravo with the following port status for both TCP and UDP:
 Result: PASS/FAIL
 
 
-10) `yandiff --baseline ./t/baseline_qa.xml --observed ./t/dns3.xml --hk --output-hosts n`
+10) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/dns3.xml --hk --output-hosts n`
 
 Should only return charlie.
 
 Result: PASS/FAIL
 
 
-11) `yandiff --baseline ./t/baseline_qa.xml --observed ./t/dns3.xml --hk --output-hosts c`
+11) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/dns3.xml --hk --output-hosts c`
 
 Should only return bravo.
 
 Result: PASS/FAIL
 
 
-12) `yandiff --baseline ./t/baseline_qa.xml --observed ./t/dns3.xml --hk --output-hosts m`
+12) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/dns3.xml --hk --output-hosts m`
 
 Should only return alpha.
 
 Result: PASS/FAIL
 
 
-13) `yandiff --baseline ./t/baseline_qa.xml --observed ./t/dns3.xml --hk --output-hosts c -output-ports o`
+13) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/dns3.xml --hk --output-hosts c -output-ports o`
 
 Should return bravo and ports 6, 8, 12 and 14 for both TCP and UDP.
 
 Result: PASS/FAIL
 
 
-14) `yandiff --baseline ./t/baseline_qa.xml --observed ./t/dns3.xml --hk --output-hosts c -output-ports f`
+14) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/dns3.xml --hk --output-hosts c -output-ports f`
 
 Should return bravo and ports 4, 6, 7, 10, 12 and 13 for both TCP and UDP.
 
 Result: PASS/FAIL
 
 
-15) `yandiff --baseline ./t/baseline_qa.xml --observed ./t/dns3.xml --hk --output-hosts c -output-ports c`
+15) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/dns3.xml --hk --output-hosts c -output-ports c`
 
 Should return bravo and ports 3, 7, 9 and 13 for both TCP and UDP.
 
 Result: PASS/FAIL
 
 
-16) `yandiff --baseline ./t/baseline_qa.xml --observed ./t/dns3.xml --hk --output-hosts c -output-ports x`
+16) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/dns3.xml --hk --output-hosts c -output-ports x`
 
 Should return bravo and ports 5 and 11 for both TCP and UDP.
 
