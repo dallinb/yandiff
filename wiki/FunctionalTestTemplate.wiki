@@ -152,7 +152,7 @@ Result: PASS/FAIL
 
 17) `./bin/yandiff --baseline t/oA9.xml --observed ./t/issue7.xml`
 
-Should return 192.168.0.9 as a changed host with no hostname.
+Should return 192.168.0.9 as a changed host (2049/tcp) with no hostname.
 
 Result: PASS/FAIL
 
