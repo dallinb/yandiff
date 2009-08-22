@@ -1,7 +1,7 @@
 #summary Functional Test 22-Aug-2009
 #labels Phase-QA
 
-= Functional Test Template =
+= Functional Test 22-Aug-2009 =
 
 Date of Test: 22 Aug 2009
 
