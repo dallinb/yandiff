@@ -12,7 +12,7 @@
 
 ==User Manuals==
   * [YandiffManual]
-  * The Original Ndiff [NdiffManual Manual]
+  * The Original Ndiff [OriginalNdiffManual Manual]
 
 ==Quality Assurance==
   * [TestPlan Test Plan]
