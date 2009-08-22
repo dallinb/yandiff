@@ -150,6 +150,12 @@ Should return bravo and ports 5 and 11 for both TCP and UDP.
 
 Result: PASS/FAIL
 
+17) `./bin/yandiff --baseline t/oA9.xml --observed ./t/issue7.xml`
+
+Should return 192.168.0.9 as a changed host with no hostname.
+
+Result: PASS/FAIL
+
 ==Summary==
 
 If any of the tests failed, provide details below and include references to any issues raised:
