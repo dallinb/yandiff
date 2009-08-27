@@ -58,7 +58,6 @@ sub show_changed_hosts {
 		$host->hostname($observed_host->hostname());
 		$host->ip_addr($observed_ip);
 		$host->mac_addr($observed_host->mac_addr());
-		$host->mac_addr($observed_host->mac_addr());
 		$host->status($observed_host->status());
 		my $host_has_changed = 0;
 		my @changed_services = ();
@@ -842,7 +841,8 @@ sub status {
 # Return the host details (not any associated ports) as a string.
 sub to_string {
 	my $self = shift;
-	my $s = $self->{IP_ADDR} . ', ' . $self->{MAC_ADDR};
+	my $s = $self->{IP_ADDR};
+	$s .= ', ' . $self->{MAC_ADDR} if defined $self->{MAC_ADDR};
 	$s .= ' (' . $self->{HOSTNAME} . ')' if ($self->{HOSTNAME});
 	$s .= ' - ' . $self->{STATUS} if defined $self->{STATUS};
 	return $s;
@@ -852,9 +852,10 @@ sub to_string {
 sub to_xml {
 	my $self = shift;
 	my $close_fully = shift;
-	my $s = "<host ip_addr=\"" . $self->{IP_ADDR} . "\" "
-	    . "mac_addr=\"" . $self->{MAC_ADDR} . "\" ";
-	$s .= "hostname=\"" . $self->{HOSTNAME} . "\" " if ($self->{HOSTNAME});
+	my $s = '<host ip_addr="' . $self->{IP_ADDR} . '"';
+	$s .= ' mac_addr="' . $self->{MAC_ADDR} . '"'
+	    if defined $self->{MAC_ADDR};
+	$s .= ' hostname="' . $self->{HOSTNAME} . '"' if ($self->{HOSTNAME});
 	$s .= ' status="' . $self->{STATUS} . '"' if defined $self->{STATUS};
 	my $close = ($close_fully) ? '/>' : '>';
 	$s .= $close;
