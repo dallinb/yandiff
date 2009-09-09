@@ -1,0 +1,15 @@
+---
+name: yandiff
+version: 1.1
+author:
+  - http://code.google.com/p/yandiff
+abstract: find differences between two nmap network scans
+license: bsd
+resources:
+  license: http://www.opensource.org/licenses/bsd-license.php
+requires:
+  Nmap::Parser: 0
+generated_by: Module::Build version 0.2808
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.2.html
+  version: 1.2
