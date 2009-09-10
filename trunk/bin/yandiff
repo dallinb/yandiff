@@ -1012,7 +1012,7 @@ sub generate {
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 <!-- ............... Set the VERSION here ....................... -->
-<xsl:variable name="yandiff_xsl_version">1.1</xsl:variable>
+<xsl:variable name="yandiff_xsl_version">1.2</xsl:variable>
 <!-- ............................................................ -->
 
 <xsl:template match="yandiff">
@@ -1216,10 +1216,13 @@ sub generate {
     <xsl:when test="\@status = 'up'">
      <h2 class="green">
       <xsl:value-of select="\@ip_addr"/>
-      <xsl:if test="\@hostname">
-       / <xsl:value-of select="\@hostname"/>
+      <xsl:if test="\@mac_addr">
+       , <xsl:value-of select="\@mac_addr"/>
       </xsl:if>
-      (<xsl:value-of select="\@status"/>)
+      <xsl:if test="\@hostname">
+       (<xsl:value-of select="\@hostname"/>)
+      </xsl:if>
+      - <xsl:value-of select="\@status"/>
      </h2>
     </xsl:when>
     <xsl:otherwise>
@@ -1259,8 +1262,11 @@ sub generate {
     </xsl:attribute>
    </xsl:element>
    <li><b><xsl:value-of select="\@ip_addr"/>
+      <xsl:if test="\@mac_addr">
+       , <xsl:value-of select="\@mac_addr"/>
+      </xsl:if>
       <xsl:if test="\@hostname">
-       / <xsl:value-of select="\@hostname"/>
+       (<xsl:value-of select="\@hostname"/>)
       </xsl:if>
    </b></li>
   </xsl:for-each>
@@ -1280,19 +1286,25 @@ sub generate {
     <xsl:when test="\@status = 'up'">
      <h2 class="green">
       <xsl:value-of select="\@ip_addr"/>
-      <xsl:if test="\@hostname">
-       / <xsl:value-of select="\@hostname"/>
+      <xsl:if test="\@mac_addr">
+       , <xsl:value-of select="\@mac_addr"/>
       </xsl:if>
-      (<xsl:value-of select="\@status"/>)
+      <xsl:if test="\@hostname">
+       (<xsl:value-of select="\@hostname"/>)
+      </xsl:if>
+      - <xsl:value-of select="\@status"/>
      </h2>
     </xsl:when>
     <xsl:otherwise>
      <h2 class="red">
       <xsl:value-of select="\@ip_addr"/>
-      <xsl:if test="\@hostname">
-       / <xsl:value-of select="\@hostname"/>
+      <xsl:if test="\@mac_addr">
+       , <xsl:value-of select="\@mac_addr"/>
       </xsl:if>
-      (<xsl:value-of select="\@status"/>)
+      <xsl:if test="\@hostname">
+       (<xsl:value-of select="\@hostname"/>)
+      </xsl:if>
+      - <xsl:value-of select="\@status"/>
      </h2>
     </xsl:otherwise>
    </xsl:choose>
@@ -1322,7 +1334,7 @@ sub generate {
  </xsl:if>
 
  <sub>
-  Ndiff stylesheet version: <xsl:value-of select="\$yandiff_xsl_version" />
+  Yandiff stylesheet version: <xsl:value-of select="\$yandiff_xsl_version" />
   &lt;<a href = 
   "http://code.google.com/p/yandiff">http://code.google.com/p/yandiff</a>&gt;
  </sub>
