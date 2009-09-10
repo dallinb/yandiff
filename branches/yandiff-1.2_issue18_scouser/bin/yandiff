@@ -52,7 +52,6 @@ sub show_changed_hosts {
 		$host->hostname($observed_host->hostname());
 		$host->ip_addr($observed_host->addr());
 		$host->mac_addr($observed_host->mac_addr());
-		$host->mac_addr($observed_host->mac_addr());
 		$host->status($observed_host->status());
 		my $host_has_changed = 0;
 		my @changed_services = ();
@@ -769,7 +768,8 @@ sub status {
 # Return the host details (not any associated ports) as a string.
 sub to_string {
 	my $self = shift;
-	my $s = $self->{IP_ADDR} . ', ' . $self->{MAC_ADDR};
+	my $s = $self->{IP_ADDR};
+	$s .= ', ' . $self->{MAC_ADDR} if defined $self->{MAC_ADDR};
 	$s .= ' (' . $self->{HOSTNAME} . ')' if ($self->{HOSTNAME});
 	$s .= ' - ' . $self->{STATUS} if defined $self->{STATUS};
 	return $s;
@@ -779,9 +779,10 @@ sub to_string {
 sub to_xml {
 	my $self = shift;
 	my $close_fully = shift;
-	my $s = "<host ip_addr=\"" . $self->{IP_ADDR} . "\" "
-	    . "mac_addr=\"" . $self->{MAC_ADDR} . "\" ";
-	$s .= "hostname=\"" . $self->{HOSTNAME} . "\" " if ($self->{HOSTNAME});
+	my $s = '<host ip_addr="' . $self->{IP_ADDR} . '"';
+	$s .= ' mac_addr="' . $self->{MAC_ADDR} . '"'
+	    if defined $self->{MAC_ADDR};
+	$s .= ' hostname="' . $self->{HOSTNAME} . '"' if ($self->{HOSTNAME});
 	$s .= ' status="' . $self->{STATUS} . '"' if defined $self->{STATUS};
 	my $close = ($close_fully) ? '/>' : '>';
 	$s .= $close;
@@ -1079,7 +1080,7 @@ sub generate {
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 <!-- ............... Set the VERSION here ....................... -->
-<xsl:variable name="yandiff_xsl_version">1.1</xsl:variable>
+<xsl:variable name="yandiff_xsl_version">1.2</xsl:variable>
 <!-- ............................................................ -->
 
 <xsl:template match="yandiff">
@@ -1283,10 +1284,13 @@ sub generate {
     <xsl:when test="\@status = 'up'">
      <h2 class="green">
       <xsl:value-of select="\@ip_addr"/>
-      <xsl:if test="\@hostname">
-       / <xsl:value-of select="\@hostname"/>
+      <xsl:if test="\@mac_addr">
+       , <xsl:value-of select="\@mac_addr"/>
       </xsl:if>
-      (<xsl:value-of select="\@status"/>)
+      <xsl:if test="\@hostname">
+       (<xsl:value-of select="\@hostname"/>)
+      </xsl:if>
+      - <xsl:value-of select="\@status"/>
      </h2>
     </xsl:when>
     <xsl:otherwise>
@@ -1326,8 +1330,11 @@ sub generate {
     </xsl:attribute>
    </xsl:element>
    <li><b><xsl:value-of select="\@ip_addr"/>
+      <xsl:if test="\@mac_addr">
+       , <xsl:value-of select="\@mac_addr"/>
+      </xsl:if>
       <xsl:if test="\@hostname">
-       / <xsl:value-of select="\@hostname"/>
+       (<xsl:value-of select="\@hostname"/>)
       </xsl:if>
    </b></li>
   </xsl:for-each>
@@ -1347,19 +1354,25 @@ sub generate {
     <xsl:when test="\@status = 'up'">
      <h2 class="green">
       <xsl:value-of select="\@ip_addr"/>
-      <xsl:if test="\@hostname">
-       / <xsl:value-of select="\@hostname"/>
+      <xsl:if test="\@mac_addr">
+       , <xsl:value-of select="\@mac_addr"/>
       </xsl:if>
-      (<xsl:value-of select="\@status"/>)
+      <xsl:if test="\@hostname">
+       (<xsl:value-of select="\@hostname"/>)
+      </xsl:if>
+      - <xsl:value-of select="\@status"/>
      </h2>
     </xsl:when>
     <xsl:otherwise>
      <h2 class="red">
       <xsl:value-of select="\@ip_addr"/>
-      <xsl:if test="\@hostname">
-       / <xsl:value-of select="\@hostname"/>
+      <xsl:if test="\@mac_addr">
+       , <xsl:value-of select="\@mac_addr"/>
       </xsl:if>
-      (<xsl:value-of select="\@status"/>)
+      <xsl:if test="\@hostname">
+       (<xsl:value-of select="\@hostname"/>)
+      </xsl:if>
+      - <xsl:value-of select="\@status"/>
      </h2>
     </xsl:otherwise>
    </xsl:choose>
