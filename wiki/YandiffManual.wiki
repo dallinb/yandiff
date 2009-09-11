@@ -42,10 +42,18 @@
        -hk
 
        --hostname-key
-        If possible, sort the output order of hosts on their name rather than the
-        IP address.  This option also tries to match hostnames to changed IP addresses
-        so it is useful in DNS environments where hostnames are static on a machine,
-        but may be allocated new IP addresses.
+        This flag can be used in a DHCP environment where host names remain static but
+        IP addresses are allocated dynamically.  As an example, a baseline is carried
+        out on a windows PC (win1) which has an IP of 192.168.1.8 and a Linux node
+        (linux1) with an IP of 192.168.1.16.  By the time an observed scan is carried
+        out, both nodes have been rebooted and reallocated each other's address while
+        retaining their configured names.  Using this flag, the IP addresses are mapped
+        back to the original hosts so that win1 in the baseline is compared to win1 in
+        the observed file.  Otherwise the IP addresses would be used for the comparison
+        meaning win1 would be incorrectly compared to linux1 and vice versa.  Using
+        this flag in an environment with static IP allocation would have no functional
+        effect.  There would simply be the performance overhead of the unnecessary
+        mapping logic. 
 
        -m
 
