@@ -1,3 +1,10 @@
+12 September 2009 - Release 1.2.  This release fixes a minor issue introduced
+in release 1.1 where a diagnostic warning was show when a host didn't have a
+MAC address (issue15).  Also tidied up the documentation and source code logic
+for the --hostname-key (issue18).  Due to an oversight <blame>Ben
+Dalling</blame>, the MAC address wasn't shown in the stylesheet, even though
+they were appearing in the XML output file (issue16).
+
 20 August 2009 - Release 1.1.  This release fixes a minor bug (issue7) that
 incorrectly shows a hostname as '0' when there was not a hostname in the
 original Nmap report.  The following changes and enhancements have been made:
