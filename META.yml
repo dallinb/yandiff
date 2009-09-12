@@ -1,6 +1,6 @@
 ---
 name: yandiff
-version: 1.1
+version: 1.2
 author:
   - http://code.google.com/p/yandiff
 abstract: find differences between two nmap network scans

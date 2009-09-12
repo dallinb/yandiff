@@ -456,7 +456,7 @@ my $xslt;
 # OK so all the other variables are in lowercase and local.  The reason why
 # version is specified differently is that that it is compatible with
 # Module::Build therefore making distribution and installing easier.
-my $VERSION = '1.1';
+my $VERSION = '1.2';
 
 $run_date = localtime;
 
@@ -1058,7 +1058,7 @@ use strict;
 sub new {
 	my $self = {};
 	$self->{FILENAME} = '';
-	$self->{XSL_VERSION} = '1.2';
+	$self->{XSL_VERSION} = '1.3';
 	bless($self);
 	return $self;
 }
