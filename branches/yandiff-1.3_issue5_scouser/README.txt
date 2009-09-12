@@ -24,14 +24,14 @@ run:
 	perl Build manifest
 
 Ensure that the $VERSION string is set correctly in bin/yandiff (in this
-example it is version 1.1) and make sure that CHANGES.txt has been updated.
+example it is version 1.2) and make sure that CHANGES.txt has been updated.
 Then run the following:
  
 	perl Build.PL 
 	perl Build disttest
 	perl Build dist
-	tar xzvf yandiff-1.1.tar.gz 
-	zip -Dlvr yandiff-1.1.zip yandiff-1.1
+	tar xzvf yandiff-1.2.tar.gz 
+	zip -Dlvr yandiff-1.2.zip yandiff-1.2
 	perl Build realclean
 	svn status
 

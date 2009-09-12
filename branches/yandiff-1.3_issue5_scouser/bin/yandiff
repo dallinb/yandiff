@@ -31,39 +31,32 @@ use strict;
 # Find hosts that are in both the observed and baseline scans.  Compare the
 # status of the host and the status of each of the individual ports.
 sub show_changed_hosts {
-	my ($format, $baseline, $observed, $ports, $unique_hostnames,
-	    $baseline_ip2h, $observed_h2ip) = @_;
+	my ($format, $baseline, $observed, $ports) = @_;
 	my $output = "\nChanged hosts:\n" if ($format eq 'text');
 	my $portid;
 	my @ip_list;
 	$output = "" if ($format eq 'xml');
 
-	for my $baseline_ip ($baseline->get_ips()) {
-		my $observed_ip = $baseline_ip;
+	for my $baseline_ip ($baseline->common($observed)) {
+		my $baseline_host = $baseline->get_host($baseline_ip);
+		my $observed_host;
 
-		# check that the hostname of the baseline host appears in the
-		# observed file
-		if ($unique_hostnames) {
-			my $hostname = $baseline_ip2h->{$baseline_ip};
-			$observed_ip = $observed_h2ip->{$hostname};
-			next if (!$observed_ip);
+		if ($observed->dhcp()) {
+			$observed_host = $baseline->get_host_dhcp($baseline_ip,
+				$observed);
+		} else {
+			$observed_host = $observed->get_host($baseline_ip);
 		}
 
-		my $observed_host = $observed->get_host($observed_ip);
-		next if (!defined($observed_host));
-
-		# To have reached here the host exists in both the baseline
-		# and the observed scans.
 		my $host = Host->new();
 		$host->hostname($observed_host->hostname());
-		$host->ip_addr($observed_ip);
+		$host->ip_addr($observed_host->addr());
 		$host->mac_addr($observed_host->mac_addr());
 		$host->status($observed_host->status());
 		my $host_has_changed = 0;
 		my @changed_services = ();
 		my @missing_services = ();
 		my @new_services = ();
-		my $baseline_host = $baseline->get_host($baseline_ip);
 		$host_has_changed = 1
 		    if ($observed_host->status() ne $baseline_host->status());
 
@@ -324,34 +317,16 @@ sub show_changed_hosts {
 # Find hosts that are defined in the baseline but are missing from the
 # observed scan.
 sub show_missing_hosts {
-	my ($format, $baseline, $observed, $unique_hostnames,
-	    $baseline_ip2h, $observed_h2ip) = @_;
+	my ($format, $baseline, $observed) = @_;
 	my @hosts = ();
 
-	for my $baseline_ip ($baseline->get_ips()) {
-		my $observed_ip = $baseline_ip;
-		my $observed_host;
-
-		# check if the hostname of the baseline host appears in the
-		# observed file
-		if ($unique_hostnames) {
-			my $hostname = $baseline_ip2h->{$baseline_ip};
-			$observed_ip = $observed_h2ip->{$hostname};
-		}
-
-		$observed_host = $observed->get_host($observed_ip)
-		    if defined($observed_ip);
-
-		# If we get to this point but either the observed_ip or
-		# observed_host is not set then we have a missing host.
-		if ((!defined($observed_ip)) || (!defined($observed_host))) {
+	for my $baseline_ip ($baseline->unique($observed)) {
 			my $baseline_host = $baseline->get_host($baseline_ip);
 			my $host = Host->new();
 			$host->hostname($baseline_host->hostname());
 			$host->ip_addr($baseline_ip);
 			$host->mac_addr($baseline_host->mac_addr());
 			push @hosts, $host;
-		}
 	}
 
 	my $output = '';
@@ -376,61 +351,40 @@ sub show_missing_hosts {
 # Find hosts that are defined in the baseline scan, but are missing from the
 # observed scan.
 sub show_new_hosts {
-	my ($format, $baseline, $observed, $unique_hostnames, $observed_ip2h,
-	    $baseline_h2ip) = @_;
+	my ($format, $baseline, $observed) = @_;
 	my @hosts = ();
-	my $baseline_host;
 
-	for my $observed_ip ($observed->get_ips()) {
-		my $baseline_ip = $observed_ip;
+	for my $ip ($observed->unique($baseline)) {
+		my $observed_host = $observed->get_host($ip);
+		my $host = Host->new();
+		$host->hostname($observed_host->hostname());
+		$host->ip_addr($ip);
+		$host->mac_addr($observed_host->mac_addr());
+		$host->status($observed_host->status());
 
-		if ($unique_hostnames) {
-			# Check if the hostname found in the observed scan
-			# can also be found in the baseline scan.  If it is
-			# then this is not a new host.
-			my $hostname = $observed_ip2h->{$observed_ip};
-			$baseline_ip = $baseline_h2ip->{$hostname}
-			    if (exists($baseline_h2ip->{$hostname}));
+		for my $portid ($observed_host->tcp_ports()) {
+			my $s = $observed_host->tcp_service($portid);
+			my $service = Service->new();
+			$service->name($s->name());
+			$service->portid($portid);
+			$service->proto("tcp");
+			$service->status(
+			    $observed_host->tcp_port_state($portid));
+			$host->add_service($service);
 		}
 
-		if (defined($baseline_ip)) {
-			$baseline_host = $baseline->get_host($baseline_ip)
-		} else {
-			$baseline_host = undef;
+		for my $portid ($observed_host->udp_ports()) {
+			my $s = $observed_host->udp_service($portid);
+			my $service = Service->new();
+			$service->name($s->name());
+			$service->portid($portid);
+			$service->proto("udp");
+			$service->status(
+			    $observed_host->udp_port_state($portid));
+			$host->add_service($service);
 		}
 
-		if (!defined($baseline_host)) {
-			my $observed_host = $observed->get_host($observed_ip);
-			my $host = Host->new();
-			$host->hostname($observed_host->hostname());
-			$host->ip_addr($observed_ip);
-			$host->mac_addr($observed_host->mac_addr());
-			$host->status($observed_host->status());
-
-			for my $portid ($observed_host->tcp_ports()) {
-				my $s = $observed_host->tcp_service($portid);
-				my $service = Service->new();
-				$service->name($s->name());
-				$service->portid($portid);
-				$service->proto("tcp");
-				$service->status(
-				    $observed_host->tcp_port_state($portid));
-				$host->add_service($service);
-			}
-
-			for my $portid ($observed_host->udp_ports()) {
-				my $s = $observed_host->udp_service($portid);
-				my $service = Service->new();
-				$service->name($s->name());
-				$service->portid($portid);
-				$service->proto("udp");
-				$service->status(
-				    $observed_host->udp_port_state($portid));
-				$host->add_service($service);
-			}
-
-			push @hosts, $host;
-		}
+		push @hosts, $host;
 	}
 
 	my $output = '';
@@ -479,8 +433,6 @@ sub show_new_hosts {
 
 # Declare and initialise local variables.
 my $baseline_file;
-my %baseline_h2ip;
-my %baseline_ip2h;
 my ($c, $entry);
 my $command_line;
 my $format;
@@ -490,8 +442,6 @@ my $hostname_key;
 my $man;
 my $node_key = "IP";
 my $observed_file;
-my %observed_h2ip;
-my %observed_ip2h;
 my $output_file;
 my $output_hosts;
 my $output_ports;
@@ -501,13 +451,12 @@ my $show_changed_hosts = 1;
 my $show_missing_hosts = 1;
 my $show_new_hosts = 1;
 my $stylesheet;
-my $unique_hostnames;
 my $xslt;
 
 # OK so all the other variables are in lowercase and local.  The reason why
 # version is specified differently is that that it is compatible with
 # Module::Build therefore making distribution and installing easier.
-my $VERSION = '1.1';
+my $VERSION = '1.2';
 
 $run_date = localtime;
 
@@ -617,51 +566,35 @@ if ($format eq 'text' || $format eq 'xml') {
 # Open and parse the files
 ##############################################################################
 pod2usage(1) if !$baseline_file;
-my $baseline = new Nmap::Parser;
+my $baseline = new Scan;
 $baseline->parsefile($baseline_file);
 pod2usage(1) if !$observed_file;
-my $observed = new Nmap::Parser;
+my $observed = new Scan;
 $observed->parsefile($observed_file);
 
-# Load hostname and IP address details from baseline and observed files
-# checking for unique hostnames
 if ($hostname_key) {
-	$unique_hostnames = 1;
-	my $hostname;
+	# The user has specified that special DHCP jiggery-pokery is to be
+	# done.
+	$baseline->dhcp(1);
+	$baseline->create_maps;
 
-	for my $ip ($baseline->get_ips()) {
-		$hostname = $baseline->get_host($ip)->hostname;
-		$hostname = $ip if ($hostname eq '');
+	if ($baseline->dhcp) {
+		# If the DHCP flag is still true, then the maps were created
+		# successfully.  Otherwise DHCP processing is not possible.
+		$observed->dhcp(1);
+		$observed->create_maps;
 
-		if (defined($baseline_h2ip{$hostname})) {
-			$unique_hostnames = 0;
-			last;
+		if (!$observed->dhcp) {
+			# If we get here, then the baseline maps were created
+			# OK, but the observed maps had something wrong.  We
+			# can't have one without the other, so reset the
+			# baseline DHCP flag back to false.
+			$baseline->dhcp(0);
 		} else {
-			$baseline_h2ip{$hostname} = $ip;
-			$baseline_ip2h{$ip} = $hostname;
+			# If we're here, then both scans have created their
+			# maps OK.
+			$node_key = "Hostname";
 		}
-	}
-
-	if ($unique_hostnames) {
-		for my $ip ($observed->get_ips()) {
-			$hostname = $observed->get_host($ip)->hostname;
-			$hostname = $ip if ($hostname eq '');
-
-			if (defined($observed_h2ip{$hostname})) {
-				$unique_hostnames = 0;
-				last;
-			} else {
-				$observed_h2ip{$hostname} = $ip;
-				$observed_ip2h{$ip} = $hostname;
-			}
-		}
-	}
-
-	if (!$unique_hostnames) {
-		print STDERR "Can't use non-unique hostnames as keys (",
-		    $hostname, ").\n";
-	} else {
-		$node_key = "Hostname";
 	}
 }
 
@@ -673,7 +606,6 @@ if ($output_file) {
 }
 
 # Do the report.
-
 if ($format eq 'text') {
 	print 'yandiff run ', $run_date, "\n",
 	    'command line: ', $command_line, "\n",
@@ -708,14 +640,9 @@ if ($format eq 'text') {
 	print " </parameters>\n";
 }
 
-show_new_hosts($format, $baseline, $observed,
-    $unique_hostnames, \%observed_ip2h, \%baseline_h2ip)
-    if $show_new_hosts;
-show_missing_hosts($format, $baseline, $observed,
-    $unique_hostnames, \%baseline_ip2h, \%observed_h2ip)
-    if $show_missing_hosts;
-show_changed_hosts($format, $baseline, $observed, $output_ports,
-    $unique_hostnames, \%baseline_ip2h, \%observed_h2ip)
+show_new_hosts($format, $baseline, $observed) if $show_new_hosts;
+show_missing_hosts($format, $baseline, $observed) if $show_missing_hosts;
+show_changed_hosts($format, $baseline, $observed, $output_ports)
     if $show_changed_hosts;
 print "</yandiff>\n" if ($format eq 'xml');
 
@@ -879,6 +806,147 @@ sub to_xml {
 1;
 
 ##############################################################################
+# Package: Scan
+#
+# This package is for use with yandiff and is for using an object representing
+# a scan.  It is largely inherited from the Nmap::Parser object.
+#
+##############################################################################
+package Scan;
+use strict;
+use base ("Nmap::Parser");
+
+sub new {
+	my $proto = shift;
+	my $class = ref($proto) || $proto;
+	my $self  = $class->SUPER::new();
+	$self->{DHCP} = 0;
+	$self->{H2IP} = undef;
+	$self->{IP2H} = undef;
+	bless ($self, $class);
+	return $self;
+}
+
+# Provide a list of IP addresses that are present in both the calling scan,
+# and in the provided scan.
+#
+# Arguments:
+#
+#  $scan - the provided scan for comparison
+sub common {
+	my $self = shift;
+	my $scan = shift;
+	my @ip_list = ();
+
+	for my $ip ($self->get_ips()) {
+		my $host;
+
+		if ($self->dhcp()) {
+			$host = $self->get_host_dhcp($ip, $scan);
+		} else {
+			$host = $scan->get_host($ip);
+		}
+
+		push(@ip_list, $ip) if (defined($host));
+	}
+
+	return @ip_list;
+}
+
+# Create the IP and hostname maps
+sub create_maps {
+	my $self = shift;
+	my $hostname;
+
+	for my $ip ($self->get_ips()) {
+		$hostname = $self->get_host($ip)->hostname;
+		$hostname = $ip if ($hostname eq '');
+
+		# If there is a duplicate hostname, the lookups are not
+		# going to work, set the DHCP flag for this scan back
+		# to false and give a message to STDERR.
+		if (defined($self->{H2IP}->{$hostname})) {
+			print STDERR
+			    "WARNING: Duplicate hostname $hostname\n";
+			$self->{DHCP} = 0;
+			last;
+		} else {
+			$self->{H2IP}->{$hostname} = $ip;
+			$self->{IP2H}->{$ip} = $hostname;
+		}
+	}
+
+	return $self->{DHCP};
+}
+
+# Is the object to use DHCP processing
+sub dhcp {
+	my $self = shift;
+	$self->{DHCP} = shift if (@_);
+	return $self->{DHCP};
+}
+
+# Get a mapped host via DHCP
+#
+# Parameters:
+#
+#  $ip - The IP address as contained within the local scan.
+#  $scan - The scan that is being used for a comparison.
+sub get_host_dhcp {
+	my $self = shift;
+	my $ip = shift;
+	my $scan = shift;
+	my $host = undef
+	my $hostname;
+
+	# If the IP is present in this scan, find out it's corresponding
+	# hostname.
+	if (defined($self->{IP2H}->{$ip})) {
+		$hostname = $self->{IP2H}->{$ip};
+
+		# If this hostname exists in the comparison scan, extract
+		# the relevant IP address, followed by the host.
+		if (defined($scan->{H2IP}->{$hostname})) {
+			$ip = $scan->{H2IP}->{$hostname};
+			$host = $scan->get_host($ip);
+		}
+	}
+
+	# Return the host.  This value will still be undifined if the IP
+	# parameter can't be found in the local scan, or the IP/host can't
+	# be found in the comparison scan.
+	return $host;
+}
+
+# Provide a list of IP addresses that are present in the calling scan,
+# but are not present in the provided scan.
+#
+# Parameters:
+#
+#  $scan - the provided scan for comparison
+sub unique {
+	my $self = shift;
+	my $scan = shift;
+	my @ip_list = ();
+
+	for my $ip ($self->get_ips()) {
+		my $host;
+
+		if ($self->dhcp()) {
+			$host = $self->get_host_dhcp($ip, $scan);
+		} else {
+			$host = $scan->get_host($ip);
+		}
+
+		push(@ip_list, $ip) if (!defined($host));
+	}
+
+	return @ip_list;
+}
+
+1;
+
+##############################################################################
 # Package: Service
 #
 # This package is for use with yandiff and is for using an object representing
@@ -1005,7 +1073,7 @@ use strict;
 sub new {
 	my $self = {};
 	$self->{FILENAME} = '';
-	$self->{XSL_VERSION} = '1.2';
+	$self->{XSL_VERSION} = '1.3';
 	bless($self);
 	return $self;
 }
@@ -1027,7 +1095,7 @@ sub generate {
  xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
 <!-- ............... Set the VERSION here ....................... -->
-<xsl:variable name="yandiff_xsl_version">1.1</xsl:variable>
+<xsl:variable name="yandiff_xsl_version">1.2</xsl:variable>
 <!-- ............................................................ -->
 
 <xsl:template match="yandiff">
@@ -1231,10 +1299,13 @@ sub generate {
     <xsl:when test="\@status = 'up'">
      <h2 class="green">
       <xsl:value-of select="\@ip_addr"/>
-      <xsl:if test="\@hostname">
-       / <xsl:value-of select="\@hostname"/>
+      <xsl:if test="\@mac_addr">
+       , <xsl:value-of select="\@mac_addr"/>
       </xsl:if>
-      (<xsl:value-of select="\@status"/>)
+      <xsl:if test="\@hostname">
+       (<xsl:value-of select="\@hostname"/>)
+      </xsl:if>
+      - <xsl:value-of select="\@status"/>
      </h2>
     </xsl:when>
     <xsl:otherwise>
@@ -1274,8 +1345,11 @@ sub generate {
     </xsl:attribute>
    </xsl:element>
    <li><b><xsl:value-of select="\@ip_addr"/>
+      <xsl:if test="\@mac_addr">
+       , <xsl:value-of select="\@mac_addr"/>
+      </xsl:if>
       <xsl:if test="\@hostname">
-       / <xsl:value-of select="\@hostname"/>
+       (<xsl:value-of select="\@hostname"/>)
       </xsl:if>
    </b></li>
   </xsl:for-each>
@@ -1295,19 +1369,25 @@ sub generate {
     <xsl:when test="\@status = 'up'">
      <h2 class="green">
       <xsl:value-of select="\@ip_addr"/>
-      <xsl:if test="\@hostname">
-       / <xsl:value-of select="\@hostname"/>
+      <xsl:if test="\@mac_addr">
+       , <xsl:value-of select="\@mac_addr"/>
       </xsl:if>
-      (<xsl:value-of select="\@status"/>)
+      <xsl:if test="\@hostname">
+       (<xsl:value-of select="\@hostname"/>)
+      </xsl:if>
+      - <xsl:value-of select="\@status"/>
      </h2>
     </xsl:when>
     <xsl:otherwise>
      <h2 class="red">
       <xsl:value-of select="\@ip_addr"/>
-      <xsl:if test="\@hostname">
-       / <xsl:value-of select="\@hostname"/>
+      <xsl:if test="\@mac_addr">
+       , <xsl:value-of select="\@mac_addr"/>
       </xsl:if>
-      (<xsl:value-of select="\@status"/>)
+      <xsl:if test="\@hostname">
+       (<xsl:value-of select="\@hostname"/>)
+      </xsl:if>
+      - <xsl:value-of select="\@status"/>
      </h2>
     </xsl:otherwise>
    </xsl:choose>
@@ -1337,7 +1417,7 @@ sub generate {
  </xsl:if>
 
  <sub>
-  Ndiff stylesheet version: <xsl:value-of select="\$yandiff_xsl_version" />
+  Yandiff stylesheet version: <xsl:value-of select="\$yandiff_xsl_version" />
   &lt;<a href = 
   "http://code.google.com/p/yandiff">http://code.google.com/p/yandiff</a>&gt;
  </sub>
@@ -1536,10 +1616,18 @@ Print a brief help message and exit.
 
 =item B<--hostname-key>
 
-If possible, sort the output order of hosts on their name rather than the
-IP address.  This option also tries to match hostnames to changed IP addresses
-so it is useful in DNS environments where hostnames are static on a machine,
-but may be allocated new IP addresses.
+This flag can be used in a DHCP environment where host names remain static but
+IP addresses are allocated dynamically.  As an example, a baseline is carried
+out on a windows PC (win1) which has an IP of 192.168.1.8 and a Linux node
+(linux1) with an IP of 192.168.1.16.  By the time an observed scan is carried
+out, both nodes have been rebooted and reallocated each other's address while
+retaining their configured names.  Using this flag, the IP addresses are mapped
+back to the original hosts so that win1 in the baseline is compared to win1 in
+the observed file.  Otherwise the IP addresses would be used for the comparison
+meaning win1 would be incorrectly compared to linux1 and vice versa.  Using
+this flag in an environment with static IP allocation would have no functional
+effect.  There would simply be the performance overhead of the unnecessary
+mapping logic. 
 
 =item B<-m>
 
