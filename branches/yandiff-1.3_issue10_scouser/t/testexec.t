@@ -21,9 +21,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 # THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ##############################################################################
-
+use Data::Dumper;
 use File::Spec;
-use Test::Simple tests => 5;
+use Test::Simple tests => 7;
+use XML::Parser;
+use strict;
  
 # See if we can locate the script.
 my $script = File::Spec->catpath('', 'bin', 'yandiff');
@@ -47,3 +49,28 @@ ok($#lines == 9, 'Number of output lines from script');
 # Check the content returned.
 my $last_line = $lines[9];
 ok( $last_line eq "Changed hosts:" , 'Content test');
+
+# Now start testing the XML generated.
+my $baseline = File::Spec->catpath("", 't', 'baseline_qa.xml');
+my $observed = File::Spec->catpath("", 't', 'observed_qa.xml');
+$command_line = "$^X $script --baseline $baseline --observed $observed --format xml";
+$command_output = `$command_line`;
+my $syntax_check = 0;
+my $stage = 'generic';
+my $tree;
+$syntax_check = 1 if (!$command_output);
+my $parser = new XML::Parser(Style => 'Tree');
+
+eval {
+	$tree = $parser->parse($command_output);
+};
+
+$syntax_check = 1 if ($@);
+ok($syntax_check == 0, "Produces valid XML ($stage)");
+$syntax_check = 1 if ($tree->[0] ne 'yandiff');
+$syntax_check = 1 if ($tree->[1]->[3] ne 'parameters');
+$syntax_check = 1 if ($tree->[1]->[4]->[0]->{node_key} ne 'IP');
+$syntax_check = 1 if ($tree->[1]->[4]->[3] ne 'baseline');
+$syntax_check = 1 if ($tree->[1]->[4]->[4]->[3] ne 'file');
+print Dumper($tree->[1]->[4]->[4]->[4]->[2]);
+ok($syntax_check == 0, "Syntax Test ($stage)");
