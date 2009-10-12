@@ -27,7 +27,7 @@ use Test::Simple tests => 25;
 use XML::Parser;
 use strict;
 
-#use t::testgen;
+use t::testgen;
  
 # See if we can locate the script.
 my $script = File::Spec->catpath('', 'bin', 'yandiff');
