@@ -14,4 +14,5 @@ t/issue7.xml
 t/oA9.xml
 t/observed_qa.xml
 t/testexec.t
+t/testgen.pm
 WIN-INSTALL.txt
