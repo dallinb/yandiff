@@ -66,6 +66,8 @@ my $tree;
 $syntax_check = 1 if (!$command_output);
 my $parser = new XML::Parser(Style => 'Tree');
 
+# We enclose the parse function within the eval so that we can catch parse
+# error exceptions.  Otherwise we're not notified of syntax errors.
 eval {
 	$tree = $parser->parse($command_output);
 };
@@ -73,6 +75,7 @@ eval {
 $syntax_check = 1 if ($@);
 ok($syntax_check == 0, "Produces valid XML");
 
+# Now check the contents of specific fields.
 $syntax_check = 0;
 $syntax_check = 1 if ($tree->[0] ne 'yandiff');
 $syntax_check = 1 if ($tree->[1]->[3] ne 'parameters');
