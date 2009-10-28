@@ -28,14 +28,492 @@ use Nmap::Parser;
 use Pod::Usage;
 use strict;
 
+##############################################################################
+# Main processing starts here.
+##############################################################################
+
+# Declare and initialise local variables.
+my $baseline_file;
+my ($c, $entry);
+my $command_line;
+my $format;
+my $gen_stylesheet;
+my $help;
+my $hostname_key;
+my $man;
+my $node_key = "IP";
+my $observed_file;
+my $output_file;
+my $output_hosts;
+my $output_ports;
+my $report;
+my $run_date;
+my $show_version;
+my $stylesheet;
+my $xslt;
+
+# OK so all the other variables are in lowercase and local.  The reason why
+# version is specified differently is that that it is compatible with
+# Module::Build therefore making distribution and installing easier.
+my $VERSION = '1.2';
+
+$run_date = localtime;
+$report = Report->new;
+
+##############################################################################
+# Command line parsing.
+##############################################################################
+
+if ($#ARGV == 1 and -f $ARGV[0] and -f $ARGV[1])
+{
+	@ARGV = ('--baseline', $ARGV[0], '--observed', $ARGV[1]);
+}
+
+$command_line = join(' ', @ARGV);
+
+GetOptions(
+	'baseline=s' => \$baseline_file,
+	'format=s' => \$format,
+	'gen-stylesheet=s' => \$gen_stylesheet,
+	'help|?' => \$help,
+	'hostname-key|hk' => \$hostname_key,
+	'man' => \$man,
+	'observed|o=s' => \$observed_file,
+	'output-file|of=s' => \$output_file,
+	'output-hosts|os=s' => \$output_hosts,
+	'output-ports|op=s' => \$output_ports,
+	'stylesheet=s' => \$stylesheet,
+	'version|V' => \$show_version
+	) or pod2usage(1);
+
+pod2usage(0) if $help;
+pod2usage(-verbose => 2) if $man;
+
+if ($show_version) {
+	if ($baseline_file || $format || $gen_stylesheet || $help || $man ||
+	    $observed_file || $output_ports || $stylesheet) {
+		pod2usage(1);
+	} else {
+		print "Version: $VERSION\n";
+		exit(0);
+	}
+}
+
+if ($gen_stylesheet) {
+	if ($baseline_file || $format || $help || $hostname_key || $man ||
+	    $observed_file || $output_ports || $show_version || $stylesheet) {
+		pod2usage(1);
+	} else {
+		$xslt = new Stylesheet;
+		$xslt->generate($gen_stylesheet);
+		exit(0);
+	}
+}
+
+if ($stylesheet && ! -e $stylesheet) {
+	unless ($stylesheet =~ m/:\/\//i) {
+		# To be here, a stylesheet has been specified that is not a
+		# URL (i.e. it is a file) and the file doesn't currently
+		# exist, so create it.
+		$xslt = new Stylesheet;
+		$xslt->generate($stylesheet);
+	}
+}
+
+if ($output_hosts) {
+	$report->show_changed_hosts(0);
+	$report->show_missing_hosts(0);
+	$report->show_new_hosts(0);
+
+	for (my $i = 0; $i < length($output_hosts); $i++) {
+		$c = substr($output_hosts, $i, 1);
+		if ($c eq "c") {
+			$report->show_changed_hosts(1);
+		} elsif ($c eq "m") {
+			$report->show_missing_hosts(1);
+		} elsif ($c eq "n") {
+			$report->show_new_hosts(1);
+		} else {
+			pod2usage(1);
+		}
+	}
+}
+
+if ($output_ports) {
+	for (my $i = 0; $i < length($output_ports); $i++) {
+		$c = substr($output_ports, $i, 1);
+		if ($c eq 'o') {
+			next;
+		} elsif ($c eq 'f') {
+			next;
+		} elsif ($c eq 'c') {
+			next;
+		} elsif ($c eq 'x') {
+			next;
+		} else {
+			pod2usage(1);
+		}
+	}
+}
+
+if ($format) {
+	if ($format eq 'xml') {
+		$report->format($format);
+	} else {
+		pod2usage(1);
+	}
+}
+
+##############################################################################
+# Open and parse the files
+##############################################################################
+pod2usage(1) if !$baseline_file;
+my $baseline = new Scan;
+$baseline->parsefile($baseline_file);
+pod2usage(1) if !$observed_file;
+my $observed = new Scan;
+$observed->parsefile($observed_file);
+
+if ($hostname_key) {
+	# The user has specified that special DHCP jiggery-pokery is to be
+	# done.
+	$baseline->dhcp(1);
+	$baseline->create_maps;
+
+	if ($baseline->dhcp) {
+		# If the DHCP flag is still true, then the maps were created
+		# successfully.  Otherwise DHCP processing is not possible.
+		$observed->dhcp(1);
+		$observed->create_maps;
+
+		if (!$observed->dhcp) {
+			# If we get here, then the baseline maps were created
+			# OK, but the observed maps had something wrong.  We
+			# can't have one without the other, so reset the
+			# baseline DHCP flag back to false.
+			$baseline->dhcp(0);
+		} else {
+			# If we're here, then both scans have created their
+			# maps OK.
+			$node_key = "Hostname";
+		}
+	}
+}
+
+# Redirect the output if requested.  Obviously this must be called after
+# all command line checks and usage messages.
+$report->output_file($output_file) if ($output_file);
+$report->go();
+
+##############################################################################
+# Package: Host
+#
+# This package is for use with yandiff and is for using an object representing
+# a host.
+#
+# Example:
+#
+#	$host = Host->new();
+#	$host->hostname("example");
+#	$host->status("up");
+#	$host->ip_addr("192.168.0.1");
+#
+#	...
+#
+#	$host->add_service($service);
+##############################################################################
+package Host;
+use strict;
+
+# Create a new instance of the Host object.
+sub new {
+	my $self = {};
+	$self->{HOSTNAME} = undef;
+	$self->{IP_ADDR} = undef;
+	$self->{MAC_ADDR} = undef;
+	$self->{PREVIOUS} = undef;
+	$self->{STATUS} = undef;
+	$self->{SERVICES} = [];
+	bless($self);
+	return $self;
+}
+
+# Associate a Service object with this host.
+sub add_service {
+	my $self = shift;
+	push @{ $self->{SERVICES} }, shift;
+}
+
+# A conveniance function for numeric sorting.
+sub by_number_ascending
+{
+	$a <=> $b;
+}
+
+# Return a service that matches the associated portid and protocol.
+#
+# Example:
+#
+#	$service = $host->get_service(80, "tcp");
+sub get_service {
+	my $self = shift;
+	my $portid = shift;
+	my $proto = shift;
+	my $null_service = ();
+
+	for my $service (@{ $self->{SERVICES} }) {
+		if ($portid eq $service->portid && $proto eq $service->proto) {
+			return $service;
+		}
+	}
+
+	return $null_service;
+}
+
+# Returns a sorted list of the portid's for the TCP services associated with
+# the host.
+sub get_tcp_service_list {
+	my $self = shift;
+	my @list = ();
+
+	for my $service (@{ $self->{SERVICES} }) {
+		push @list, $service->portid if ($service->proto eq "tcp");
+	}
+
+	return sort(by_number_ascending @list);
+}
+
+# Returns a sorted list of the portid's for the UDP services associated with
+# the host.
+sub get_udp_service_list {
+	my $self = shift;
+	my @list = ();
+
+	for my $service (@{ $self->{SERVICES} }) {
+		push @list, $service->portid if ($service->proto eq "udp");
+	}
+
+	return sort(by_number_ascending @list);
+}
+
+# Get or set the hostname
+sub hostname {
+	my $self = shift;
+	$self->{HOSTNAME} = shift if (@_);
+	return $self->{HOSTNAME};
+}
+
+# Get or set the IP address.
+sub ip_addr {
+	my $self = shift;
+	$self->{IP_ADDR} = shift if (@_);
+	return $self->{IP_ADDR};
+}
+
+# Get or set the MAC address.
+sub mac_addr {
+	my $self = shift;
+	$self->{MAC_ADDR} = shift if (@_);
+	return $self->{MAC_ADDR};
+}
+
+# Get or set the status of the host.
+sub status {
+	my $self = shift;
+	$self->{STATUS} = shift if (@_);
+	return $self->{STATUS};
+}
+
+# Return the host details (not any associated ports) as xml.
+sub to_xml {
+	my $self = shift;
+	my $close_fully = shift;
+	my $s = '<host ip_addr="' . $self->{IP_ADDR} . '"';
+	$s .= ' mac_addr="' . $self->{MAC_ADDR} . '"'
+	    if defined $self->{MAC_ADDR};
+	$s .= ' hostname="' . $self->{HOSTNAME} . '"' if ($self->{HOSTNAME});
+	$s .= ' status="' . $self->{STATUS} . '"' if defined $self->{STATUS};
+	my $close = ($close_fully) ? '/>' : '>';
+	$s .= $close;
+	return $s;
+}
+1;
+
+##############################################################################
+# Package: Report
+#
+# This package is for use with yandiff and is for using an object representing
+# a report.
+#
+##############################################################################
+package Report;
+use Data::Dumper;
+use XML::Parser;
+use strict;
+
+sub new {
+	my $self = {};
+	$self->{FORMAT} = 'text';
+	$self->{OUTPUT_FILE} = undef;
+	$self->{SHOW_CHANGED_HOSTS} = 1;
+	$self->{SHOW_MISSING_HOSTS} = 1;
+	$self->{SHOW_NEW_HOSTS} = 1;
+	bless($self);
+	return $self;
+}
+
+# Is the output format to be text or xml?
+sub format {
+	my $self = shift;
+	$self->{FORMAT} = shift if (@_);
+	return $self->{FORMAT};
+}
+
+# Actually generate the report
+#
+# Globals:
+#	$VERSION		(character string)
+#	$baseline		(Scan object)
+#	$baseline_file		(character string)
+#	$command_line		(character string)
+#	$node_key		(character string)
+#	$observed		(Scan object)
+#	$observed_file		(character string)
+#	$output_ports		(character string)
+#	$run_date		(character string)
+#	$stylesheet		(character string)
+sub go {
+	my $self = shift;
+	my $xml;
+
+	$xml = '<?xml version="1.0" encoding="utf-8"?>'
+    	    . "\n";
+	$xml .= '<?xml-stylesheet type="text/xsl" href="'
+    	    . $stylesheet
+    	    . '"?>'
+    	    . "\n" if ($stylesheet);
+	$xml .= "<yandiff rundate=\"$run_date\""
+    	    . ' version="'
+	    . $VERSION
+	    . '"'
+    	    . ' command_line="'
+	    . $command_line
+	    . '">'
+	    . "\n";
+	$xml .= " <parameters node_key=\"$node_key\">\n";
+	my $session = $baseline->get_session();
+	$xml .= "  <baseline>\n"
+    	    . "   <file>$baseline_file</file>\n"
+    	    . '   <scan_args>'
+	    . $session->scan_args
+	    . "</scan_args>\n"
+    	    . '   <nmap_version>'
+	    . $session->nmap_version
+	    . "</nmap_version>\n"
+    	    . '   <scan_start>'
+	    . $session->start_str
+	    . "</scan_start>\n"
+    	    . "  </baseline>\n";
+	$session = $observed->get_session();
+	$xml .= "  <observed>\n"
+    	    . "   <file>$observed_file</file>\n"
+    	    . '   <scan_args>'
+	    . $session->scan_args
+	    . "</scan_args>\n"
+    	    . '   <nmap_version>'
+	    . $session->nmap_version
+	    . "</nmap_version>\n"
+    	    . '   <scan_start>'
+	    . $session->start_str
+	    . "</scan_start>\n"
+    	    . "  </observed>\n"
+	    . " </parameters>\n";
+
+	$xml .= report_new_hosts($baseline, $observed)
+	    if $self->show_new_hosts;
+	$xml .= report_missing_hosts($baseline, $observed)
+	    if $self->show_missing_hosts;
+	$xml .= report_changed_hosts($baseline, $observed,
+	    $output_ports) if $self->show_changed_hosts;
+	$xml .= "</yandiff>\n";
+
+	if ($self->{FORMAT} eq 'xml') {
+		print $xml;
+	} else {
+		my $parser = new XML::Parser(Handlers => {
+		    Start => \&handle_start
+		});
+		$parser->parse($xml);
+	}
+}
+
+# An XML::Parser handling sub-routine.  See the doucmentation for XML::Parser
+# for more information.
+sub handle_start {
+	my ($p, $element, %attrs) = @_;
+	my @context = $p->context;
+
+	if ($element eq 'yandiff') {
+		print "$element run $attrs{rundate}\n",
+		    "command line: $attrs{command_line}\n",
+		    "baseline: $baseline_file\n",
+		    "observed: $observed_file\n";
+	} elsif ($element eq 'parameters') {
+		print "node key: $attrs{node_key}";
+	} elsif ($element eq 'new') {
+		print "\nNew hosts:\n";
+	} elsif ($element eq 'host') {
+		my $ip_addr = $attrs{ip_addr};
+		my $mac_addr = $attrs{mac_addr};
+		my $hostname = $attrs{hostname};
+		my $status = $attrs{status};
+		print "\t$ip_addr";
+		print ", $mac_addr" if ($mac_addr);
+		print " ($hostname)" if ($hostname);
+		print " - $status" if ($status);
+		print "\n";
+	} elsif ($element eq 'service' && $context[1] eq 'new') {
+		print "\t\t$attrs{portid}/$attrs{proto}/$attrs{status}\n";
+	} elsif ($element eq 'service' && $context[1] eq 'changed') {
+		print "\t\t\t$attrs{portid}/$attrs{proto}/$attrs{status}";
+		my $name = $attrs{name};
+		print " ($name)" if ($name);
+		my $previous = $attrs{previous};
+		print " (previously $previous)" if ($previous);
+		print "\n";
+	} elsif ($element eq 'missing') {
+		print "\nMissing hosts:\n";
+	} elsif ($element eq 'changed') {
+		print "\nChanged hosts:\n";
+	} elsif ($element eq 'new_services') {
+		print "\t\tNew Services:\n";
+	} elsif ($element eq 'missing_services') {
+		print "\t\tMissing Services:\n";
+	} elsif ($element eq 'changed_services') {
+		print "\t\tChanged Services:\n";
+	}
+}
+
+# Get or set the output file.
+sub output_file {
+	my $self = shift;
+
+	if (@_) {
+		$self->{OUTPUT_FILE} = shift;
+		open OUTPUT, '>', $self->{OUTPUT_FILE} or die $!;
+		STDOUT->fdopen(\*OUTPUT, 'w') or die $!;
+	}
+
+	return $self->{OUTPUT_FILE};
+}
+
 # Find hosts that are in both the observed and baseline scans.  Compare the
 # status of the host and the status of each of the individual ports.
-sub show_changed_hosts {
-	my ($format, $baseline, $observed, $ports) = @_;
-	my $output = "\nChanged hosts:\n" if ($format eq 'text');
+sub report_changed_hosts {
+	my ($baseline, $observed, $ports) = @_;
 	my $portid;
 	my @ip_list;
-	$output = "" if ($format eq 'xml');
+	my $output;
 
 	for my $baseline_ip ($baseline->common($observed)) {
 		my $baseline_host = $baseline->get_host($baseline_ip);
@@ -231,93 +709,66 @@ sub show_changed_hosts {
 		# To have reached here then a change has been detected in the
 		# host between the scans.
 
-		if ($format eq 'text') {
-			$output .= "\t" . $host->to_string() . "\n";
-			$output .= "\t\tNew Services:\n";
+		$output .= "  " . $host->to_xml(0) . "\n";
+
+		if (scalar(@new_services) == 0) {
+			$output .= "   <new_services/>\n";
+		} else {
+			$output .= "   <new_services>\n";
 
 			for my $service (@new_services) {
-				$output .= "\t\t\t" . $service->to_string()
+				$output .= "    "
+				    . $service->to_xml()
 				    . "\n";
 			}
 
-			$output .= "\t\tMissing Services:\n";
+			$output .= "   </new_services>\n";
+		}
+
+		if (scalar(@missing_services) == 0) {
+			$output .= "   <missing_services/>\n";
+		} else {
+			$output .= "   <missing_services>\n";
 
 			for my $service (@missing_services) {
-				$output .= "\t\t\t" . $service->to_string()
+				$output .= "    "
+				    . $service->to_xml()
 				    . "\n";
 			}
 
-			$output .= "\t\tChanged Services:\n";
+			$output .= "   </missing_services>\n";
+		}
+
+		if (scalar(@changed_services) == 0) {
+			$output .= "   <changed_services/>\n";
+		} else {
+			$output .= "   <changed_services>\n";
 
 			for my $service (@changed_services) {
-				$output .= "\t\t\t" . $service->to_string()
+				$output .= "    "
+				    . $service->to_xml()
 				    . "\n";
 			}
-		} else {
-			# XML output for differing hosts.
-			$output .= "  " . $host->to_xml(0) . "\n";
 
-			if (scalar(@new_services) == 0) {
-				$output .= "   <new_services/>\n";
-			} else {
-				$output .= "   <new_services>\n";
-
-				for my $service (@new_services) {
-					$output .= "    "
-					    . $service->to_xml()
-					    . "\n";
-				}
-
-				$output .= "   </new_services>\n";
-			}
-
-			if (scalar(@missing_services) == 0) {
-				$output .= "   <missing_services/>\n";
-			} else {
-				$output .= "   <missing_services>\n";
-
-				for my $service (@missing_services) {
-					$output .= "    "
-					    . $service->to_xml()
-					    . "\n";
-				}
-
-				$output .= "   </missing_services>\n";
-			}
-
-			if (scalar(@changed_services) == 0) {
-				$output .= "   <changed_services/>\n";
-			} else {
-				$output .= "   <changed_services>\n";
-
-				for my $service (@changed_services) {
-					$output .= "    "
-					    . $service->to_xml()
-					    . "\n";
-				}
-
-				$output .= "   </changed_services>\n";
-			}
-
-			$output .= "  </host>\n";
+			$output .= "   </changed_services>\n";
 		}
+
+		$output .= "  </host>\n";
 	}
 
-	if ($format eq 'xml') {
-		if ($output) {
-			$output = " <changed>\n" . $output . " </changed>\n";
-		} else {
-			$output = " <changed/>\n";
-		}
+	if ($output) {
+		$output = " <changed>\n" . $output . " </changed>\n";
+	} else {
+		$output = " <changed/>\n";
 	}
 
-	print $output;
+	return $output;
 }
 
 # Find hosts that are defined in the baseline but are missing from the
 # observed scan.
-sub show_missing_hosts {
-	my ($format, $baseline, $observed) = @_;
+sub report_missing_hosts {
+	my ($baseline, $observed) = @_;
 	my @hosts = ();
 
 	for my $baseline_ip ($baseline->unique($observed)) {
@@ -330,28 +781,21 @@ sub show_missing_hosts {
 	}
 
 	my $output = '';
-	$output = "\nMissing hosts:\n" if ($format eq 'text');
-	$output = " <missing>\n" if (scalar(@hosts) != 0
-	    && $format eq 'xml');
-	$output = " <missing/>\n" if (scalar(@hosts) == 0
-	    && $format eq 'xml');
+	$output = " <missing>\n" if (scalar(@hosts) != 0);
+	$output = " <missing/>\n" if (scalar(@hosts) == 0);
 
 	for my $host (@hosts) {
-		$output .= "\t" . $host->to_string . "\n"
-		    if ($format eq 'text');
-		$output .= "  " . $host->to_xml(1) . "\n"
-		    if ($format eq 'xml');
+		$output .= "  " . $host->to_xml(1) . "\n";
 	}
 
-	$output .= " </missing>\n"
-	    if (scalar(@hosts) != 0 && $format eq 'xml');
-	print $output;
+	$output .= " </missing>\n" if (scalar(@hosts) != 0);
+	return $output;
 }
 
 # Find hosts that are defined in the baseline scan, but are missing from the
 # observed scan.
-sub show_new_hosts {
-	my ($format, $baseline, $observed) = @_;
+sub report_new_hosts {
+	my ($baseline, $observed) = @_;
 	my @hosts = ();
 
 	for my $ip ($observed->unique($baseline)) {
@@ -387,407 +831,48 @@ sub show_new_hosts {
 		push @hosts, $host;
 	}
 
-	my $output = '';
-	$output = "\nNew hosts:\n" if ($format eq 'text');
-	$output = " <new>\n" if (scalar(@hosts) != 0 && $format eq 'xml');
-	$output = " <new/>\n" if (scalar(@hosts) == 0 && $format eq 'xml');
+	my $output;
+	$output = " <new>\n" if (scalar(@hosts) != 0);
+	$output = " <new/>\n" if (scalar(@hosts) == 0);
 
 	for my $host (@hosts) {
-		if ($format eq 'text') {
-			$output .= "\t" . $host->to_string . "\n";
-		} else {
-			$output .= "  " . $host->to_xml(0) . "\n";
-		}
+		$output .= "  " . $host->to_xml(0) . "\n";
 
 		for my $portid ($host->get_tcp_service_list()) {
 			my $svc = $host->get_service($portid, "tcp");
-
-			if ($format eq 'text') {
-				$output .= "\t\t" . $svc->to_string() . "\n";
-			} else {
-				$output .= "   " . $svc->to_xml() . "\n";
-			}
+			$output .= "   " . $svc->to_xml() . "\n";
 		}
 
 		for my $portid ($host->get_udp_service_list()) {
 			my $svc = $host->get_service($portid, "udp");
-
-			if ($format eq 'text') {
-				$output .= "\t\t" . $svc->to_string() . "\n";
-			} else {
-				$output .= "   " . $svc->to_xml() . "\n";
-			}
+			$output .= "   " . $svc->to_xml() . "\n";
 		}
 
-		$output .= "  </host>\n" if ($format eq 'xml');
+		$output .= "  </host>\n";
 	}
 
-	$output .= " </new>\n"
-	    if (scalar(@hosts) != 0 && $format eq 'xml');
-	print $output;
+	$output .= " </new>\n" if (scalar(@hosts) != 0);
+	return $output;
 }
 
-##############################################################################
-# Main processing starts here.
-##############################################################################
-
-# Declare and initialise local variables.
-my $baseline_file;
-my ($c, $entry);
-my $command_line;
-my $format;
-my $gen_stylesheet;
-my $help;
-my $hostname_key;
-my $man;
-my $node_key = "IP";
-my $observed_file;
-my $output_file;
-my $output_hosts;
-my $output_ports;
-my $run_date;
-my $show_version;
-my $show_changed_hosts = 1;
-my $show_missing_hosts = 1;
-my $show_new_hosts = 1;
-my $stylesheet;
-my $xslt;
-
-# OK so all the other variables are in lowercase and local.  The reason why
-# version is specified differently is that that it is compatible with
-# Module::Build therefore making distribution and installing easier.
-my $VERSION = '1.2';
-
-$run_date = localtime;
-
-##############################################################################
-# Command line parsing.
-##############################################################################
-
-if ($#ARGV == 1 and -f $ARGV[0] and -f $ARGV[1])
-{
-	@ARGV = ('--baseline', $ARGV[0], '--observed', $ARGV[1]);
-}
-
-$command_line = join(' ', @ARGV);
-
-GetOptions(
-	'baseline=s' => \$baseline_file,
-	'format=s' => \$format,
-	'gen-stylesheet=s' => \$gen_stylesheet,
-	'help|?' => \$help,
-	'hostname-key|hk' => \$hostname_key,
-	'man' => \$man,
-	'observed|o=s' => \$observed_file,
-	'output-file|of=s' => \$output_file,
-	'output-hosts|os=s' => \$output_hosts,
-	'output-ports|op=s' => \$output_ports,
-	'stylesheet=s' => \$stylesheet,
-	'version|V' => \$show_version
-	) or pod2usage(1);
-
-pod2usage(0) if $help;
-pod2usage(-verbose => 2) if $man;
-
-if ($show_version) {
-	if ($baseline_file || $format || $gen_stylesheet || $help || $man ||
-	    $observed_file || $output_ports || $stylesheet) {
-		pod2usage(1);
-	} else {
-		print "Version: $VERSION\n";
-		exit(0);
-	}
-}
-
-if ($gen_stylesheet) {
-	if ($baseline_file || $format || $help || $hostname_key || $man ||
-	    $observed_file || $output_ports || $show_version || $stylesheet) {
-		pod2usage(1);
-	} else {
-		$xslt = new Stylesheet;
-		$xslt->generate($gen_stylesheet);
-		exit(0);
-	}
-}
-
-$format = 'text' if (!$format);
-
-if ($stylesheet && ! -e $stylesheet) {
-	unless ($stylesheet =~ m/:\/\//i) {
-		# To be here, a stylesheet has been specified that is not a
-		# URL (i.e. it is a file) and the file doesn't currently
-		# exist, so create it.
-		$xslt = new Stylesheet;
-		$xslt->generate($stylesheet);
-	}
-}
-
-if ($output_hosts) {
-	$show_changed_hosts = $show_missing_hosts = $show_new_hosts = 0;
-
-	for (my $i = 0; $i < length($output_hosts); $i++) {
-		$c = substr($output_hosts, $i, 1);
-		if ($c eq "c") {
-			$show_changed_hosts = 1;
-		} elsif ($c eq "m") {
-			$show_missing_hosts = 1;
-		} elsif ($c eq "n") {
-			$show_new_hosts = 1;
-		} else {
-			pod2usage(1);
-		}
-	}
-}
-
-if ($output_ports) {
-	for (my $i = 0; $i < length($output_ports); $i++) {
-		$c = substr($output_ports, $i, 1);
-		if ($c eq 'o') {
-			next;
-		} elsif ($c eq 'f') {
-			next;
-		} elsif ($c eq 'c') {
-			next;
-		} elsif ($c eq 'x') {
-			next;
-		} else {
-			pod2usage(1);
-		}
-	}
-}
-
-if ($format eq 'text' || $format eq 'xml') {
-	;
-} else {
-	pod2usage(1);
-}
-
-##############################################################################
-# Open and parse the files
-##############################################################################
-pod2usage(1) if !$baseline_file;
-my $baseline = new Scan;
-$baseline->parsefile($baseline_file);
-pod2usage(1) if !$observed_file;
-my $observed = new Scan;
-$observed->parsefile($observed_file);
-
-if ($hostname_key) {
-	# The user has specified that special DHCP jiggery-pokery is to be
-	# done.
-	$baseline->dhcp(1);
-	$baseline->create_maps;
-
-	if ($baseline->dhcp) {
-		# If the DHCP flag is still true, then the maps were created
-		# successfully.  Otherwise DHCP processing is not possible.
-		$observed->dhcp(1);
-		$observed->create_maps;
-
-		if (!$observed->dhcp) {
-			# If we get here, then the baseline maps were created
-			# OK, but the observed maps had something wrong.  We
-			# can't have one without the other, so reset the
-			# baseline DHCP flag back to false.
-			$baseline->dhcp(0);
-		} else {
-			# If we're here, then both scans have created their
-			# maps OK.
-			$node_key = "Hostname";
-		}
-	}
-}
-
-# Redirect the output if requested.  Obviously this must be called after
-# all command line checks and usage messages.
-if ($output_file) {
-	open OUTPUT, '>', $output_file or die $!;
-	STDOUT->fdopen(\*OUTPUT, 'w') or die $!;
-}
-
-# Do the report.
-if ($format eq 'text') {
-	print 'yandiff run ', $run_date, "\n",
-	    'command line: ', $command_line, "\n",
-	    'baseline: ', $baseline_file, "\n",
-	    'observed: ', $observed_file, "\n",
-	    'node key: ', $node_key;
-} else {
-	print '<?xml version="1.0" encoding="utf-8"?>',
-	    "\n";
-	print '<?xml-stylesheet type="text/xsl" href="',
-	    $stylesheet,
-	    '"?>',
-	    "\n" if ($stylesheet);
-	print "<yandiff rundate=\"$run_date\"",
-	    ' version="', $VERSION, '"',
-	    ' command_line="', $command_line, '">', "\n";
-	print " <parameters node_key=\"$node_key\">\n";
-	my $session = $baseline->get_session();
-	print "  <baseline>\n",
-	    "   <file>$baseline_file</file>\n",
-	    '   <scan_args>', $session->scan_args, "</scan_args>\n",
-	    '   <nmap_version>', $session->nmap_version, "</nmap_version>\n",
-	    '   <scan_start>', $session->start_str, "</scan_start>\n",
-	    "  </baseline>\n";
-	$session = $observed->get_session();
-	print "  <observed>\n",
-	    "   <file>$observed_file</file>\n",
-	    '   <scan_args>', $session->scan_args, "</scan_args>\n",
-	    '   <nmap_version>', $session->nmap_version, "</nmap_version>\n",
-	    '   <scan_start>', $session->start_str, "</scan_start>\n",
-	    "  </observed>\n";
-	print " </parameters>\n";
-}
-
-show_new_hosts($format, $baseline, $observed) if $show_new_hosts;
-show_missing_hosts($format, $baseline, $observed) if $show_missing_hosts;
-show_changed_hosts($format, $baseline, $observed, $output_ports)
-    if $show_changed_hosts;
-print "</yandiff>\n" if ($format eq 'xml');
-
-##############################################################################
-# Package: Host
-#
-# This package is for use with yandiff and is for using an object representing
-# a host.
-#
-# Example:
-#
-#	$host = Host->new();
-#	$host->hostname("example");
-#	$host->status("up");
-#	$host->ip_addr("192.168.0.1");
-#
-#	...
-#
-#	$host->add_service($service);
-##############################################################################
-package Host;
-use strict;
-
-# Create a new instance of the Host object.
-sub new {
-	my $self = {};
-	$self->{HOSTNAME} = undef;
-	$self->{IP_ADDR} = undef;
-	$self->{MAC_ADDR} = undef;
-	$self->{PREVIOUS} = undef;
-	$self->{STATUS} = undef;
-	$self->{SERVICES} = [];
-	bless($self);
-	return $self;
-}
-
-# Associate a Service object with this host.
-sub add_service {
+sub show_changed_hosts {
 	my $self = shift;
-	push @{ $self->{SERVICES} }, shift;
+	$self->{SHOW_CHANGED_HOSTS} = shift if (@_);
+	return $self->{SHOW_CHANGED_HOSTS};
 }
 
-# A conveniance function for numeric sorting.
-sub by_number_ascending
-{
-	$a <=> $b;
-}
-
-# Return a service that matches the associated portid and protocol.
-#
-# Example:
-#
-#	$service = $host->get_service(80, "tcp");
-sub get_service {
+sub show_missing_hosts {
 	my $self = shift;
-	my $portid = shift;
-	my $proto = shift;
-	my $null_service = ();
-
-	for my $service (@{ $self->{SERVICES} }) {
-		if ($portid eq $service->portid && $proto eq $service->proto) {
-			return $service;
-		}
-	}
-
-	return $null_service;
+	$self->{SHOW_MISSING_HOSTS} = shift if (@_);
+	return $self->{SHOW_MISSING_HOSTS};
 }
 
-# Returns a sorted list of the portid's for the TCP services associated with
-# the host.
-sub get_tcp_service_list {
+sub show_new_hosts {
 	my $self = shift;
-	my @list = ();
-
-	for my $service (@{ $self->{SERVICES} }) {
-		push @list, $service->portid if ($service->proto eq "tcp");
-	}
-
-	return sort(by_number_ascending @list);
+	$self->{SHOW_NEW_HOSTS} = shift if (@_);
+	return $self->{SHOW_NEW_HOSTS};
 }
 
-# Returns a sorted list of the portid's for the UDP services associated with
-# the host.
-sub get_udp_service_list {
-	my $self = shift;
-	my @list = ();
-
-	for my $service (@{ $self->{SERVICES} }) {
-		push @list, $service->portid if ($service->proto eq "udp");
-	}
-
-	return sort(by_number_ascending @list);
-}
-
-# Get or set the hostname
-sub hostname {
-	my $self = shift;
-	$self->{HOSTNAME} = shift if (@_);
-	return $self->{HOSTNAME};
-}
-
-# Get or set the IP address.
-sub ip_addr {
-	my $self = shift;
-	$self->{IP_ADDR} = shift if (@_);
-	return $self->{IP_ADDR};
-}
-
-# Get or set the MAC address.
-sub mac_addr {
-	my $self = shift;
-	$self->{MAC_ADDR} = shift if (@_);
-	return $self->{MAC_ADDR};
-}
-
-# Get or set the status of the host.
-sub status {
-	my $self = shift;
-	$self->{STATUS} = shift if (@_);
-	return $self->{STATUS};
-}
-
-# Return the host details (not any associated ports) as a string.
-sub to_string {
-	my $self = shift;
-	my $s = $self->{IP_ADDR};
-	$s .= ', ' . $self->{MAC_ADDR} if defined $self->{MAC_ADDR};
-	$s .= ' (' . $self->{HOSTNAME} . ')' if ($self->{HOSTNAME});
-	$s .= ' - ' . $self->{STATUS} if defined $self->{STATUS};
-	return $s;
-}
-
-# Return the host details (not any associated ports) as xml.
-sub to_xml {
-	my $self = shift;
-	my $close_fully = shift;
-	my $s = '<host ip_addr="' . $self->{IP_ADDR} . '"';
-	$s .= ' mac_addr="' . $self->{MAC_ADDR} . '"'
-	    if defined $self->{MAC_ADDR};
-	$s .= ' hostname="' . $self->{HOSTNAME} . '"' if ($self->{HOSTNAME});
-	$s .= ' status="' . $self->{STATUS} . '"' if defined $self->{STATUS};
-	my $close = ($close_fully) ? '/>' : '>';
-	$s .= $close;
-	return $s;
-}
 1;
 
 ##############################################################################
@@ -1012,18 +1097,6 @@ sub status {
 	my $self = shift;
 	$self->{STATUS} = shift if (@_);
 	return $self->{STATUS};
-}
-
-# Return a string representation of the service.
-sub to_string {
-	my $self = shift;
-	my $s = "$self->{PORTID}/";
-	$s .= "$self->{PROTO}/";
-	$s .= "$self->{STATUS}";
-	$s .= " ($self->{NAME})" if ($self->{NAME});
-	$s .= ' (previously ' . $self->{PREVIOUS} . ')' if defined
-	    $self->{PREVIOUS};
-	return $s;
 }
 
 # Return an XML representation of the service.
