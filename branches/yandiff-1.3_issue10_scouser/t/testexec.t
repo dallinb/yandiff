@@ -1426,7 +1426,11 @@ $baseline = File::Spec->catpath("", 't', 'dns1.xml');
 $observed = File::Spec->catpath("", 't', 'dns2.xml');
 $command_line = "$^X $script --baseline $baseline --observed $observed"
     . " --format xml --hk";
+my $tmpfile = 'testexec.tmp';
+open TMPFILE, ">$tmpfile" or die $!;
+STDERR->fdopen(\*TMPFILE, 'w') or die $!;
 $command_output = `$command_line`;
+unlink($tmpfile);
 $syntax_check = 1 if (!$command_output);
 $parser = new XML::Parser(Style => 'Tree');
 
@@ -1436,7 +1440,7 @@ eval {
 
 $syntax_check = 1 if ($@);
 $syntax_check = 1 if ($tree->[1]->[4]->[0]->{node_key} ne 'IP');
-$stage =  "Recognises impossible --hostname-key input (ignore the warning"
+$stage =  "Recognises impossible --hostname-key input"
     . " message)";
 ok($syntax_check == 0, $stage);
 # Only use the function below when generating test cases.
