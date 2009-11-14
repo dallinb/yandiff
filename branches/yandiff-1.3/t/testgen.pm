@@ -30,7 +30,7 @@ use strict;
 #############################################################################
 sub displaylist {
 	my ($current, @tree) = @_;
-	my $inset = "\$tree->";
+	my $inset = '$tree->';
 	my $key;
 
 	for my $i (@tree) {
@@ -48,7 +48,7 @@ sub displaylist {
 			}
 		} else {
 			my $info = $$current[$key];
-			print_line ("\$syntax_check = 1 "
+			print_line ('$syntax_check = 1 '
 			    . "if ($inset\[$key] ne \'$info\');\n");
 		}
 	}
@@ -67,7 +67,7 @@ sub displayhash {
 			}
 		} else {
 			my $info = $$current{$key};
-			print_line ("\$syntax_check = 1"
+			print_line ('$syntax_check = 1'
 			    . " if ($inset\[0\]\->\{$key\} ne \'$info\');\n");
 		}
 	}
