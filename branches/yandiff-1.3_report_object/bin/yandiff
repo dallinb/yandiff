@@ -499,7 +499,8 @@ sub output_file {
 
 	if (@_) {
 		$self->{OUTPUT_FILE} = shift;
-		open OUTPUT, '>', $self->{OUTPUT_FILE} or die $!;
+		open OUTPUT, '>', $self->{OUTPUT_FILE}
+		    or die "[FATAL]Unable to open $self->{OUTPUT_FILE}: $!";
 		STDOUT->fdopen(\*OUTPUT, 'w') or die $!;
 	}
 
