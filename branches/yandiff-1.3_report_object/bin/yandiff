@@ -347,7 +347,6 @@ sub to_xml {
 #
 ##############################################################################
 package Report;
-use Data::Dumper;
 use XML::Parser;
 use strict;
 
