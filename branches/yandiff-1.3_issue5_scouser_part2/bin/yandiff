@@ -34,7 +34,7 @@ use strict;
 
 # Declare and initialise local variables.
 my $baseline_file;
-my ($c, $entry);
+my $c;
 my $command_line;
 my $format;
 my $gen_stylesheet;
@@ -142,6 +142,7 @@ if ($output_hosts) {
 if ($output_ports) {
 	for (my $i = 0; $i < length($output_ports); $i++) {
 		$c = substr($output_ports, $i, 1);
+
 		if ($c eq 'o') {
 			next;
 		} elsif ($c eq 'f') {
@@ -1012,63 +1013,6 @@ sub unique {
 	}
 
 	return @ip_list;
-}
-
-# Get or set the hostname
-sub hostname {
-	my $self = shift;
-	$self->{HOSTNAME} = shift if (@_);
-	return $self->{HOSTNAME};
-}
-
-# Get or set the IP address.
-sub ip_addr {
-	my $self = shift;
-	$self->{IP_ADDR} = shift if (@_);
-	return $self->{IP_ADDR};
-}
-
-# Get or set the MAC address.
-sub mac_addr {
-	my $self = shift;
-	$self->{MAC_ADDR} = shift if (@_);
-	return $self->{MAC_ADDR};
-}
-
-# Get or set the status of the host.
-sub status {
-	my $self = shift;
-	$self->{STATUS} = shift if (@_);
-	return $self->{STATUS};
-}
-
-# Return the host details (not any associated ports) as xml.
-#
-# Parameters:
-#  $no_sub_elements - a boolean value indicating if the element is to be
-#      closed when first declared, or if it should remain open to have
-#      sub-elements declared within it (and for later closing).  An example
-#      of an element with no sub-elements is:
-#
-#          <element attrib="..."/>
-#
-#      Whereas the following is an example of an element with sub-elements:
-#
-#          <element attrib="...">
-#           <sub_elem_a>...</sub_elem_a>
-#           <sub_elem_b>...</sub_elem_b>
-#          </element>
-sub to_xml {
-	my $self = shift;
-	my $no_sub_elements = shift;
-	my $s = '<host ip_addr="' . $self->{IP_ADDR} . '"';
-	$s .= ' mac_addr="' . $self->{MAC_ADDR} . '"'
-	    if defined $self->{MAC_ADDR};
-	$s .= ' hostname="' . $self->{HOSTNAME} . '"' if ($self->{HOSTNAME});
-	$s .= ' status="' . $self->{STATUS} . '"' if defined $self->{STATUS};
-	my $close = ($no_sub_elements) ? '/>' : '>';
-	$s .= $close;
-	return $s;
 }
 1;
 
