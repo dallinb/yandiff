@@ -573,7 +573,7 @@ sub report_changed_hosts {
 		my $accuracy;
 		my $os;
 
-		if ($OS) {
+		if ($OS->class_count()) {
 			$name = $OS->name();
 
 			# If the name is set then find out how accurate the
@@ -602,7 +602,7 @@ sub report_changed_hosts {
 		# Now do the same OS extraction for the observed host.
 		$OS = $observed_host->os_sig();
 
-		if (1 == 2) {
+		if ($OS->class_count()) {
 			$name = $OS->name();
 
 			if ($name) {
