@@ -23,7 +23,7 @@
 ##############################################################################
 use Data::Dumper;
 use File::Spec;
-use Test::Simple tests => 25;
+use Test::Simple tests => 26;
 use XML::Parser;
 use strict;
 
@@ -1441,7 +1441,28 @@ eval {
 $syntax_check = 1 if ($@);
 $syntax_check = 1 if ($tree->[1]->[4]->[0]->{node_key} ne 'IP');
 $stage =  "Recognises impossible --hostname-key input"
-    . " message)";
+    . " message";
 ok($syntax_check == 0, $stage);
+
+# Test that different OS versions are detected.
+$syntax_check = 0;
+$baseline = File::Spec->catpath("", 't', 'issue25b.xml');
+$observed = File::Spec->catpath("", 't', 'issue25o.xml');
+$command_line = "$^X $script --baseline $baseline --observed $observed"
+    . " --format xml";
+$command_output = `$command_line`;
+$syntax_check = 1 if (!$command_output);
+$parser = new XML::Parser(Style => 'Tree');
+
+eval {
+	$tree = $parser->parse($command_output);
+};
+
 # Only use the function below when generating test cases.
 #displaylist($tree);
+$stage = 'OS Detection';
+$syntax_check = 1 if ($tree->[1]->[16]->[4]->[16]->[0]->{baseline}
+    ne 'FreeBSD 5.2 - 5.3 (100%)');
+$syntax_check = 1 if ($tree->[1]->[16]->[4]->[16]->[0]->{observed}
+    ne 'FreeNAS 0.686 (FreeBSD 6.2-RELEASE) (100%)');
+ok($syntax_check == 0, $stage);
