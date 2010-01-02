@@ -430,8 +430,11 @@ sub go {
 	    . $command_line
 	    . '">'
 	    . "\n";
-	$xml .= " <parameters node_key=\"$node_key\">\n";
 	my $session = $baseline->get_session();
+	$xml .= " <parameters node_key=\"$node_key\"";
+	$xml .= ' nmap_version_warning="true"' if ($session->nmap_version()
+	    ne $observed->get_session()->nmap_version());
+	$xml .= ">\n";
 	$xml .= "  <baseline>\n"
     	    . "   <file>$baseline_file</file>\n"
     	    . '   <scan_args>'
@@ -489,6 +492,12 @@ sub handle_start {
 		    "baseline: $baseline_file\n",
 		    "observed: $observed_file\n";
 	} elsif ($element eq 'parameters') {
+		if (exists($attrs{nmap_version_warning})
+		    && $attrs{nmap_version_warning}) {
+			print "Warning: Nmap version mismatch between the "
+			    . "baseline and observed scans.\n";
+		}
+
 		print "node key: $attrs{node_key}";
 	} elsif ($element eq 'new') {
 		print "\nNew hosts:\n";
@@ -1416,6 +1425,11 @@ sub generate {
    <td><i><xsl:value-of select="parameters/observed/scan_args"/></i></td>
   </tr>
  </table>
+
+ <xsl:if test="parameters/\@nmap_version_warning">
+  <p style="color: orange">Warning: Nmap version mismatch between the baseline
+  and the observed scan.</p>
+ </xsl:if>
 
  <h2>Host Summary</h2>
 
