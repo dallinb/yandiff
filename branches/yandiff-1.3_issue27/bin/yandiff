@@ -1031,7 +1031,7 @@ sub create_maps {
 
 	for my $ip ($self->get_ips()) {
 		$hostname = $self->get_host($ip)->hostname;
-		$hostname = $ip if ($hostname eq '');
+		$hostname = $ip if (!$hostname);
 
 		# If there is a duplicate hostname, the lookups are not
 		# going to work, set the DHCP flag for this scan back
