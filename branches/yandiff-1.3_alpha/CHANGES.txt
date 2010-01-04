@@ -1,3 +1,13 @@
+4 January 2010 - Release 1.3.  Two changes (issue5 & issue23) simply changed
+the format of the code but was for the sake of the developers and did not add,
+change or remove and functionality.  Testing has been made a bit stricter at
+install time when the user runs "Build test" with a much larger number of tests
+now being carried out (issue10).  A defect that meant that spurious null
+hostnames would be shown under some circumstances has been fixed (issue27).
+Finally, a user is notified if a changed node has had it's operating system
+changed (issue25).  There is also a warning if the version of Nmap has changed
+between the baseline and observed scans (issue28).
+
 12 September 2009 - Release 1.2.  This release fixes a minor issue introduced
 in release 1.1 where a diagnostic warning was show when a host didn't have a
 MAC address (issue15).  Also tidied up the documentation and source code logic

@@ -10,6 +10,8 @@ t/baseline_qa.xml
 t/dns1.xml
 t/dns2.xml
 t/dns3.xml
+t/issue25b.xml
+t/issue25o.xml
 t/issue7.xml
 t/oA9.xml
 t/observed_qa.xml
