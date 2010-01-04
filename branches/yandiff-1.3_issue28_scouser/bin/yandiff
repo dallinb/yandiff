@@ -1502,9 +1502,6 @@ sub generate {
    <xsl:apply-templates select="service"/>
 
    </table>
-   <xsl:if test="os">
-    <xsl:apply-templates select="os"/>
-   </xsl:if>
   </xsl:for-each>
 
  </xsl:if>
@@ -1589,12 +1586,7 @@ sub generate {
     </xsl:for-each>
    </table>
    <xsl:if test="os">
-    <p><b>OS:</b>
-     <ul>
-      <li>Baseline: <xsl:value-of select="\@baseline"/></li>
-      <li>Observed: <xsl:value-of select="\@observed"/></li>
-     </ul>
-    </p>
+    <xsl:apply-templates select="os"/>
    </xsl:if>
   </xsl:for-each>
  </xsl:if>
