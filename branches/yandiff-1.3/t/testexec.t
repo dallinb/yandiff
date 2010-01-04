@@ -23,7 +23,7 @@
 ##############################################################################
 use Data::Dumper;
 use File::Spec;
-use Test::Simple tests => 26;
+use Test::Simple tests => 27;
 use XML::Parser;
 use strict;
 
@@ -1465,4 +1465,10 @@ $syntax_check = 1 if ($tree->[1]->[16]->[4]->[16]->[0]->{baseline}
     ne 'FreeBSD 5.2 - 5.3 (100%)');
 $syntax_check = 1 if ($tree->[1]->[16]->[4]->[16]->[0]->{observed}
     ne 'FreeNAS 0.686 (FreeBSD 6.2-RELEASE) (100%)');
+ok($syntax_check == 0, $stage);
+
+# Nmap version mismatch detection.
+$stage = 'Nmap version mismatch detection';
+$syntax_check = 1 if ($tree->[1]->[4]->[0]->{nmap_version_warning}
+    ne 'true');
 ok($syntax_check == 0, $stage);
