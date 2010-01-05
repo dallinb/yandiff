@@ -4,7 +4,7 @@
 =Wiki Index=
 
 ==Overview==
-  * [history History] of Yandiff and it's predecessor Xndiff.
+  *  [history History] of Yandiff and it's predecessor Xndiff.
 
 ==Installation Instructions==
   * [WinInstall Windows]
