@@ -4,11 +4,11 @@
 =Wiki Index=
 
 ==Overview==
-  *[history History] of Yandiff and it's predecessor Xndiff.
+  * A [history History] of Yandiff and it's predecessor Xndiff.
 
 ==Installation Instructions==
-  * [WinInstall Windows]
-  * [INSTALL UNIX/Linux]
+  * Click [WinInstall here] for instructions on installing on Windows.
+  * Click [INSTALL here] for installing on UNIX or Linux.
 
 ==User Manuals==
   * [YandiffManual]
