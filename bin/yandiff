@@ -1323,8 +1323,7 @@ The default is to show all ports.
 =item B<--stylesheet> <file | URL>
 
 Specifies the location of an XML stylesheet to be referred to in any XML
-output.  If the stylesheet specified is not a URL and is found to be a
-non-existent file then it will be generated.
+output.
 
 =item B<-V>
 
