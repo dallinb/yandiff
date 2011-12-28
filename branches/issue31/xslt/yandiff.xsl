@@ -22,7 +22,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
- See http://code.google.com/p/yandiff for details.
+This stylesheet is heavily based upon Benjamin Erb's
+<http://www.benjamin-erb.de/nmap_xsl.php> stylesheet for Nmap.
 -->
 
 <xsl:stylesheet version="1.0"
