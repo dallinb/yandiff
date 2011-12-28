@@ -1,0 +1,57 @@
+Dependencies
+============
+
+Before you can start, Yandiff required Perl [1], the Nmap::Parser module and
+the nmake utility [2]. Yandiff is written in Perl and the Nmap::Parser module
+requires nmake during installation. The directories where Perl and nmake are
+installed should be in the execution path [3]. When this has been configured
+correctly, the Nmap::Parser module needs to be installed by typing the
+following command:
+
+	cpan Nmap::Parser
+
+You will be prompted for some yes/no answers and for most users the defaults
+are sufficient. This should be the final dependency require to be installed
+and you should be able to proceed to install the yandiff utility.
+
+Installation
+============
+
+In the example below, the archive has been extracted to C:\yandiff and that is
+also the current working directory:
+ 
+	C:\yandiff>perl Build.PL
+	C:\yandiff>perl Build build
+	C:\yandiff>perl Build test
+	C:\yandiff>perl Build install
+
+On a machine running Windows XP this procedure installed the following
+files:
+
+	C:\Perl\man\man1\yandiff.1
+	C:\Perl\html\bin\yandiff.html
+	C:\Perl\site\bin\yandiff
+	C:\Perl\site\bin\yandiff.bat
+
+Installing to an alternative location
+=====================================
+If you do not want to install to the default location, you can specify an
+alternative in the first installation command:
+
+        C:\yandiff>perl Build.PL --install_base N:\foobar
+	C:\yandiff>perl Build build
+	C:\yandiff>perl Build test
+	C:\yandiff>perl Build install
+
+References
+==========
+
+[1] - Perl Downloads, available from <http://www.activestate.com/downloads>
+viewed on 14 December 2008.
+
+[2] - Nmake from Microsoft, available from
+<http://download.microsoft.com/download/vc15/patch/1.52/w95/en-us/nmake15.exe>
+viewed on 14 December 2008.
+
+[3] - How to set the path in Windows 2000 / Windows XP, available from
+<http://www.computerhope.com/issues/ch000549.htm> viewed on 14 December 2008.

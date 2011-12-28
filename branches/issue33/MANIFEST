@@ -1,0 +1,20 @@
+bin/yandiff
+Build.PL
+CHANGES.txt
+COPYING.txt
+INSTALL.txt
+MANIFEST			This list of files
+META.yml
+README.txt
+t/baseline_qa.xml
+t/dns1.xml
+t/dns2.xml
+t/dns3.xml
+t/issue25b.xml
+t/issue25o.xml
+t/issue7.xml
+t/oA9.xml
+t/observed_qa.xml
+t/testexec.t
+t/testgen.pm
+WIN-INSTALL.txt
