@@ -97,16 +97,6 @@ if ($show_version) {
 	}
 }
 
-if ($stylesheet && ! -e $stylesheet) {
-	unless ($stylesheet =~ m/:\/\//i) {
-		# To be here, a stylesheet has been specified that is not a
-		# URL (i.e. it is a file) and the file doesn't currently
-		# exist, so create it.
-		$xslt = new Stylesheet;
-		$xslt->generate($stylesheet);
-	}
-}
-
 if ($output_hosts) {
 	$report->show_changed_hosts(0);
 	$report->show_missing_hosts(0);
