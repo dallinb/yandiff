@@ -9,8 +9,6 @@
 
  yandiff file file
 
- yandiff --gen-stylesheet file
-
  yandiff --help | -?
 
  yandiff --man
@@ -28,11 +26,6 @@
 
        --format <text | xml>
                Specifies the output format (text is the default).
-
-       -g file
-
-       --gen-stylesheet file
-               Generate an XML stylesheet (XSLT) suitable for use with the --stylesheet option.
 
        -h
 
@@ -103,9 +96,7 @@
        -s <file | URL>
 
        --stylesheet <file | URL>
-               Specifies the location of an XML stylesheet to be referred to in any XML output.  If the stylesheet specified is not a URL
-               and is found to be a non-existent file then it will be generated.  A suitable stylesheet can also be generated using the
-               --gen-stylesheet option.
+               Specifies the location of an XML stylesheet to be referred to in any XML output.
 
        -V
 
@@ -126,13 +117,10 @@ which is equivalent to
 
  yandiff --baseline baseline.xml --observed observed.xml
 
-To generate a stylesheet to file:
+To generate a report to an XML file and using a stylesheet:
 
-  yandiff --gen-stylesheet yandiff.xsl
+  yandiff --baseline baseline.xml --observed observed.xml                    --format xml --output-file report.xml --stylesheet yandiff.xsl
 
-To generate a report to an XML file and using the stylesheet generated in the previous example:
-
- yandiff --baseline baseline.xml --observed observed.xml --format xml --output-file report.xml
 
 ==HISTORY==
 Yandiff is loosely based on ndiff written by James Levine, except where ndiff used "grepable" output from nmap, yandiff reads XML output using Nmap::Parser.
