@@ -1364,7 +1364,8 @@ To generate a report to an XML file and using a stylesheet:
 =over 8
 
 yandiff --baseline baseline.xml --observed observed.xml \
-	--format xml --output-file report.xml
+	--format xml --output-file report.xml \
+        --stylesheet yandiff.xsl
 
 =back
 
