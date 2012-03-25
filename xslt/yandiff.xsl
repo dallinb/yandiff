@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Copyright (c) 2008-2011, League of Crafty Programmers Ltd <info@locp.co.uk>
+Copyright (c) 2008-2012, League of Crafty Programmers Ltd <info@locp.co.uk>
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

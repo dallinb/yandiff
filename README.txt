@@ -8,7 +8,7 @@ designated the "baseline", the other the "observation". Alternatively a third
 XML file can be created containing the differences.
 
 It is loosely based on ndiff written by James Levine (circa 2001), except where
-ndiff used nmap’s "grepable" output, yandiff reads XML output using
+ndiff used nmap's "grepable" output, yandiff reads XML output using
 Nmap::Parser.
 
 Building a Distribution
