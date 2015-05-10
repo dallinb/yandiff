@@ -1,0 +1,124 @@
+
+```
+NDIFF(1)              User Contributed Perl Documentation             NDIFF(1)
+
+
+
+       ndiff - find differences between two nmap network scans
+
+SYNOPSIS
+       ndiff    [-b, -baseline  <file-or-:tag>]   [-o, -observed  <file-or-:tag>] [-op, -output-ports < ocufx >] [-of, -output-hosts < nmc >] [-fmt‚-format <terse‚ minimal‚ verbose‚ machine‚ html‚ htmle>]
+
+DESCRIPTION
+       ndiff allows a network administrator or other interested party to eas-
+       ily monitor one or more networks for changes in port states and running
+       services.  It achieves this by comparing the results of two nmap scans,
+       one designated the "baseline", the other "observation".
+
+       Both baseline and observation are stored in files generated via nmap`'`s
+       -m switch.
+
+OPTIONS
+       -b <filename-or-:tag>
+       -baseline <filename-or-:tag>
+           Specifies the nmap results to use as the baseline for the compari-
+           son.  Normally this is the name of an nmap machine-parseable file,
+           but if the parameter starts with a colon (:), it is treated as a
+           key into a data store.  See "DATA STORES" below for more informa-
+           tion.
+
+           See "SUBSTITUTIONS" below for information about using %-style
+           expansions within filenames and :tags.
+
+       -o <filename-or-:tag>
+       -observed <filename-or-:tag>
+           Specifies the nmap results to use as the "observed results" for the
+           comparison.  Normally this is the name of an nmap machine-parseable
+           file, but if the parameter starts with a colon (:), it is treated
+           as a key into a data store. See "DATA STORES" below for more infor-
+           mation.
+
+           See "SUBSTITUTIONS" below for information about using %-style
+           expansions within filenames and :tags.
+
+       -fmt  <terse | minimal | verbose | machine | html | htmle>
+       -format  <terse | minimal | verbose | machine | html | htmle>
+           Specifies the level of detail in the output.  "html" causes ndiff
+           to generate an html page, while "htmle" causes ndiff to generate an
+           embeddable html fragment (See ndiff2html).
+
+       -op [ ocufx ]
+       -output-ports [ ocufk ]
+           Specifies which ports to display when outputting changed hosts.
+           Any combination of the characters [ ocufx ] may be specified to
+           enable printing of ports that changed to states (in the "observed"
+           scan) as follows:
+
+            o = open
+            c = closed
+            f = filtered
+            x = unfiltered
+            k = unknown (wasn't scanned or host wasn't up)
+
+       -oh [ nmc ]
+       -output-hosts [ nmc ]
+           Specifies which types hosts to display.  Any combination of [ nmc ]
+           may be specified, as follows:
+
+            n = new hosts (in the "observed" scan)
+            m = missing hosts ( " " " )
+            c = changed hosts ( " " " )
+
+       -of < file >
+       -output-file < file >
+           Send the output to the specified file.  % substitutions are sup-
+           ported in the filename, see "SUBSTITUTIONS" below.
+
+DATASTORES
+       Nrun and its related tools can manipulate results in regular nmap-for-
+       mat files, in any user-specified location, or they can handle storing
+       and organizing the data on behalf of the user, through a user-config-
+       urable "data store".
+
+       Whenever you precede a results tag with a colon (:), the tag will be
+       treated as a unique key into a data store, identifying the results set.
+
+       Currently the only supported data store is  nmap format files placed in
+       a preconfigured directory.  Other types may be added at a later date.
+
+       A legal tag may contain any alphanumeric string, plus dash, underscore,
+       and dot.  %-style substitutions in the ilk of the "date" command are
+       also supported, allowing a tag to contain date, time, or the local
+       hostname.  See "SUBSTITUTIONS" below for more information.
+
+SUBSTITUTIONS
+       %-style substitutions supported in tags as follows:
+
+       %H = hour
+       %M = minute
+       %S = second
+       %D = day of month
+       %m = month of year (01-12)
+       %Y = year, four digits
+       %j = day of year, three digits
+       %w = day of week (0-6) one digit
+
+       Except where noted, the above items are two digits, and local time.
+       All are zero-padded as appropriate.
+
+       In addtion-
+
+       %F = output of "hostname" on the local machine
+
+BUGS
+       It`'`s too slow -- approx 3 scanned hosts per second on a Pentium II-300.
+       No support for human-readable hostnames and portnames.  Port/protocol
+       output formatting is inconsistent in certain places.
+
+AUTHOR
+       James Levine <jdl@vinecorp.com>
+
+
+
+perl v5.8.8                       2008-07-02                          NDIFF(1)
+```

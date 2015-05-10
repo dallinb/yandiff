@@ -1,0 +1,84 @@
+# Test Plan #
+
+## Description ##
+This is a description of the series of tests to be carried out to test the individual requirements of the utility.  This will include checking
+that hosts can be filtered on individual status (new, changed or missing) and that ports on changed hosts can be filtered depending on the status returned by Nmap.  These are open, closed, filtered, unfiltered, open|filtered and closed|filtered `[1]`.
+
+## Test Data ##
+A minimal set of test data will be prepared to carry out the specific tests.
+This data is not intended to be realistic from a scanning point of view.  It
+is merely to test the functionality of the script.
+
+### Baseline ###
+The baseline file (baseline\_qa.xml) will consist of two hosts called alpha and beta.  These hosts will have the following details:
+
+| **Host** | **IP** |
+|:---------|:-------|
+|alpha|192.168.1.8|
+|bravo|192.168.1.16|
+
+Both of the hosts will have been configured with the following services:
+
+| **Protocol** | **Port** | **Status** |
+|:-------------|:---------|:-----------|
+|tcp|1 |open|
+|tcp|2 |open|
+|tcp|3 |open|
+|tcp|4 |open|
+|tcp|5 |open|
+|tcp|6 |open|
+|tcp|7 |open|
+|tcp|14|filtered|
+|udp|1 |open|
+|udp|2 |open|
+|udp|3 |open|
+|udp|4 |open|
+|udp|5 |open|
+|udp|6 |open|
+|udp|7 |open|
+|udp|14|filtered|
+
+### Observed ###
+The changes in the observed scan (observed\_qa.xml) will be that  alpha will be renamed to charlie and have the IP address changed to 192.168.1.
+24.  Except for these changes, the host will remain unchanged.  The bravo host will have the following services configured:
+
+| **Protocol** | **Port** | **Status** |
+|:-------------|:---------|:-----------|
+|tcp|2 |open|
+|tcp|3 |closed|
+|tcp|4 |filtered|
+|tcp|5 |unfiltered|
+|tcp|6 |open|filtered|
+|tcp|7 |closed|filtered|
+|tcp|8 |open|
+|tcp|9 |closed|
+|tcp|10|filtered|
+|tcp|11|unfiltered|
+|tcp|12|open|filtered|
+|tcp|13|closed|filtered|
+|tcp|14|open|
+|udp|2 |open|
+|udp|3 |closed|
+|udp|4 |filtered|
+|udp|5 |unfiltered|
+|udp|6 |open|filtered|
+|udp|7 |closed|filtered|
+|udp|8 |open|
+|udp|9 |closed|
+|udp|10|filtered|
+|udp|11|unfiltered|
+|udp|12|open|filtered|
+|udp|13|closed|filtered|
+|udp|14|open|
+
+## Test Schedule ##
+
+Results should be recorded using the [FunctionalTestTemplate](FunctionalTestTemplate.md).
+
+## Performance Testing ##
+James Levine stated that the original ndiff ran too slowly (3 scanned hosts per second).  While the majority of processing is parsing the XML files and this handled by Anthony Persaud's excellent Nmap::Parser we thought a benchmark test was required.  This was carried out in [late 2008 using version 0.3 of xndiff](PerformanceTest20081219.md).  This test was repeated using yandiff version 1.0 in [July 2009](PerformanceTest20090717.md).
+
+## References ##
+
+`[1]` – _Nmap Reference Guide:  Port Scanning Basics_, available from < http://nmap.org/book/man-port-scanning-basics.html >, downloaded on 31
+December 2008.

@@ -1,0 +1,34 @@
+# Performance Test 17-Jul-2009 #
+
+## Summary ##
+
+**Date of Test**: 17-Jul-2009
+
+**Yandiff Version**: 1.0
+
+**Test Data Version**: 0.3
+
+**Test Machine OS**: Ubuntu 8.4
+
+**Test Machine Processor**: 1.6 GHz Intel Atom
+
+## Test Details ##
+
+Carried out 3 scans using the following command line:
+
+> `time yandiff --baseline baseline1024.xml --observed observed1024.xml`
+
+Both XML files contain 1024 hosts.  The timings were:
+
+|**Run**|Time (seconds)|
+|:------|:-------------|
+|1 |45.165|
+|2 |42.976|
+|3 |43.553|
+|**Average**|**43.898**|
+
+Processor (MHz) adjustment: (300 / 1600) `*` 100 = 18.75%
+
+Average Number of Hosts Processed Per Second: 1024 / 43.898  = 23.327
+
+18.75% of 23.327 = 4.374

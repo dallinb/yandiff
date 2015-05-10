@@ -1,0 +1,161 @@
+# Functional Test 22-Aug-2009 #
+
+Date of Test: 22 Aug 2009
+
+Yandiff Version: 1.1
+
+## Tests ##
+
+1) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/observed_qa.xml`
+
+The output should list charlie as a new host, alpha as a missing host and
+bravo with the following port status for both TCP and UDP:
+
+| **Reason** | **Port** | **Observed Status**  |
+|:-----------|:---------|:---------------------|
+| New | 8 | open |
+| New | 9 | closed |
+| New | 10 | filtered |
+| New | 11 | unfiltered |
+| New | 12 | open|filtered |
+| New | 13 | closed|filtered |
+| Missing | 1 | N/A |
+| Changed | 3 | closed |
+| Changed | 4 | filtered |
+| Changed | 5 | unfiltered |
+| Changed | 6 | open|filtered |
+| Changed | 7 | closed|filtered |
+| Changed | 14 | open |
+
+Result: PASS
+
+
+2) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/observed_qa.xml --output-hosts n`
+
+Should only return charlie.
+
+Result: PASS
+
+
+3) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/observed_qa.xml --output-hosts c`
+
+Should only return bravo.
+
+Result: PASS
+
+
+4) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/observed_qa.xml --output-hosts m`
+
+Should only return alpha.
+
+Result: PASS
+
+
+5) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/observed_qa.xml --output-hosts c -output-ports o`
+
+Should return bravo and ports 6, 8, 12 and 14 for both TCP and UDP.
+
+Result: PASS
+
+
+6) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/observed_qa.xml --output-hosts c -output-ports f`
+
+Should return bravo and ports 4, 6, 7, 10, 12 and 13 for both TCP and UDP.
+
+Result: PASS
+
+
+7) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/observed_qa.xml --output-hosts c -output-ports c`
+
+Should return bravo and ports 3, 7, 9 and 13 for both TCP and UDP.
+
+Result: PASS
+
+
+8) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/observed_qa.xml --output-hosts c -output-ports x`
+
+Should return bravo and ports 5 and 11 for both TCP and UDP.
+
+Result: PASS
+
+9) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/dns3.xml --hk`
+
+The output should list charlie as a new host, alpha as a missing host and
+bravo with the following port status for both TCP and UDP:
+
+| **Reason** | **Port** | **Observed Status**  |
+|:-----------|:---------|:---------------------|
+| New | 8 | open |
+| New | 9 | closed |
+| New | 10 | filtered |
+| New | 11 | unfiltered |
+| New | 12 | open|filtered |
+| New | 13 | closed|filtered |
+| Missing | 1 | N/A |
+| Changed | 3 | closed |
+| Changed | 4 | filtered |
+| Changed | 5 | unfiltered |
+| Changed | 6 | open|filtered |
+| Changed | 7 | closed|filtered |
+| Changed | 14 | open |
+
+Result: PASS
+
+
+10) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/dns3.xml --hk --output-hosts n`
+
+Should only return charlie.
+
+Result: PASS
+
+
+11) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/dns3.xml --hk --output-hosts c`
+
+Should only return bravo.
+
+Result: PASS
+
+
+12) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/dns3.xml --hk --output-hosts m`
+
+Should only return alpha.
+
+Result: PASS
+
+
+13) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/dns3.xml --hk --output-hosts c -output-ports o`
+
+Should return bravo and ports 6, 8, 12 and 14 for both TCP and UDP.
+
+Result: PASS
+
+
+14) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/dns3.xml --hk --output-hosts c -output-ports f`
+
+Should return bravo and ports 4, 6, 7, 10, 12 and 13 for both TCP and UDP.
+
+Result: PASS
+
+
+15) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/dns3.xml --hk --output-hosts c -output-ports c`
+
+Should return bravo and ports 3, 7, 9 and 13 for both TCP and UDP.
+
+Result: PASS
+
+
+16) `./bin/yandiff --baseline ./t/baseline_qa.xml --observed ./t/dns3.xml --hk --output-hosts c -output-ports x`
+
+Should return bravo and ports 5 and 11 for both TCP and UDP.
+
+Result: PASS
+
+17) `./bin/yandiff --baseline t/oA9.xml --observed ./t/issue7.xml`
+
+Should return 192.168.0.9 as a changed host (2049/tcp) with no hostname.
+
+Result: PASS
+
+## Summary ##
+
+If any of the tests failed, provide details below and include references to any issues raised:

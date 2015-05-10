@@ -1,0 +1,33 @@
+# History of Yandiff #
+
+## The Original Ndiff ##
+
+The original ndiff was developed in Perl by James Levine and compared the output of Nmap's 'grepable' output. This project seems to have gone into hiatus since 2001 (see http://packages.debian.org/etch/ndiff for details of the Debian package) and the web page which one used to be directed to to download the software (http://www.vinecorp.com/ndiff/) makes no mention of it any more.  While the concept of the software was excellent, the grepable output was troublesome with the [manual](OriginalNdiffManual.md) stating that "port/protocol output formatting is inconsistent in certain places".
+
+Most importantly is that since 2001 development of Nmap has rather left the grepable output behind.  Fyodor (the development coordinator of Nmap) suggests that developers interact with the XML output (Lyon, 2008: 348) and consider the grepable output as deprecated.
+
+## The Official Ndiff ##
+
+Another script to compare Nmap output files (this time the XML) was developed in Perl by Michael Pattrick during the [2008 Google Summer of Code](http://code.google.com/soc/2008) shortly before the summer of code was due to finish, it was decided to rewrite the software in Python to interface better with Zenmap.  Due to time constraints this work was carried out by David Fifield.  See the page for Ndiff at the Nmap site http://nmap.org/ndiff.
+
+## Xndiff ##
+
+During 2007 and 2008 I was working in roles that required a lot of analysis of Nmap output.  Having found mention of the original Ndiff and struggled with the grepable output.  I eventually started writing custom scripts utilising Anthony G. Persaud's (http://search.cpan.org/dist/Nmap-Parser/).  In mid 2008, unaware of the development taking place during the Google Summer of Code I decided to work seriously on a functional equivalent of the original Ndiff, also developed in Perl but using the XML output (as now suggested by Fyodor).
+
+The name Xndiff was chosen to represent the origin of the function of the script and the fact that XML was was used.
+
+In late November 2008 I uploaded the software as an open source project at Google code and was helped by Pete Stubbs into making [seven releases of xndiff](XndiffHistory.md) which included a couple of bug fixes and further enhancements.
+
+## Rename of Xndiff to Yandiff ##
+
+In June 2009 having been aware of the existence of the new Ndiff project for a few months we decided to rename the project to Yandiff (yet another Nmap differential) and what had been Xndiff version 0.7 was renamed to Yandiff-0.1.  All future enhancements or fixes will be made on Yandiff.  After a suitable period of mourning, the Xndiff project will be deleted.
+
+## References ##
+
+Gordon "Fyodor" Lyon (2008) _Nmap Network Scanning:  Official Nmap Project Guide to Network Discovery and Security Scanning_, Insecure.Com LLC, Sunnyvale.
+
+---
+
+Ben Dalling
+
+June 2009
