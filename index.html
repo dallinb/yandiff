@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Yandiff by locp</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Yandiff</h1>
+        <p>Automatically exported from code.google.com/p/yandiff</p>
+
+        <p class="view"><a href="https://github.com/locp/yandiff">View the Project on GitHub <small>locp/yandiff</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/locp/yandiff/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/locp/yandiff/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/locp/yandiff">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a id="description" class="anchor" href="#description" aria-hidden="true"><span class="octicon octicon-link"></span></a>Description</h1>
+
+<p>Yandiff (previously called Xndiff) is a command line utility (written in Perl)
+that allows users to monitor networks for changes in port states and running
+services. It does this by comparing the XML output of two nmap scans, one
+designated the "baseline", the other the "observation". Alternatively a third
+XML file can be created containing the differences.</p>
+
+<p>It is loosely based on ndiff written by James Levine (circa 2001), except where
+ndiff used nmap's "grepable" output, yandiff reads XML output using
+Nmap::Parser.</p>
+
+<h1>
+<a id="building-a-distribution" class="anchor" href="#building-a-distribution" aria-hidden="true"><span class="octicon octicon-link"></span></a>Building a Distribution</h1>
+
+<p>This section is only useful if you intend to create a distribution.  It
+also assumes you're using Subversion.</p>
+
+<p>In a release branch, ensure that the manifest is up to date, if necessary
+run:</p>
+
+<pre><code>perl Build.PL
+perl Build manifest
+</code></pre>
+
+<p>Ensure that the $VERSION string is set correctly in bin/yandiff (in this
+example it is version 1.3) and make sure that CHANGES.txt has been updated.
+Then run the following:</p>
+
+<pre><code>perl Build.PL 
+perl Build disttest
+perl Build dist
+tar xzvf yandiff-1.3.tar.gz 
+zip -Dlvr yandiff-1.3.zip yandiff-1.3
+perl Build realclean
+svn status
+</code></pre>
+
+<p>If all has gone well, you should have a zip archive and a gzipped tarball.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/locp">locp</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-6773548-5");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
